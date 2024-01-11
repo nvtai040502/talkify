@@ -21,11 +21,12 @@ import { Button } from './ui/button'
 import { Input } from './ui/input'
 import { toast } from 'react-hot-toast'
 import { usePathname, useRouter } from 'next/navigation'
-
+import axios from "axios"
+import { createChat } from '@/actions/chat'
 const IS_PREVIEW = process.env.VERCEL_ENV === 'preview'
 export interface ChatProps extends React.ComponentProps<'div'> {
   initialMessages?: Message[]
-  id?: string
+  id: string
 }
 
 export function Chat({ id, initialMessages, className }: ChatProps) {
@@ -35,10 +36,22 @@ export function Chat({ id, initialMessages, className }: ChatProps) {
     'ai-token',
     null
   )
+  // let idUse = ""
+  // if (path === "/") {
+  //   (async () => {
+  //     const {chat} = await createChat();
+  //     toast.success("Post created!");
+  //     idUse = String(chat.id);
+  //   })();
+  // } else {
+  //   idUse = id;
+  // }
+
   const [previewTokenDialog, setPreviewTokenDialog] = useState(IS_PREVIEW)
   const [previewTokenInput, setPreviewTokenInput] = useState(previewToken ?? '')
   const { messages, append, reload, stop, isLoading, input, setInput } =
     useChat({
+      api: "api/chat/hf",
       initialMessages,
       id,
       body: {
@@ -56,6 +69,7 @@ export function Chat({ id, initialMessages, className }: ChatProps) {
         }
       }
     })
+    
   return (
     <>
       <div className={cn('pb-[200px] pt-4 md:pt-10', className)}>
