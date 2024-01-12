@@ -6,7 +6,28 @@ import { kv } from '@vercel/kv'
 
 import { auth } from '@/auth'
 import { type Chat } from '@/lib/types'
+import { db } from '@/lib/db'
+import { Message } from 'ai'
 
+
+export async function createChatWithMessages(id: string, messages: Message[]) {
+  await db.chat.create({
+    data: {
+      id: id,
+      name: 'Home',
+      messages: {
+        createMany: {
+          data: messages.map((message) => ({
+            content: message.content,
+            role: message.role,
+            tool_call_id: message.tool_call_id,
+            chatId: id
+          })),
+        },
+      },
+    },
+  });
+}
 export async function getChats(userId?: string | null) {
   if (!userId) {
     return []
@@ -30,10 +51,14 @@ export async function getChats(userId?: string | null) {
   }
 }
 
-export async function getChat(id: string, userId: string) {
-  const chat = await kv.hgetall<Chat>(`chat:${id}`)
+export async function getChat(id: string) {
+  const chat = await db.chat.findUnique({
+    where: {
+      id: id
+    }
+  })
 
-  if (!chat || (userId && chat.userId !== userId)) {
+  if (!chat) {
     return null
   }
 

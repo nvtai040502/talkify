@@ -19,25 +19,38 @@ generator client {
 // }
 
 model Chat {
-  id Int @id @default(autoincrement())
+  id String @id @default(uuid())  @unique
   createdAt DateTime @default(now())
   updatedAt  DateTime   @updatedAt
   name        String     @db.Text
-  messages    Message[]
+  messages Message[]
   // workspaceId String @db.Uuid
   // workspace   Workspace  @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
 
 }
 
+enum MessageRole {
+  system 
+  user 
+  assistant
+  function
+  data
+  tool
+}
 model Message {
-  id      Int      @id @default(autoincrement())
-  createdAt  DateTime   @default(now())
-  updatedAt  DateTime   @updatedAt
-
-  content   String     @db.Text
-  role      String     @db.Text
-
-  chatId    Int    @unique
-  chat      Chat       @relation(fields: [chatId], references: [id], onDelete: Cascade)
+  id String @id @default(uuid()) @unique
+  tool_call_id String?
+  createdAt DateTime?
+  content String
+  
+  ui String?
+  role MessageRole
+  name String?
+  function_call String?
+  data Json?
+  tool_calls Json?
+  chatId String
+  chat Chat @relation(fields: [chatId], references: [id], onDelete: Cascade)
 
 }
+
