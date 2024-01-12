@@ -5,7 +5,7 @@ import Link from 'next/link'
 import { type DialogProps } from '@radix-ui/react-dialog'
 import { toast } from 'react-hot-toast'
 
-import { ServerActionResult, type Chat } from '@/lib/types'
+import { ServerActionResult } from '@/lib/types'
 import { cn } from '@/lib/utils'
 import { badgeVariants } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
@@ -19,9 +19,10 @@ import {
 } from '@/components/ui/dialog'
 import { IconSpinner } from '@/components/ui/icons'
 import { useCopyToClipboard } from '@/lib/hooks/use-copy-to-clipboard'
+import { Chat } from '@prisma/client'
 
 interface ChatShareDialogProps extends DialogProps {
-  chat: Pick<Chat, 'id' | 'title' | 'messages'>
+  chat: Pick<Chat, 'id' | 'name'>
   shareChat: (id: string) => ServerActionResult<Chat>
   onCopy: () => void
 }
@@ -71,9 +72,10 @@ export function ChatShareDialog({
           </DialogDescription>
         </DialogHeader>
         <div className="p-4 space-y-1 text-sm border rounded-md">
-          <div className="font-medium">{chat.title}</div>
+          <div className="font-medium">{chat.name}</div>
           <div className="text-muted-foreground">
-            {chat.messages.length} messages
+            {/* {chat.messages.length}  */}
+            legth messages
           </div>
         </div>
         <DialogFooter className="items-center">

@@ -6,7 +6,7 @@ import { auth } from '@/auth'
 import { clearChats } from '@/app/actions'
 import { Button, buttonVariants } from '@/components/ui/button'
 import { Sidebar } from '@/components/sidebar'
-import { SidebarList } from '@/components/sidebar-list'
+import { SidebarList } from '@/components/haveChecked/Sidebar/sidebar-list'
 import {
   IconGitHub,
   IconNextChat,
@@ -15,11 +15,11 @@ import {
 } from '@/components/ui/icons'
 import { SidebarFooter } from '@/components/sidebar-footer'
 import { ThemeToggle } from '@/components/theme-toggle'
-import { ClearHistory } from '@/components/clear-history'
+import { ClearHistory } from '@/components/haveChecked/clear-history'
 import { UserMenu } from '@/components/user-menu'
 import { SidebarMobile } from './sidebar-mobile'
 import { SidebarToggle } from './sidebar-toggle'
-import { ChatHistory } from './chat-history'
+import { ChatHistory } from './haveChecked/chat-history'
 
 async function UserOrLogin() {
   const session = await auth()

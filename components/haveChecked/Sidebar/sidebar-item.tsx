@@ -15,8 +15,8 @@ import {
   TooltipTrigger
 } from '@/components/ui/tooltip'
 import { useLocalStorage } from '@/lib/hooks/use-local-storage'
-import { type Chat } from '@/lib/types'
 import { cn } from '@/lib/utils'
+import { Chat } from '@prisma/client'
 
 interface SidebarItemProps {
   index: number
@@ -78,11 +78,11 @@ export function SidebarItem({ index, chat, children }: SidebarItemProps) {
       >
         <div
           className="relative max-h-5 flex-1 select-none overflow-hidden text-ellipsis break-all"
-          title={chat.title}
+          title={chat.name}
         >
           <span className="whitespace-nowrap">
             {shouldAnimate ? (
-              chat.title.split('').map((character, index) => (
+              chat.name.split('').map((character, index) => (
                 <motion.span
                   key={index}
                   variants={{
@@ -104,7 +104,7 @@ export function SidebarItem({ index, chat, children }: SidebarItemProps) {
                     staggerChildren: 0.05
                   }}
                   onAnimationComplete={() => {
-                    if (index === chat.title.length - 1) {
+                    if (index === chat.name.length - 1) {
                       setNewChatId(null)
                     }
                   }}
@@ -113,7 +113,7 @@ export function SidebarItem({ index, chat, children }: SidebarItemProps) {
                 </motion.span>
               ))
             ) : (
-              <span>{chat.title}</span>
+              <span>{chat.name}</span>
             )}
           </span>
         </div>

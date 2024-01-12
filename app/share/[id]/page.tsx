@@ -18,7 +18,7 @@ export async function generateMetadata({
   const chat = await getSharedChat(params.id)
 
   return {
-    title: chat?.title.slice(0, 50) ?? 'Chat'
+    title: chat?.name.slice(0, 50) ?? 'Chat'
   }
 }
 
@@ -35,7 +35,7 @@ export default async function SharePage({ params }: SharePageProps) {
         <div className="px-4 py-6 border-b bg-background md:px-6 md:py-8">
           <div className="max-w-2xl mx-auto md:px-6">
             <div className="space-y-1 md:-mx-8">
-              <h1 className="text-2xl font-bold">{chat.title}</h1>
+              <h1 className="text-2xl font-bold">{chat.name}</h1>
               <div className="text-sm text-muted-foreground">
                 {formatDate(chat.createdAt)} · {chat.messages.length} messages
               </div>

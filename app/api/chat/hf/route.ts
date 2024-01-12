@@ -45,7 +45,7 @@ export async function POST(req: Request) {
           const allMessages = messages.map((message: Message) => ({ ...message, chatId: id }));
 
           await db.chat.create({
-            data: { id: id, name: name },
+            data: { id: id, name: name, path: `/chat/${id}` },
           });
 
           await db.message.createMany({

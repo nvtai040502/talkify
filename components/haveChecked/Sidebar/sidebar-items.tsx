@@ -1,12 +1,12 @@
 'use client'
 
-import { Chat } from '@/lib/types'
 import { AnimatePresence, motion } from 'framer-motion'
 
 import { removeChat, shareChat } from '@/app/actions'
 
 import { SidebarActions } from '@/components/sidebar-actions'
-import { SidebarItem } from '@/components/sidebar-item'
+import { SidebarItem } from '@/components/haveChecked/Sidebar/sidebar-item'
+import { Chat } from '@prisma/client'
 
 interface SidebarItemsProps {
   chats?: Chat[]

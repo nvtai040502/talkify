@@ -14,7 +14,6 @@ import { usePathname, useRouter } from 'next/navigation'
 import axios from "axios"
 import { createChat } from '@/actions/chat'
 import { db } from '@/lib/db'
-import { createChatWithMessages } from '@/app/actions'
 export interface ChatProps extends React.ComponentProps<'div'> {
   initialMessages?: Message[]
   id?: string
@@ -39,9 +38,9 @@ export function Chat({ id, initialMessages, className }: ChatProps) {
       },
       onFinish() {
         if (!path.includes('chat')) {
-          // router.push(`/chat/${id}`);
           window.history.pushState({}, '', `/chat/${id}`)
-          router.refresh()
+          // router.refresh()
+          // router.push(`/chat/${id}`);
         }
       },
     });
