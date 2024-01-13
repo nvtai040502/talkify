@@ -11,7 +11,7 @@ import {
 import { IconArrowElbow, IconPlus } from '@/components/ui/icons'
 import { useRouter } from 'next/navigation'
 import { TalkifyContext } from '@/lib/hooks/context'
-import { useChatHandler } from '@/lib/hooks/chat-hooks/use-chat-handler'
+import { useChatHandler } from '@/lib/hooks/use-chat-handler'
 
 export interface PromptProps
   {

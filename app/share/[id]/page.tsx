@@ -3,7 +3,7 @@ import { notFound } from 'next/navigation'
 
 import { formatDate } from '@/lib/utils'
 import { getSharedChat } from '@/app/actions'
-import { ChatList } from '@/components/chat-list'
+import { ChatMessages } from '@/components/chats/chat-messages'
 import { FooterText } from '@/components/haveChecked/footer'
 
 interface SharePageProps {
@@ -42,7 +42,7 @@ export default async function SharePage({ params }: SharePageProps) {
             </div>
           </div>
         </div>
-        <ChatList messages={chat.messages} />
+        <ChatMessages messages={chat.messages} />
       </div>
       <FooterText className="py-8" />
     </>

@@ -1,6 +1,6 @@
 
 import { FC } from "react"
-import { Icons } from "./icons"
+import { Icons } from "../icons"
 
 interface ChatScrollButtonsProps {
   isAtTop: boolean

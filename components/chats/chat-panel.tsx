@@ -3,11 +3,10 @@ import { type UseChatHelpers } from 'ai/react'
 
 import { shareChat } from '@/app/actions'
 import { Button } from '@/components/ui/button'
-import { PromptForm } from '@/components/prompt-form'
-import { ButtonScrollToBottom } from '@/components/button-scroll-to-bottom'
+import { PromptForm } from '@/components/chats/prompt-form'
 import { IconRefresh, IconShare, IconStop } from '@/components/ui/icons'
 import { FooterText } from '@/components/haveChecked/footer'
-import { ChatShareDialog } from '@/components/chat-share-dialog'
+import { ChatShareDialog } from '@/components/chats/chat-share-dialog'
 
 export interface ChatPanelProps
   extends Pick<
@@ -17,6 +16,7 @@ export interface ChatPanelProps
     | 'reload'
     | 'messages'
     | 'stop'
+    | 'setMessages'
 
   > {
   id?: string
@@ -27,6 +27,7 @@ export function ChatPanel({
   id,
   title,
   isLoading,
+  setMessages,
   stop,
   append,
   reload,

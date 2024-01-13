@@ -3,8 +3,8 @@
 import { useChat, type Message } from 'ai/react'
 
 import { cn } from '@/lib/utils'
-import { ChatList } from '@/components/chat-list'
-import { ChatPanel } from '@/components/chat-panel'
+import { ChatMessages } from '@/components/chats/chat-messages'
+import { ChatPanel } from '@/components/chats/chat-panel'
 import { EmptyScreen } from '@/components/empty-screen'
 import { useLocalStorage } from '@/lib/hooks/use-local-storage'
 
@@ -15,7 +15,7 @@ import { createChat } from '@/actions/chat'
 import { db } from '@/lib/db'
 import { useCallback, useEffect, useState } from 'react'
 import { useScroll } from '@/lib/hooks/use-scroll'
-import { ChatScrollButtons } from '../chat-scroll-button'
+import { ChatScrollButtons } from './chat-scroll-button'
 export interface ChatProps extends React.ComponentProps<'div'> {
   initialMessages?: Message[]
   id?: string
@@ -25,7 +25,7 @@ export function Chat({ id, initialMessages, className }: ChatProps) {
   const router = useRouter()
   const path = usePathname()
   
-  const { messages, append, reload, stop, isLoading } =
+  const { messages, append, reload, stop, isLoading, setMessages } =
     useChat({
       api: `/api/chat/hf`,
       initialMessages,
@@ -45,24 +45,24 @@ export function Chat({ id, initialMessages, className }: ChatProps) {
         }
       },
     });
-    const {
-      messagesStartRef,
-      messagesEndRef,
-      handleScroll,
-      scrollToBottom,
-      setIsAtBottom,
-      isAtTop,
-      isAtBottom,
-      isOverflowing,
-      scrollToTop
-    } = useScroll({isGenerating: isLoading, chatMessages: messages})
+  const {
+    messagesStartRef,
+    messagesEndRef,
+    handleScroll,
+    scrollToBottom,
+    setIsAtBottom,
+    isAtTop,
+    isAtBottom,
+    isOverflowing,
+    scrollToTop
+  } = useScroll({isGenerating: isLoading, chatMessages: messages})
 
-    useEffect(() => {
-      if (path.includes('chat')) {
-        scrollToBottom()
-        setIsAtBottom(true)
-      }
-    }, [])
+  useEffect(() => {
+    if (path.includes('chat')) {
+      scrollToBottom()
+      setIsAtBottom(true)
+    }
+  }, [])
   return (
     <>
       <div className={cn('pb-[200px] pt-4 md:pt-10', className)}>
@@ -80,7 +80,12 @@ export function Chat({ id, initialMessages, className }: ChatProps) {
           </div>
           <div className="h-72 overflow-auto" onScroll={handleScroll}>
             <div ref={messagesStartRef} />
-              <ChatList messages={messages} />
+              <ChatMessages 
+                messages={messages} 
+                isLoading={isLoading} 
+                // setMessages={setMessages} 
+                reload={reload}
+              />
             <div ref={messagesEndRef} />
           </div>
 
@@ -90,6 +95,7 @@ export function Chat({ id, initialMessages, className }: ChatProps) {
           <EmptyScreen />
         )}
       </div>
+      
       <ChatPanel
         id={id}
         title="hel"
@@ -97,6 +103,7 @@ export function Chat({ id, initialMessages, className }: ChatProps) {
         stop={stop}
         append={append}
         reload={reload}
+        setMessages={setMessages}
         messages={messages}
        
       /> 

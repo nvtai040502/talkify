@@ -7,7 +7,11 @@ import { kv } from '@vercel/kv'
 import { auth } from '@/auth'
 import { type Chat } from '@/lib/types'
 import { db } from '@/lib/db'
-import { Message } from 'ai'
+import { JSONValue, Message as MessageVercel } from 'ai'
+import { Message as MessagePrisma, MessageRole } from '@prisma/client'
+import { mapPrismaMessageToVercelMessage } from './(chat)/chat/[id]/page'
+
+
 
 export async function getChats(userId?: string | null) {
   const chats = await db.chat.findMany({
@@ -16,6 +20,21 @@ export async function getChats(userId?: string | null) {
     }
   })
   return chats
+}
+
+export async function updateMessage(id: string, content: string) {
+  const messagePrisma = await db.message.update({
+    where: {
+      id
+    }, data: {
+      content
+    }
+  })
+  if (!messagePrisma) {
+    return null
+  }
+  const messageVercel = mapPrismaMessageToVercelMessage(messagePrisma)
+  return messageVercel
 }
 
 export async function getChat(id: string) {
