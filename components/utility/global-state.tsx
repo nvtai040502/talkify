@@ -13,7 +13,6 @@ interface GlobalStateProps {
 
 export const GlobalState: FC<GlobalStateProps> = ({children}) => {
   const [userInput, setUserInput] = useState<string>("")
-  const [chats, setChats] = useState<Chat[]>([])
   
   
     return (
@@ -21,8 +20,6 @@ export const GlobalState: FC<GlobalStateProps> = ({children}) => {
       value={{
         userInput,
         setUserInput,
-        chats,
-        setChats
       }}
     >
       {children}

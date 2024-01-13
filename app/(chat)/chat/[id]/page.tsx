@@ -29,7 +29,7 @@ export default async function ChatPage({ params }: ChatPageProps) {
     createdAt: prismaMessage.createdAt || undefined,
     content: prismaMessage.content,
     ui: prismaMessage.ui || undefined,
-    role: prismaMessage.role as MessageRole, // Ensure correct enum mapping
+    role: prismaMessage.role as MessageRole, 
     name: prismaMessage.name || undefined,
     function_call: prismaMessage.function_call || undefined,
     data: prismaMessage.data as JSONValue[] | undefined,

@@ -33,7 +33,7 @@ export function PromptForm({
   
   React.useEffect(() => {
     handleFocusChatInput(userInput)
-  });
+  }, []);
   
   return (
     <form

@@ -6,7 +6,6 @@ import { cn } from '@/lib/utils'
 import { ChatList } from '@/components/chat-list'
 import { ChatPanel } from '@/components/chat-panel'
 import { EmptyScreen } from '@/components/empty-screen'
-import { ChatScrollAnchor } from '@/components/chat-scroll-anchor'
 import { useLocalStorage } from '@/lib/hooks/use-local-storage'
 
 import { toast } from 'react-hot-toast'
@@ -14,7 +13,9 @@ import { usePathname, useRouter } from 'next/navigation'
 import axios from "axios"
 import { createChat } from '@/actions/chat'
 import { db } from '@/lib/db'
-import { useEffect, useState } from 'react'
+import { useCallback, useEffect, useState } from 'react'
+import { useScroll } from '@/lib/hooks/use-scroll'
+import { ChatScrollButtons } from '../chat-scroll-button'
 export interface ChatProps extends React.ComponentProps<'div'> {
   initialMessages?: Message[]
   id?: string
@@ -40,26 +41,58 @@ export function Chat({ id, initialMessages, className }: ChatProps) {
       onFinish() {
         if (!path.includes('chat')) {
           router.push(`/chat/${id}`, { scroll: false });
-          // router.push(`/chat/${id}`, {scroll: false});
           router.refresh();
         }
       },
     });
+    const {
+      messagesStartRef,
+      messagesEndRef,
+      handleScroll,
+      scrollToBottom,
+      setIsAtBottom,
+      isAtTop,
+      isAtBottom,
+      isOverflowing,
+      scrollToTop
+    } = useScroll({isGenerating: isLoading, chatMessages: messages})
+
+    useEffect(() => {
+      if (path.includes('chat')) {
+        scrollToBottom()
+        setIsAtBottom(true)
+      }
+    }, [])
   return (
     <>
       <div className={cn('pb-[200px] pt-4 md:pt-10', className)}>
         {messages.length ? (
+
           <>
-            
-            <ChatList messages={messages} />
-            <ChatScrollAnchor trackVisibility={isLoading} />
-          </>
+          <div className="absolute right-4 top-2.5 flex justify-center">
+            <ChatScrollButtons
+              isAtTop={isAtTop}
+              isAtBottom={isAtBottom}
+              isOverflowing={isOverflowing}
+              scrollToTop={scrollToTop}
+              scrollToBottom={scrollToBottom}
+            />
+          </div>
+          <div className="h-72 overflow-auto" onScroll={handleScroll}>
+            <div ref={messagesStartRef} />
+              <ChatList messages={messages} />
+            <div ref={messagesEndRef} />
+          </div>
+
+          
+        </>
         ) : (
           <EmptyScreen />
         )}
       </div>
       <ChatPanel
         id={id}
+        title="hel"
         isLoading={isLoading}
         stop={stop}
         append={append}
