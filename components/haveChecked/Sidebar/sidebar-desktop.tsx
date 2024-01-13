@@ -1,7 +1,7 @@
-import { Sidebar } from '@/components/sidebar'
+import { Sidebar } from '@/components/haveChecked/Sidebar/sidebar'
 
 import { auth } from '@/auth'
-import { ChatHistory } from '@/components/haveChecked/chat-history'
+import { ChatHistory } from '@/components/haveChecked/Sidebar/chat-history'
 
 export async function SidebarDesktop() {
   // const session = await auth()

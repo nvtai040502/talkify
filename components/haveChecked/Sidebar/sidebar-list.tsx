@@ -1,5 +1,5 @@
 import { clearChats, getChats } from '@/app/actions'
-import { ClearHistory } from '@/components/haveChecked/clear-history'
+import { ClearHistory } from '@/components/haveChecked/Sidebar/clear-history'
 import { SidebarItems } from '@/components/haveChecked/Sidebar/sidebar-items'
 import { ThemeToggle } from '@/components/theme-toggle'
 import { cache } from 'react'
@@ -16,7 +16,6 @@ interface SidebarListProps {
 
 export async function SidebarList({ userId }: SidebarListProps) {
   const chats = await getChats()
-
   return (
     <div className="flex flex-1 flex-col overflow-hidden">
       <div className="flex-1 overflow-auto">

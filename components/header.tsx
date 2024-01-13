@@ -5,7 +5,7 @@ import { cn } from '@/lib/utils'
 import { auth } from '@/auth'
 import { clearChats } from '@/app/actions'
 import { Button, buttonVariants } from '@/components/ui/button'
-import { Sidebar } from '@/components/sidebar'
+import { Sidebar } from '@/components/haveChecked/Sidebar/sidebar'
 import { SidebarList } from '@/components/haveChecked/Sidebar/sidebar-list'
 import {
   IconGitHub,
@@ -13,13 +13,13 @@ import {
   IconSeparator,
   IconVercel
 } from '@/components/ui/icons'
-import { SidebarFooter } from '@/components/sidebar-footer'
+import { SidebarFooter } from '@/components/haveChecked/Sidebar/sidebar-footer'
 import { ThemeToggle } from '@/components/theme-toggle'
-import { ClearHistory } from '@/components/haveChecked/clear-history'
+import { ClearHistory } from '@/components/haveChecked/Sidebar/clear-history'
 import { UserMenu } from '@/components/user-menu'
-import { SidebarMobile } from './sidebar-mobile'
-import { SidebarToggle } from './sidebar-toggle'
-import { ChatHistory } from './haveChecked/chat-history'
+import { SidebarMobile } from './haveChecked/Sidebar/sidebar-mobile'
+import { SidebarToggle } from './haveChecked/Sidebar/sidebar-toggle'
+import { ChatHistory } from './haveChecked/Sidebar/chat-history'
 
 async function UserOrLogin() {
   const session = await auth()

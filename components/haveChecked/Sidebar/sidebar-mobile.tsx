@@ -2,7 +2,7 @@
 
 import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet'
 
-import { Sidebar } from '@/components/sidebar'
+import { Sidebar } from '@/components/haveChecked/Sidebar/sidebar'
 import { Button } from '@/components/ui/button'
 
 import { IconSidebar } from '@/components/ui/icons'
@@ -17,7 +17,7 @@ export function SidebarMobile({ children }: SidebarMobileProps) {
       <SheetTrigger asChild>
         <Button variant="ghost" className="-ml-2 flex h-9 w-9 p-0 lg:hidden">
           <IconSidebar className="h-6 w-6" />
-          <span className="sr-only">Toggle Sidebar</span>
+          <div className="sr-only">Toggle Sidebar</div>
         </Button>
       </SheetTrigger>
       <SheetContent className="inset-y-0 flex h-auto w-[300px] flex-col p-0">

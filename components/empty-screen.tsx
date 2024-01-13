@@ -3,6 +3,8 @@ import { UseChatHelpers } from 'ai/react'
 import { Button } from '@/components/ui/button'
 import { ExternalLink } from '@/components/external-link'
 import { IconArrowRight } from '@/components/ui/icons'
+import { TalkifyContext } from '@/lib/hooks/context'
+import { useContext } from 'react'
 
 const exampleMessages = [
   {
@@ -19,7 +21,8 @@ const exampleMessages = [
   }
 ]
 
-export function EmptyScreen({ setInput }: Pick<UseChatHelpers, 'setInput'>) {
+export function EmptyScreen() {
+  const {setUserInput} = useContext(TalkifyContext)
   return (
     <div className="mx-auto max-w-2xl px-4">
       <div className="rounded-lg border bg-background p-8">
@@ -43,7 +46,7 @@ export function EmptyScreen({ setInput }: Pick<UseChatHelpers, 'setInput'>) {
               key={index}
               variant="link"
               className="h-auto p-0 text-base"
-              onClick={() => setInput(message.message)}
+              onClick={() => setUserInput(message.message)}
             >
               <IconArrowRight className="mr-2 text-muted-foreground" />
               {message.heading}

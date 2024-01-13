@@ -1,6 +1,5 @@
 import * as React from 'react'
 import Textarea from 'react-textarea-autosize'
-import { UseChatHelpers } from 'ai/react'
 import { useEnterSubmit } from '@/lib/hooks/use-enter-submit'
 import { cn } from '@/lib/utils'
 import { Button, buttonVariants } from '@/components/ui/button'
@@ -11,37 +10,40 @@ import {
 } from '@/components/ui/tooltip'
 import { IconArrowElbow, IconPlus } from '@/components/ui/icons'
 import { useRouter } from 'next/navigation'
+import { TalkifyContext } from '@/lib/hooks/context'
+import { useChatHandler } from '@/lib/hooks/chat-hooks/use-chat-handler'
 
 export interface PromptProps
-  extends Pick<UseChatHelpers, 'input' | 'setInput'> {
+  {
   onSubmit: (value: string) => void
   isLoading: boolean
 }
 
 export function PromptForm({
   onSubmit,
-  input,
-  setInput,
   isLoading
 }: PromptProps) {
   const { formRef, onKeyDown } = useEnterSubmit()
-  const inputRef = React.useRef<HTMLTextAreaElement>(null)
   const router = useRouter()
+  const {userInput, setUserInput} = React.useContext(TalkifyContext)
+  const {
+    chatInputRef,
+    handleFocusChatInput
+  } = useChatHandler()
+  
   React.useEffect(() => {
-    if (inputRef.current) {
-      inputRef.current.focus()
-    }
-  }, [])
-
+    handleFocusChatInput(userInput)
+  });
+  
   return (
     <form
       onSubmit={async e => {
         e.preventDefault()
-        if (!input?.trim()) {
+        if (!userInput?.trim()) {
           return
         }
-        setInput('')
-        await onSubmit(input)
+        setUserInput('')
+        await onSubmit(userInput)
       }}
       ref={formRef}
     >
@@ -66,14 +68,14 @@ export function PromptForm({
           <TooltipContent>New Chat</TooltipContent>
         </Tooltip>
         <Textarea
-          ref={inputRef}
+          ref={chatInputRef}
           tabIndex={0}
           onKeyDown={onKeyDown}
           rows={1}
-          value={input}
-          onChange={e => setInput(e.target.value)}
+          value={userInput}
+          onChange={(e) => setUserInput(e.target.value)}
           placeholder="Send a message."
-          spellCheck={false}
+          spellCheck={true}
           className="min-h-[60px] w-full resize-none bg-transparent px-4 py-[1.3rem] focus-within:outline-none sm:text-sm"
         />
         <div className="absolute right-0 top-4 sm:right-4">
@@ -82,7 +84,7 @@ export function PromptForm({
               <Button
                 type="submit"
                 size="icon"
-                disabled={isLoading || input === ''}
+                disabled={isLoading || userInput === ''}
               >
                 <IconArrowElbow />
                 <span className="sr-only">Send message</span>

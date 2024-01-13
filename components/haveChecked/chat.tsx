@@ -14,6 +14,7 @@ import { usePathname, useRouter } from 'next/navigation'
 import axios from "axios"
 import { createChat } from '@/actions/chat'
 import { db } from '@/lib/db'
+import { useEffect, useState } from 'react'
 export interface ChatProps extends React.ComponentProps<'div'> {
   initialMessages?: Message[]
   id?: string
@@ -23,7 +24,7 @@ export function Chat({ id, initialMessages, className }: ChatProps) {
   const router = useRouter()
   const path = usePathname()
   
-  const { messages, append, reload, stop, isLoading, input, setInput } =
+  const { messages, append, reload, stop, isLoading } =
     useChat({
       api: `/api/chat/hf`,
       initialMessages,
@@ -38,9 +39,9 @@ export function Chat({ id, initialMessages, className }: ChatProps) {
       },
       onFinish() {
         if (!path.includes('chat')) {
-          window.history.pushState({}, '', `/chat/${id}`)
-          // router.refresh()
-          // router.push(`/chat/${id}`);
+          router.push(`/chat/${id}`, { scroll: false });
+          // router.push(`/chat/${id}`, {scroll: false});
+          router.refresh();
         }
       },
     });
@@ -49,11 +50,12 @@ export function Chat({ id, initialMessages, className }: ChatProps) {
       <div className={cn('pb-[200px] pt-4 md:pt-10', className)}>
         {messages.length ? (
           <>
+            
             <ChatList messages={messages} />
             <ChatScrollAnchor trackVisibility={isLoading} />
           </>
         ) : (
-          <EmptyScreen setInput={setInput} />
+          <EmptyScreen />
         )}
       </div>
       <ChatPanel
@@ -63,9 +65,8 @@ export function Chat({ id, initialMessages, className }: ChatProps) {
         append={append}
         reload={reload}
         messages={messages}
-        input={input}
-        setInput={setInput}
-      />
+       
+      /> 
 
       
     </>

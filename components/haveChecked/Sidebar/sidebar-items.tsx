@@ -4,7 +4,7 @@ import { AnimatePresence, motion } from 'framer-motion'
 
 import { removeChat, shareChat } from '@/app/actions'
 
-import { SidebarActions } from '@/components/sidebar-actions'
+import { SidebarActions } from '@/components/haveChecked/Sidebar/sidebar-actions'
 import { SidebarItem } from '@/components/haveChecked/Sidebar/sidebar-item'
 import { Chat } from '@prisma/client'
 
@@ -14,7 +14,7 @@ interface SidebarItemsProps {
 
 export function SidebarItems({ chats }: SidebarItemsProps) {
   if (!chats?.length) return null
-
+  
   return (
     <AnimatePresence>
       {chats.map(
