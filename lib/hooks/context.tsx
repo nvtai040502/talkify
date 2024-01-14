@@ -5,13 +5,9 @@ import { Dispatch, SetStateAction, createContext } from "react"
 import { Message as VercelMessage } from "ai"
 interface TalkifyContextProps {
   userInput: string
-  prismaChatMessages: PrismaMessage[]
   setUserInput: Dispatch<SetStateAction<string>>
-  setPrismaChatMessages: Dispatch<SetStateAction<PrismaMessage[]>>
 }
 export const TalkifyContext = createContext<TalkifyContextProps>({
   userInput: "",
-  prismaChatMessages: [],
-  setPrismaChatMessages: () => {},
   setUserInput: () => {},
 })

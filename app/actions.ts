@@ -7,24 +7,35 @@ import { kv } from '@vercel/kv'
 import { auth } from '@/auth'
 import { type Chat } from '@/lib/types'
 import { db } from '@/lib/db'
-import { JSONValue, Message as MessageVercel } from 'ai'
-import { Message as MessagePrisma, MessageRole } from '@prisma/client'
+import { JSONValue, Message as VercelMessage } from 'ai'
+import { Message as PrismaMessage, MessageRole } from '@prisma/client'
 import { mapPrismaMessageToVercelMessage } from '@/lib/utils'
 // import { mapPrismaMessageToVercelMessage } from './(chat)/chat/[id]/page'
 
 
 
-export async function getChatMessages(chatId: string): Promise<MessageVercel[]> {
+export async function getPrismaMessages(chatId: string): Promise<PrismaMessage[]> {
   try {
     const prismaMessages = await db.message.findMany({
       where: {
         chatId
       }, 
       orderBy: {
-        createdAt: "desc"
+        index: "asc"
       }
     });
 
+    return prismaMessages;
+  } catch (error) {
+    console.error("Error fetching chat messages:", error);
+    // Handle the error appropriately
+    return [];
+  }
+}
+
+export async function getVercelMessages(chatId: string): Promise<VercelMessage[]> {
+  try {
+    const prismaMessages = await getPrismaMessages(chatId)
     const messages = prismaMessages.map(mapPrismaMessageToVercelMessage);
     return messages;
   } catch (error) {
@@ -43,56 +54,47 @@ export async function getChats(userId?: string | null) {
   return chats
 }
 
-export async function getUpdatedUserMessages({
-  indexMessage,
+export async function getVercelMessagesUpdated({
+  messageId,
   chatId,
   editedContent
 }: {
-  indexMessage: number
+  messageId: string
   chatId: string
   editedContent: string  
-}): Promise<MessageVercel[]> {
-  const messagesPrisma = await db.message.findMany({
+}): Promise<VercelMessage[]> {
+  const prismaMessageUpdated = await updateMessage(messageId, editedContent)
+  if (!prismaMessageUpdated) return []
+  // Delete messages with index greater than the updated message's index
+  await db.message.deleteMany({
     where: {
-      chatId
-    }, orderBy: {
-      createdAt: "asc"
+      chatId,
+      index: {
+        gt: prismaMessageUpdated.index
+      }
     }
-  })
+  });
+  // Fetch and return the updated messages
+  const vercelMessagesUpdated = await getVercelMessages(chatId)
+  return vercelMessagesUpdated
 
-  // Ensure the index is within the array bounds
-  if (indexMessage >= 0 && indexMessage < messagesPrisma.length) {
-    // Get the ID of the message at the specified index
-    const messageIdToUpdate = messagesPrisma[indexMessage].id;
-    const messagesToDeleteIds = messagesPrisma.slice(indexMessage + 1).map(message => message.id);
-    const messageUserUpdated = await updateMessage(messageIdToUpdate, editedContent)
-    if (!messageUserUpdated) return []
-    // Delete messages
-    await db.message.deleteMany({
-      where: {
-        id: { in: messagesToDeleteIds },
-      },
-    });
-    const messagePromises = messagesPrisma.map(mapPrismaMessageToVercelMessage);
-    const messages = await Promise.all(messagePromises);
-    return messages.slice(0, indexMessage + 1);
-  }
-  return [];
+
+
+
 }
 
 export async function updateMessage(id: string, content: string) {
-  const messagePrisma = await db.message.update({
+  const prismaMessage = await db.message.update({
     where: {
       id
     }, data: {
       content
     }
   })
-  if (!messagePrisma) {
+  if (!prismaMessage) {
     return null
   }
-  const messageVercel = await mapPrismaMessageToVercelMessage(messagePrisma)
-  return messageVercel
+  return prismaMessage
 }
 
 export async function getChat(id: string) {

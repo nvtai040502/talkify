@@ -41,6 +41,7 @@ enum MessageRole {
 }
 model Message {
   id String @id @default(uuid()) @unique
+  index Int @default(autoincrement())
   tool_call_id String?
   createdAt DateTime?
   content String

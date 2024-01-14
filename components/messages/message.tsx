@@ -10,12 +10,13 @@ import { IconOpenAI, IconUser } from '@/components/ui/icons'
 import { MessageActions } from '@/components/messages/message-actions'
 import { UseChatHelpers } from 'ai/react/dist'
 import { useChatHandler } from '@/lib/hooks/use-chat-handler'
-import { useEffect, useRef, useState } from 'react'
+import { useContext, useEffect, useRef, useState } from 'react'
 import { Icons } from '../icons'
 import Image from 'next/image'
 import { TextareaAutosize } from '../ui/textarea-autosize'
 import { MessageMarkdown } from './message-markdown'
 import { Button } from '../ui/button'
+import { TalkifyContext } from '@/lib/hooks/context'
 
 
 
@@ -33,12 +34,10 @@ UseChatHelpers,
   onStartEdit: (message: MessageVercel) => void
   onCancelEdit: () => void
   chatId: string
-  indexMessage: number
 }
 export function Message({ 
   message, 
   isEditing,
-  indexMessage,
   isLoading,
   isLast,
   reload,
@@ -51,11 +50,11 @@ export function Message({
   const [editedMessage, setEditedMessage] = useState<string>(message.content)
   const editInputRef = useRef<HTMLTextAreaElement>(null)    
   const [isHovering, setIsHovering] = useState(false)
-
+  
   const onSubmitEdit = () => {
     handleSendEdit({
+      messageId: message.id, 
       setMessages, 
-      indexMessage, 
       reload, 
       editedContent: editedMessage, 
       chatId
@@ -69,8 +68,8 @@ export function Message({
     onStartEdit(message)
   }
   const handleKeyDown = (event: React.KeyboardEvent) => {
-    if (isEditing && event.key === "Enter" && event.metaKey) {
-      onSubmitEdit
+    if (isEditing && event.key === "Enter") {
+      onSubmitEdit()
     }
   }
   useEffect(() => {
@@ -88,6 +87,7 @@ export function Message({
       className={cn('flex w-full justify-center')}
       onMouseEnter={() => setIsHovering(true)}
       onMouseLeave={() => setIsHovering(false)}
+      onKeyDown={handleKeyDown}
     >
      
       <div className="relative flex w-[300px] flex-col py-6 sm:w-[400px] md:w-[500px] lg:w-[600px] xl:w-[700px]">

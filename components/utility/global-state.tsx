@@ -4,7 +4,7 @@
 
 import { db } from "@/lib/db"
 import { TalkifyContext } from "@/lib/hooks/context"
-import { Chat } from "@prisma/client"
+import { Chat, Message as PrismaMessage } from "@prisma/client"
 import { FC, useEffect, useState } from "react"
 
 interface GlobalStateProps {
@@ -13,7 +13,6 @@ interface GlobalStateProps {
 
 export const GlobalState: FC<GlobalStateProps> = ({children}) => {
   const [userInput, setUserInput] = useState<string>("")
-  
   
     return (
     <TalkifyContext.Provider

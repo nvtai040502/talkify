@@ -18,6 +18,7 @@ import { ChatScrollButtons } from './chat-scroll-button'
 import { v4 as uuidV4 } from 'uuid'
 import { TalkifyContext } from '@/lib/hooks/context'
 import { useChatHandler } from '@/lib/hooks/use-chat-handler'
+import { getPrismaMessages } from '@/app/actions'
 export interface ChatProps extends React.ComponentProps<'div'> {
   initialMessages?: Message[]
   id: string
@@ -26,25 +27,20 @@ export interface ChatProps extends React.ComponentProps<'div'> {
 export function Chat({ id, initialMessages, className }: ChatProps) {
   const router = useRouter()
   const path = usePathname()
-  const { userInput, setPrismaChatMessages } = useContext(TalkifyContext)
-  // const { handleSendMessage } = useChatHandler()
-  
   const { messages, append, reload, stop, isLoading, setMessages } =
     useChat({
       api: `/api/chat/hf`,
       initialMessages,
-      id,
+      sendExtraMessageFields: true,
       body: {
         chatId: id,
-        userInput: userInput
       },
       onResponse(response) {
-        if (response.status === 401) {
+        if (response.status === 401) {  
           toast.error(response.statusText)
         }
       },
       onFinish() {
-        
         if (!path.includes('chat')) {
           router.push(`/chat/${id}`, { scroll: false });
           router.refresh();
@@ -52,9 +48,7 @@ export function Chat({ id, initialMessages, className }: ChatProps) {
         
       },
     });
-  // useEffect(() => {
-  //   handleSendMessage(id, messages)
-  // }, [messages])
+    
   const {
     messagesStartRef,
     messagesEndRef,
