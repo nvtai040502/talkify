@@ -9,9 +9,30 @@ import { type Chat } from '@/lib/types'
 import { db } from '@/lib/db'
 import { JSONValue, Message as MessageVercel } from 'ai'
 import { Message as MessagePrisma, MessageRole } from '@prisma/client'
-import { mapPrismaMessageToVercelMessage } from './(chat)/chat/[id]/page'
+import { mapPrismaMessageToVercelMessage } from '@/lib/utils'
+// import { mapPrismaMessageToVercelMessage } from './(chat)/chat/[id]/page'
 
 
+
+export async function getChatMessages(chatId: string): Promise<MessageVercel[]> {
+  try {
+    const prismaMessages = await db.message.findMany({
+      where: {
+        chatId
+      }, 
+      orderBy: {
+        createdAt: "desc"
+      }
+    });
+
+    const messages = prismaMessages.map(mapPrismaMessageToVercelMessage);
+    return messages;
+  } catch (error) {
+    console.error("Error fetching chat messages:", error);
+    // Handle the error appropriately
+    return [];
+  }
+}
 
 export async function getChats(userId?: string | null) {
   const chats = await db.chat.findMany({
@@ -20,6 +41,43 @@ export async function getChats(userId?: string | null) {
     }
   })
   return chats
+}
+
+export async function getUpdatedUserMessages({
+  indexMessage,
+  chatId,
+  editedContent
+}: {
+  indexMessage: number
+  chatId: string
+  editedContent: string  
+}): Promise<MessageVercel[]> {
+  const messagesPrisma = await db.message.findMany({
+    where: {
+      chatId
+    }, orderBy: {
+      createdAt: "asc"
+    }
+  })
+
+  // Ensure the index is within the array bounds
+  if (indexMessage >= 0 && indexMessage < messagesPrisma.length) {
+    // Get the ID of the message at the specified index
+    const messageIdToUpdate = messagesPrisma[indexMessage].id;
+    const messagesToDeleteIds = messagesPrisma.slice(indexMessage + 1).map(message => message.id);
+    const messageUserUpdated = await updateMessage(messageIdToUpdate, editedContent)
+    if (!messageUserUpdated) return []
+    // Delete messages
+    await db.message.deleteMany({
+      where: {
+        id: { in: messagesToDeleteIds },
+      },
+    });
+    const messagePromises = messagesPrisma.map(mapPrismaMessageToVercelMessage);
+    const messages = await Promise.all(messagePromises);
+    return messages.slice(0, indexMessage + 1);
+  }
+  return [];
 }
 
 export async function updateMessage(id: string, content: string) {
@@ -33,7 +91,7 @@ export async function updateMessage(id: string, content: string) {
   if (!messagePrisma) {
     return null
   }
-  const messageVercel = mapPrismaMessageToVercelMessage(messagePrisma)
+  const messageVercel = await mapPrismaMessageToVercelMessage(messagePrisma)
   return messageVercel
 }
 

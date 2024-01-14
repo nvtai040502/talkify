@@ -1,16 +1,24 @@
 import { db } from '@/lib/db';
 import { HfInference } from '@huggingface/inference';
-import { HuggingFaceStream, Message, StreamingTextResponse } from 'ai';
+import { HuggingFaceStream, Message as VercelMessage, StreamingTextResponse } from 'ai';
 import { experimental_buildOpenAssistantPrompt } from 'ai/prompts';
-
+import { v4 as uuidV4 } from 'uuid';
 const Hf = new HfInference(process.env.HUGGINGFACE_API_KEY);
 
 export async function POST(req: Request) {
   try {
-    const { messages, id } = await req.json();
+    const { 
+      messages, 
+      chatId, 
+      userInput 
+    }: {
+      messages: VercelMessage[], 
+      chatId: string, 
+      userInput: string
+    } = await req.json();
 
     const existingChat = await db.chat.findUnique({
-      where: { id: id },
+      where: { id: chatId },
     });
 
     const response = Hf.textGenerationStream({
@@ -30,26 +38,44 @@ export async function POST(req: Request) {
       async onCompletion(completion) {
         if (existingChat) {
           console.log("🚀 ~ onCompletion ~ existingChat:", messages)
+          
           // If the chat exists, update its messages
-          await db.message.create({
-            data: {
+          await db.message.createMany({
+            data: [{
+              id: uuidV4(),
+              content: userInput,
+              role: "user",
+              chatId,
+            }, {
+              id: uuidV4(),
               content: completion,
               role: "assistant",
-              chatId: id,
-            },
+              chatId,
+            }],
           });
         } else {
-          console.log("1")
+          // console.log("1")
           // If the chat doesn't exist, create a new chat with messages
           const name = messages[0].content.substring(0, 100);
-          const allMessages = messages.map((message: Message) => ({ ...message, chatId: id }));
+          const allMessages = messages.map((message: VercelMessage) => ({ 
+            id: uuidV4(),
+            content: message.content,
+            role: message.role, 
+            chatId 
+          }));
 
           await db.chat.create({
-            data: { id: id, name: name, path: `/chat/${id}` },
+            data: { id: chatId, name: name, path: `/chat/${chatId}` },
           });
 
           await db.message.createMany({
-            data: [...allMessages, { content: completion, role: "assistant", chatId: id }],
+            data: [
+              ...allMessages, { 
+                id: uuidV4(),
+                content: completion, 
+                role: "assistant", 
+                chatId 
+              }],
           });
         }
       },

@@ -16,67 +16,72 @@ import Image from 'next/image'
 import { TextareaAutosize } from '../ui/textarea-autosize'
 import { MessageMarkdown } from './message-markdown'
 import { Button } from '../ui/button'
-import OpenAI from 'openai'
 
 
 
-const ICON_SIZE = 28
 
 interface MessageProps extends Pick<
 UseChatHelpers,
-// | 'setMessages'
+| 'setMessages'
 | 'isLoading'
 | 'reload'
-// | 'messages'
 
 > {
   message: MessageVercel
-  // isEditing: boolean
+  isEditing: boolean
   isLast: boolean
-  // onStartEdit: (message: Message) => void
-  // onCancelEdit: () => void
+  onStartEdit: (message: MessageVercel) => void
+  onCancelEdit: () => void
+  chatId: string
+  indexMessage: number
 }
 export function Message({ 
   message, 
-  // isEditing,
+  isEditing,
+  indexMessage,
   isLoading,
   isLast,
-  // messages,
   reload,
-  // setMessages,
-  // onStartEdit,
-  // onCancelEdit,
-  ...props 
+  setMessages,
+  onStartEdit,
+  onCancelEdit,
+  chatId
 }: MessageProps) {
-  // const { handleSendEdit: obSubmitEdit } = useChatHandler()
-  // const [editedMessage, setEditedMessage] = useState<string>(message.content)
-  // const editInputRef = useRef<HTMLTextAreaElement>(null)
+  const { handleSendEdit } = useChatHandler()
+  const [editedMessage, setEditedMessage] = useState<string>(message.content)
+  const editInputRef = useRef<HTMLTextAreaElement>(null)    
   const [isHovering, setIsHovering] = useState(false)
 
-  // const handleSendEdit = () => {
-  //   obSubmitEdit({setMessages: setMessages, messageId: message.id, reload: reload, editedContent: editedMessage, messages})
-  //   onCancelEdit()
-  // }
+  const onSubmitEdit = () => {
+    handleSendEdit({
+      setMessages, 
+      indexMessage, 
+      reload, 
+      editedContent: editedMessage, 
+      chatId
+    })
+    onCancelEdit()
+  }
   const handleCopy = () => {
     navigator.clipboard.writeText(message.content)
   }
-  // const handleStartEdit = () => {
-  //   onStartEdit(message)
-  // }
-  // const handleKeyDown = (event: React.KeyboardEvent) => {
-  //   if (isEditing && event.key === "Enter" && event.metaKey) {
-  //     handleSendEdit()
-  //   }
-  // }
-  // useEffect(() => {
-  //   setEditedMessage(message.content)
+  const handleStartEdit = () => {
+    onStartEdit(message)
+  }
+  const handleKeyDown = (event: React.KeyboardEvent) => {
+    if (isEditing && event.key === "Enter" && event.metaKey) {
+      onSubmitEdit
+    }
+  }
+  useEffect(() => {
+    setEditedMessage(message.content)
 
-  //   if (isEditing && editInputRef.current) {
-  //     const input = editInputRef.current
-  //     input.focus()
-  //     input.setSelectionRange(input.value.length, input.value.length)
-  //   }
-  // }, [isEditing])
+    if (isEditing && editInputRef.current) {
+      const input = editInputRef.current
+      input.focus()
+      input.setSelectionRange(input.value.length, input.value.length)
+    }
+  }, [isEditing])
 
   return (
     <div
@@ -90,12 +95,12 @@ export function Message({
           <MessageActions 
             isAssistant={message.role === "assistant"}
             isLast={isLast}
-            // isEditing={isEditing}
+            isEditing={isEditing}
             isHovering={isHovering}
             isLoading={isLoading}
             onCopy={handleCopy}
             reload={reload}
-            // onEdit={handleStartEdit}
+            onEdit={handleStartEdit}
             
           />
         </div>
@@ -109,10 +114,20 @@ export function Message({
               )}
 
               <div className="font-semibold">
-                {message.role === "assistant" ? "ChatGPT" : "You"}
+                {message.role === "assistant" ? (<div>{message.id}</div>) : (<div> {message.id}</div>)}
               </div>
             </div>
-            <MessageMarkdown content={message.content} />
+            {isEditing ? (
+              <TextareaAutosize
+                textareaRef={editInputRef}
+                className="text-md"
+                value={editedMessage}
+                onValueChange={setEditedMessage}
+                maxRows={20}
+              />
+            ): (
+              <MessageMarkdown content={message.content} />
+            )}
         </div>
       </div>
     </div>

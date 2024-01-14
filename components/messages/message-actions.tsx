@@ -20,21 +20,21 @@ UseChatHelpers,
 > {
   isAssistant: boolean
   isLast: boolean
-  // isEditing: boolean
+  isEditing: boolean
   isHovering: boolean
   onCopy: () => void
-  // onEdit: () => void
+  onEdit: () => void
 }
 
 export function MessageActions({
   isAssistant,
   isLast,
-  // isEditing,
+  isEditing,
   isLoading,
   reload,
   isHovering,
   onCopy,
-  // onEdit,
+  onEdit,
 }: MessageActionsProps) {
   // const { isCopied, copyToClipboard } = useCopyToClipboard({ timeout: 2000 })
 
@@ -62,7 +62,7 @@ export function MessageActions({
     }
   }, [showCheckmark])
 
-  return (isLast && isLoading) ? null : (
+  return (isLast && isLoading) || isEditing ? null : (
     <div className="text-muted-foreground flex items-center space-x-2 ">
       {/* {((isAssistant && isHovering) || isLast) && (
         <WithTooltip
@@ -80,19 +80,18 @@ export function MessageActions({
       )} */}
 
       {!isAssistant && isHovering && (
-        // <WithTooltip
-        //   delayDuration={1000}
-        //   side="bottom"
-        //   display={<div>Edit</div>}
-        //   trigger={
-        //     <Icons.edit
-        //       className="cursor-pointer hover:opacity-50"
-        //       size={MESSAGE_ICON_SIZE}
-        //       onClick={onEdit}
-        //     />
-        //   }
-        // />
-        <></>
+        <WithTooltip
+          delayDuration={1000}
+          side="bottom"
+          display={<div>Edit</div>}
+          trigger={
+            <Icons.edit
+              className="cursor-pointer hover:opacity-50"
+              size={MESSAGE_ICON_SIZE}
+              onClick={onEdit}
+            />
+          }
+        />
       )}
 
       {(isHovering || isLast) && (

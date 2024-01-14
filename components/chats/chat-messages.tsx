@@ -1,5 +1,5 @@
 "use client"
-import { type Message } from 'ai'
+import { type Message as MessageVercel } from 'ai'
 
 import { Separator } from '@/components/ui/separator'
 import { Message } from '@/components/messages/message'
@@ -9,21 +9,23 @@ import { UseChatHelpers } from 'ai/react/dist'
 
 export interface ChatMessagesProps extends Pick<
 UseChatHelpers,
-// | 'setMessages'
+| 'setMessages'
 | 'isLoading'
 | 'reload'
 | 'messages'
 
 > {
+  chatId: string
 }
 
 export function ChatMessages({ 
   messages, 
+  chatId,
   isLoading,
   reload,
-  // setMessages
+  setMessages
 }: ChatMessagesProps) {
-  // const [editingMessage, setEditingMessage] = useState<Message>()
+  const [editingMessage, setEditingMessage] = useState<MessageVercel>()
   if (!messages.length) {
     return null
   }
@@ -34,14 +36,15 @@ export function ChatMessages({
           <Message 
             key={index}
             message={message} 
-            // isEditing={editingMessage?.id === message.id}
+            indexMessage={index}
+            isEditing={editingMessage?.id === message.id}
             isLast={index === messages.length - 1}
-            // onStartEdit={setEditingMessage}
-            // onCancelEdit={() => setEditingMessage(undefined)}
-            // setMessages={setMessages}
+            onStartEdit={setEditingMessage}
+            onCancelEdit={() => setEditingMessage(undefined)}
+            setMessages={setMessages}
             reload={reload}
-            // messages={messages}
             isLoading={isLoading}
+            chatId={chatId}
           />
       ))}
     </div>
