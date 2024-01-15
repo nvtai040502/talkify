@@ -28,7 +28,7 @@ interface MessageProps {
   isLast: boolean
   onStartEdit: (message: PrismaMessage) => void
   onCancelEdit: () => void
-  // onSubmitEdit: (value: string, sequenceNumber: number) => void
+  onSubmitEdit: (value: string, sequenceNumber: number) => void
 }
 export function Message({ 
   message, 
@@ -36,22 +36,21 @@ export function Message({
   isLast,
   onStartEdit,
   onCancelEdit,
+  onSubmitEdit
 }: MessageProps) {
-  const { handleSendEdit } = useChatHandler()
+  const {
+    setIsGenerating,
+    chatMessages,
+  } = useContext(TalkifyContext)
   const [editedMessage, setEditedMessage] = useState<string>(message.content)
   const editInputRef = useRef<HTMLTextAreaElement>(null)    
   const [isHovering, setIsHovering] = useState(false)
+  const { handleSendMessage } = useChatHandler()
   
-  // const onSubmitEdit = () => {
-  //   handleSendEdit({
-  //     messageId: message.id, 
-  //     setMessages, 
-  //     reload, 
-  //     editedContent: editedMessage, 
-  //     chatId
-  //   })
-  //   onCancelEdit()
-  // }
+  const handleSendEdit = () => {
+    onSubmitEdit(editedMessage, message.sequence_number)
+    onCancelEdit()
+  }
   const handleCopy = () => {
     navigator.clipboard.writeText(message.content)
   }
@@ -59,9 +58,17 @@ export function Message({
     onStartEdit(message)
   }
   const handleKeyDown = (event: React.KeyboardEvent) => {
-    if (isEditing && event.key === "Enter") {
-      // onSubmitEdit()
+    if (isEditing && event.key === "Enter" && !event.shiftKey) {
+      handleSendEdit()
     }
+  }
+  const handleRegenerate = async () => {
+    setIsGenerating(true)
+    await handleSendMessage(
+      editedMessage || chatMessages[chatMessages.length - 2].content,
+      chatMessages,
+      true
+    )
   }
   useEffect(() => {
     setEditedMessage(message.content)
@@ -88,9 +95,8 @@ export function Message({
             isLast={isLast}
             isEditing={isEditing}
             isHovering={isHovering}
-            // isLoading={isLoading}
             onCopy={handleCopy}
-            // reload={reload}
+            onRegenerate={handleRegenerate}
             onEdit={handleStartEdit}
             
           />

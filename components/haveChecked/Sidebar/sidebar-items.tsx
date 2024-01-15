@@ -2,7 +2,7 @@
 
 import { AnimatePresence, motion } from 'framer-motion'
 
-import { removeChat, shareChat } from '@/app/actions'
+import { removeChat, shareChat, updateChat } from '@/app/actions'
 
 import { SidebarActions } from '@/components/haveChecked/Sidebar/sidebar-actions'
 import { SidebarItem } from '@/components/haveChecked/Sidebar/sidebar-item'
@@ -17,7 +17,9 @@ export function SidebarItems({ chats }: SidebarItemsProps) {
   
   return (
     <AnimatePresence>
-      {chats.map(
+      {chats
+      .sort((a, b) => b.updatedAt.getTime() - a.updatedAt.getTime())
+      .map(
         (chat, index) =>
           chat && (
             <motion.div

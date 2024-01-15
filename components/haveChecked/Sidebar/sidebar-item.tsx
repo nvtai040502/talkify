@@ -53,7 +53,7 @@ export function SidebarItem({ index, chat, children }: SidebarItemProps) {
         ease: 'easeIn'
       }}
     >
-      <div className="absolute left-2 top-1 flex h-6 w-6 items-center justify-center">
+      <div className="absolute flex items-center justify-center w-6 h-6 left-2 top-1">
         {chat.sharePath ? (
           <Tooltip delayDuration={1000}>
             <TooltipTrigger
@@ -77,7 +77,7 @@ export function SidebarItem({ index, chat, children }: SidebarItemProps) {
         )}
       >
         <div
-          className="relative max-h-5 flex-1 select-none overflow-hidden text-ellipsis break-all"
+          className="relative flex-1 overflow-hidden break-all select-none max-h-5 text-ellipsis"
           title={chat.name}
         >
           <span className="whitespace-nowrap">

@@ -20,6 +20,7 @@ interface MessageActionsProps {
   isHovering: boolean
   onCopy: () => void
   onEdit: () => void
+  onRegenerate: () => void
 }
 
 export function MessageActions({
@@ -29,6 +30,7 @@ export function MessageActions({
   isHovering,
   onCopy,
   onEdit,
+  onRegenerate
 }: MessageActionsProps) {
   const { isGenerating } = useContext(TalkifyContext)
   // const { isCopied, copyToClipboard } = useCopyToClipboard({ timeout: 2000 })
@@ -117,7 +119,7 @@ export function MessageActions({
             <Icons.repeat
               className="cursor-pointer hover:opacity-50"
               size={MESSAGE_ICON_SIZE}
-              // onClick={() => reload()}
+              onClick={onRegenerate}
             />
           }
         />

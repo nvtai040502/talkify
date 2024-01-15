@@ -1,13 +1,13 @@
 // Modified from https://github.com/mckaywrigley/chatbot-ui/blob/main/components/chat/chat-hooks/use-chat-handler.tsx
-import { UseChatHelpers } from 'ai/react/dist';
 import { useContext, useRef } from 'react';
 import { TalkifyContext } from './context';
-import { createChat, createMessage, getVercelMessagesUpdated } from '@/app/actions';
+import { createChat, createMessage, deleteMessagesIncludingAndAfter, getVercelMessagesUpdated, updateChat } from '@/app/actions';
 import toast from 'react-hot-toast';
 import { v4 as uuidV4 } from 'uuid';
 import { Chat, Message } from '@prisma/client';
 import { ChatMessages } from '@/components/chats/chat-messages';
 import { db } from '../db';
+import { updateMessage } from '@/actions/messages';
 
 export const fetchChatResponse = async (
   url: string,
@@ -25,7 +25,7 @@ export const fetchChatResponse = async (
   if (!response.ok) {
     if (response.status === 404) {
       toast.error(
-        "Model not found. Make sure you have it downloaded via Ollama."
+        "Model not found."
       )
     }
 
@@ -169,11 +169,12 @@ export const useChatHandler = () => {
     userInput,
     setUserInput,
     setAbortController,
+    abortController,
     setIsGenerating,
     setChatMessages,
     setChats,
     setSelectedChat,
-
+    chatMessages,
     selectedChat
   } = useContext(TalkifyContext)
 
@@ -249,22 +250,14 @@ const handleCreateMessages = async (
   let finalChatMessages: Message[] = []
 
   if (isRegeneration) {
-    // const lastStartingMessage = chatMessages[chatMessages.length - 1]
+    const lastStartingMessage = chatMessages[chatMessages.length - 1]
 
-    // const updatedMessage = await db.message.update({
-    //   where: {
-    //     id: lastStartingMessage.id
-    //   }, data: {
-    //     ...lastStartingMessage,
-    //     content: generatedText
-    //   }
-    // })
-    // // })
-    // chatMessages[chatMessages.length - 1] = updatedMessage
+    const updatedMessage = await updateMessage(lastStartingMessage.id, generatedText)
+    chatMessages[chatMessages.length - 1] = updatedMessage
 
-    // finalChatMessages = [...chatMessages]
+    finalChatMessages = [...chatMessages]
 
-    // setChatMessages(finalChatMessages)
+    setChatMessages(finalChatMessages)
   } else {
     
     finalChatMessages = [
@@ -327,28 +320,19 @@ const handleCreateMessages = async (
             setSelectedChat,
             setChats,
           )
-          window.history.pushState({}, "", `chat/${currentChat.id}`)
+          window.history.pushState({}, "", `/chat/${currentChat.id}`)
           
-            
+          // console.log("11111111111")
         
       } else {
-        console.log("?")
-        // const updatedChat = await db.chat.update({
-        //   where: {
-        //     id: currentChat.id
-        //   }, data: {
-        //     updatedAt: new Date().toISOString()
-        //   }
-        // })
-          
+        const updatedChat = await updateChat(currentChat.id)
+        setChats(prevChats => {
+          const updatedChats = prevChats.map(prevChat =>
+            prevChat.id === updatedChat.id ? updatedChat : prevChat
+          )
   
-        // setChats(prevChats => {
-        //   const updatedChats = prevChats.map(prevChat =>
-        //     prevChat.id === updatedChat.id ? updatedChat : prevChat
-        //   )
-  
-        //   return updatedChats
-        // })
+          return updatedChats
+        })
       }
   
      await handleCreateMessages(
@@ -376,44 +360,45 @@ const handleCreateMessages = async (
     }
   };
 
-  
+  const handleStopMessage = () => {
+    if (abortController) {
+      abortController.abort()
+    }
+  }
+
   const handleNewChat = () => {
     setUserInput("")
     setChatMessages([])
     setSelectedChat(null)
     setIsGenerating(false)
   }
-  interface HandleSendEditProps extends Pick<UseChatHelpers, |'setMessages' | 'reload' > {
-    messageId: string;
-    editedContent: string;
-    chatId: string
-  }
   
-  const handleSendEdit = async ({
-    setMessages,
-    reload,
-    chatId,
-    editedContent,
-    messageId
-  }: HandleSendEditProps) => {
-    const vercelMessagesUpdated = await getVercelMessagesUpdated({
-      messageId,
-      editedContent,
-      chatId
-    })
+  const handleSendEdit = async (
+    editedContent: string,
+    sequenceNumber: number
+  ) => {
+    if (!selectedChat) return
 
-    if (vercelMessagesUpdated.length) {
-      setMessages(vercelMessagesUpdated)
-      reload()
-    }
+    await deleteMessagesIncludingAndAfter(
+      selectedChat.id,
+      sequenceNumber
+    )
 
-  };
+    const filteredMessages = chatMessages.filter(
+      chatMessage => chatMessage.sequence_number < sequenceNumber
+    )
+
+    setChatMessages(filteredMessages)
+
+    handleSendMessage(editedContent, filteredMessages, false)
+  }
 
   return {
     chatInputRef,
     handleFocusChatInput,
     handleSendEdit,
     handleSendMessage,
-    handleNewChat
+    handleNewChat,
+    handleStopMessage
   };
 };

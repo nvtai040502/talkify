@@ -13,7 +13,8 @@ import { Message as PrismaMessage} from '@prisma/client'
 
 
 export function ChatMessages() {
-  const { chatMessages, isGenerating, setChatMessages } = useContext(TalkifyContext)
+  const { chatMessages } = useContext(TalkifyContext)
+  const { handleSendEdit } = useChatHandler()
   const [editingMessage, setEditingMessage] = useState<MessageVercel>()
   if (!chatMessages.length) {
     return null
@@ -23,13 +24,13 @@ export function ChatMessages() {
     .map((chatMessage, index, array) => {
       return (
         <Message
-          key={chatMessage.sequence_number}
+          key={chatMessage.id}
           message={chatMessage}
           isEditing={editingMessage?.id === chatMessage.id}
           isLast={index === array.length - 1}
           onStartEdit={setEditingMessage}
           onCancelEdit={() => setEditingMessage(undefined)}
-          // onSubmitEdit={handleSendEdit}
+          onSubmitEdit={handleSendEdit}
         />
       )
     })

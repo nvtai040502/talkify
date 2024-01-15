@@ -16,7 +16,8 @@ const ChatInput = () => {
   const {
     chatInputRef,
     handleSendMessage,
-    handleFocusChatInput
+    handleFocusChatInput,
+    handleStopMessage
   } = useChatHandler()
   const handleKeyDown = (event: React.KeyboardEvent) => {
     if (event.key === "Enter" && !event.shiftKey) {
@@ -71,7 +72,7 @@ const ChatInput = () => {
           {isGenerating ? (
             <Icons.stop
               className="p-1 bg-transparent rounded hover:bg-background animate-pulse"
-              // onClick={handleStopMessage}
+              onClick={handleStopMessage}
               size={30}
             />
           ) : (

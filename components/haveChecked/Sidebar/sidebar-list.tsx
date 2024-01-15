@@ -19,6 +19,8 @@ interface SidebarListProps {
 
 export function SidebarList({ userId }: SidebarListProps) {
   const { chats } = useContext(TalkifyContext)
+  
+  
   return (
     <div className="flex flex-col flex-1 overflow-hidden">
       <div className="flex-1 overflow-auto">

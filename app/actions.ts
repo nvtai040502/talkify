@@ -11,17 +11,12 @@ import { Message as PrismaMessage, MessageRole, Message, Chat } from '@prisma/cl
 import { mapPrismaMessageToVercelMessage } from '@/lib/utils'
 // import { mapPrismaMessageToVercelMessage } from './(chat)/chat/[id]/page'
 import { v4 as uuidV4 } from 'uuid'
+import { ChatMessage } from '@/lib/types'
+import { updateMessage } from '@/actions/messages'
 
-export async function getMessagesByChatId(chatId: string) {
-  const messages = await db.message.findMany({
-    where: {
-      chatId
-    }, orderBy: {
-      sequence_number: "asc"
-    }
-  })
-  return messages
-}
+
+
+
 export async function createMessage({
   content,
   chatId,
@@ -38,17 +33,38 @@ export async function createMessage({
   })
   return createdMessage
 }
-
-export async function createChat(name: string, path: string): Promise<Chat> {
+export async function updateChat(id: string) {
+  const updatedChat = await db.chat.update({
+    where: {
+      id
+    }, data: {
+      updatedAt: new Date()
+    }
+  })
+  return updatedChat
+}
+export async function createChat(name: string, customId?: string, path?: string): Promise<Chat> {
+  const id = uuidV4()
   const createdChat = await db.chat.create({
     data: {
+      id: customId || id, 
       name,
-      path
+      path: path || `/chat/${id}`
+      
     }
   })
   return createdChat
 }
-
+export async function deleteMessagesIncludingAndAfter(chatId: string, sequenceNumber: number) {
+  await db.message.deleteMany({
+    where: {
+      chatId,
+      sequence_number: {
+        gte: sequenceNumber,
+      },
+    },
+  });
+}
 export async function getPrismaMessages(chatId: string): Promise<PrismaMessage[]> {
   try {
     const prismaMessages = await db.message.findMany({
@@ -78,6 +94,24 @@ export async function getVercelMessages(chatId: string): Promise<VercelMessage[]
     // Handle the error appropriately
     return [];
   }
+}
+
+export async function getChatMessages(chatId: string): Promise<ChatMessage | null> {
+  const chatMessages = await db.chat.findUnique({
+    where: {
+      id: chatId
+    }, include: {
+      messages: {
+        where: {
+          chatId
+        }, orderBy: {
+          sequence_number: "asc"
+        }
+      }
+    }
+  })
+  if (!chatMessages) return null
+  return chatMessages
 }
 
 export async function getChats(userId?: string | null) {
@@ -118,19 +152,7 @@ export async function getVercelMessagesUpdated({
 
 }
 
-export async function updateMessage(id: string, content: string) {
-  const prismaMessage = await db.message.update({
-    where: {
-      id
-    }, data: {
-      content
-    }
-  })
-  if (!prismaMessage) {
-    return null
-  }
-  return prismaMessage
-}
+
 
 export async function getChatById(id: string) {
   const chat = await db.chat.findUnique({
