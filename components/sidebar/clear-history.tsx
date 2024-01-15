@@ -4,7 +4,6 @@ import * as React from 'react'
 import { useRouter } from 'next/navigation'
 import { toast } from 'react-hot-toast'
 
-import { ServerActionResult } from '@/lib/types'
 import { Button } from '@/components/ui/button'
 import {
   AlertDialog,
@@ -18,20 +17,30 @@ import {
   AlertDialogTrigger
 } from '@/components/ui/alert-dialog'
 import { IconSpinner } from '@/components/ui/icons'
+import { clearChats } from '@/actions/chats'
+import { useChatHandler } from '@/lib/hooks/chat-hook/use-chat-handler'
+import { TalkifyContext } from '@/lib/hooks/context'
 
 interface ClearHistoryProps {
   isEnabled: boolean
-  clearChats: () => ServerActionResult<void>
 }
 
 export function ClearHistory({
   isEnabled = false,
-  clearChats
 }: ClearHistoryProps) {
   const [open, setOpen] = React.useState(false)
   const [isPending, startTransition] = React.useTransition()
   const router = useRouter()
+  const { handleNewChat } = useChatHandler()
+  const { setChats } = React.useContext(TalkifyContext)
+  const handleClearChats = async () => {
+    await clearChats()
 
+    setChats([])
+    handleNewChat()
+    toast.success('history cleaned')
+    router.push("/")
+  }
   return (
     <AlertDialog open={open} onOpenChange={setOpen}>
       <AlertDialogTrigger asChild>
@@ -52,21 +61,7 @@ export function ClearHistory({
           <AlertDialogCancel disabled={isPending}>Cancel</AlertDialogCancel>
           <AlertDialogAction
             disabled={isPending}
-            onClick={event => {
-              event.preventDefault()
-              startTransition(() => {
-                clearChats().then(result => {
-                  if (result && 'error' in result) {
-                    toast.error(result.error)
-                    return
-                  }
-
-                  setOpen(false)
-                  router.push('/')
-                  router.refresh()
-                })
-              })
-            }}
+            onClick={handleClearChats}
           >
             {isPending && <IconSpinner className="mr-2 animate-spin" />}
             Delete

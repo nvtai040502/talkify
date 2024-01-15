@@ -2,7 +2,7 @@
 
 "use client"
 
-import { getChats } from "@/app/actions"
+import { getChats } from "@/actions/chats"
 import { db } from "@/lib/db"
 import { TalkifyContext } from "@/lib/hooks/context"
 import { Chat, Message } from "@prisma/client"

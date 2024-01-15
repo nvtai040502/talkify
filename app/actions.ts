@@ -17,54 +17,9 @@ import { updateMessage } from '@/actions/messages'
 
 
 
-export async function createMessage({
-  content,
-  chatId,
-  role,
-  sequence_number
-}: Pick<Message, 'chatId' | 'content' | 'sequence_number' | 'role'>) {
-  const createdMessage = await db.message.create({
-    data: {
-      content,
-      chatId,
-      role,
-      sequence_number
-    }
-  })
-  return createdMessage
-}
-export async function updateChat(id: string) {
-  const updatedChat = await db.chat.update({
-    where: {
-      id
-    }, data: {
-      updatedAt: new Date()
-    }
-  })
-  return updatedChat
-}
-export async function createChat(name: string, customId?: string, path?: string): Promise<Chat> {
-  const id = uuidV4()
-  const createdChat = await db.chat.create({
-    data: {
-      id: customId || id, 
-      name,
-      path: path || `/chat/${id}`
-      
-    }
-  })
-  return createdChat
-}
-export async function deleteMessagesIncludingAndAfter(chatId: string, sequenceNumber: number) {
-  await db.message.deleteMany({
-    where: {
-      chatId,
-      sequence_number: {
-        gte: sequenceNumber,
-      },
-    },
-  });
-}
+
+
+
 export async function getPrismaMessages(chatId: string): Promise<PrismaMessage[]> {
   try {
     const prismaMessages = await db.message.findMany({
@@ -114,14 +69,6 @@ export async function getChatMessages(chatId: string): Promise<ChatMessage | nul
   return chatMessages
 }
 
-export async function getChats(userId?: string | null) {
-  const chats = await db.chat.findMany({
-    orderBy: {
-      updatedAt: "desc"
-    }
-  })
-  return chats
-}
 
 export async function getVercelMessagesUpdated({
   messageId,
@@ -154,39 +101,7 @@ export async function getVercelMessagesUpdated({
 
 
 
-export async function getChatById(id: string) {
-  const chat = await db.chat.findUnique({
-    where: {
-      id: id
-    }
-  })
 
-  if (!chat) {
-    return null
-  }
-
-  return chat
-}
-
-export async function removeChat({ id, path }: { id: string; path: string }) {
-
-  await db.chat.delete({
-    where: {
-      id
-    }
-  })
-
-  revalidatePath('/')
-  return revalidatePath(path)
-}
-
-export async function clearChats() {
-
-  await db.chat.deleteMany()
-
-  revalidatePath('/')
-  return redirect('/')
-}
 
 export async function getSharedChat(id: string) {
   const chat = await db.chat.findUnique({

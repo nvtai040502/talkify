@@ -5,7 +5,7 @@ import { shareChat } from '@/app/actions'
 import { Button } from '@/components/ui/button'
 import { PromptForm } from '@/components/chats/prompt-form'
 import { IconRefresh, IconShare, IconStop } from '@/components/ui/icons'
-import { FooterText } from '@/components/haveChecked/footer'
+import { FooterText } from '@/components/footer'
 import { ChatShareDialog } from '@/components/chats/chat-share-dialog'
 
 export interface ChatPanelProps

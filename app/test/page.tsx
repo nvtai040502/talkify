@@ -1,6 +1,6 @@
 "use client"
 import { TalkifyContext } from '@/lib/hooks/context';
-import { useChatHandler } from '@/lib/hooks/use-chat-handler';
+import { useChatHandler } from '@/lib/hooks/chat-hook/use-chat-handler';
 import { useContext, useEffect, useState } from 'react';
 import toast from 'react-hot-toast';
 

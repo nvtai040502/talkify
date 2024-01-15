@@ -2,11 +2,11 @@
 
 import { AnimatePresence, motion } from 'framer-motion'
 
-import { removeChat, shareChat, updateChat } from '@/app/actions'
 
-import { SidebarActions } from '@/components/haveChecked/Sidebar/sidebar-actions'
-import { SidebarItem } from '@/components/haveChecked/Sidebar/sidebar-item'
+import { SidebarActions } from '@/components/sidebar/sidebar-actions'
+import { SidebarItem } from '@/components/sidebar/sidebar-item'
 import { Chat } from '@prisma/client'
+import { useChatHandler } from '@/lib/hooks/chat-hook/use-chat-handler'
 
 interface SidebarItemsProps {
   chats?: Chat[]
@@ -14,7 +14,6 @@ interface SidebarItemsProps {
 
 export function SidebarItems({ chats }: SidebarItemsProps) {
   if (!chats?.length) return null
-  
   return (
     <AnimatePresence>
       {chats
@@ -32,8 +31,8 @@ export function SidebarItems({ chats }: SidebarItemsProps) {
               <SidebarItem index={index} chat={chat}>
                 <SidebarActions
                   chat={chat}
-                  removeChat={removeChat}
-                  shareChat={shareChat}
+                  
+                  // shareChat={shareChat}
                 />
               </SidebarItem>
             </motion.div>

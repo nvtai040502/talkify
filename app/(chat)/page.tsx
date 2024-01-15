@@ -4,7 +4,7 @@ import ChatInput from "@/components/chats/chat-input"
 import ChatUI from "@/components/chats/chat-ui"
 import { Icons } from "@/components/icons"
 import { TalkifyContext } from "@/lib/hooks/context"
-import { useChatHandler } from "@/lib/hooks/use-chat-handler"
+import { useChatHandler } from "@/lib/hooks/chat-hook/use-chat-handler"
 import { useContext } from "react"
 
 export default function IndexPage() {

@@ -4,7 +4,6 @@ import { useRouter } from 'next/navigation'
 import * as React from 'react'
 import { toast } from 'react-hot-toast'
 
-import { ServerActionResult } from '@/lib/types'
 import {
   AlertDialog,
   AlertDialogAction,
@@ -24,23 +23,32 @@ import {
   TooltipTrigger
 } from '@/components/ui/tooltip'
 import { Chat } from '@prisma/client'
+import { useChatHandler } from '@/lib/hooks/chat-hook/use-chat-handler'
+import { deleteChat } from '@/actions/chats'
+import { TalkifyContext } from '@/lib/hooks/context'
 
 interface SidebarActionsProps {
   chat: Chat
-  removeChat: (args: { id: string; path: string }) => ServerActionResult<void>
-  shareChat: (id: string) => ServerActionResult<Chat>
 }
 
 export function SidebarActions({
   chat,
-  removeChat,
-  shareChat
 }: SidebarActionsProps) {
   const router = useRouter()
   const [deleteDialogOpen, setDeleteDialogOpen] = React.useState(false)
   const [shareDialogOpen, setShareDialogOpen] = React.useState(false)
   const [isRemovePending, startRemoveTransition] = React.useTransition()
+  const {setChats} = React.useContext(TalkifyContext)
+  const {handleNewChat} = useChatHandler()
+  const handleRemoveChat = async () => {
+    await deleteChat(chat.id)
 
+    setChats(prevState => prevState.filter(c => c.id !== chat.id))
+    setDeleteDialogOpen(false)
+    handleNewChat()
+    toast.success('Chat deleted')
+    router.push("/")
+  }
   return (
     <>
       <div className="space-x-1">
@@ -72,13 +80,13 @@ export function SidebarActions({
           <TooltipContent>Delete chat</TooltipContent>
         </Tooltip>
       </div>
-      <ChatShareDialog
+      {/* <ChatShareDialog
         chat={chat}
         shareChat={shareChat}
         open={shareDialogOpen}
         onOpenChange={setShareDialogOpen}
         onCopy={() => setShareDialogOpen(false)}
-      />
+      /> */}
       <AlertDialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
         <AlertDialogContent>
           <AlertDialogHeader>
@@ -94,26 +102,7 @@ export function SidebarActions({
             </AlertDialogCancel>
             <AlertDialogAction
               disabled={isRemovePending}
-              onClick={event => {
-                event.preventDefault()
-                // @ts-ignore
-                startRemoveTransition(async () => {
-                  const result = await removeChat({
-                    id: chat.id,
-                    path: chat.path
-                  })
-
-                  if (result && 'error' in result) {
-                    toast.error(result.error)
-                    return
-                  }
-
-                  setDeleteDialogOpen(false)
-                  router.refresh()
-                  router.push('/')
-                  toast.success('Chat deleted')
-                })
-              }}
+              onClick={handleRemoveChat}
             >
               {isRemovePending && <IconSpinner className="mr-2 animate-spin" />}
               Delete

@@ -4,12 +4,17 @@ import { ChatScrollButtons } from "./chat-scroll-button";
 import { useContext, useEffect, useState } from "react";
 import { useScroll } from "@/lib/hooks/use-scroll";
 import { useParams } from "next/navigation";
-import { useChatHandler } from "@/lib/hooks/use-chat-handler";
-import { getChatById, getMessagesByChatId } from "@/app/actions";
+import { useChatHandler } from "@/lib/hooks/chat-hook/use-chat-handler";
 import ChatInput from "./chat-input";
 import { ChatMessages } from "./chat-messages";
+import { getMessagesByChatId } from "@/actions/messages";
+import { getChatById } from "@/actions/chats";
 
-const ChatUI = () => {
+const ChatUI = ({
+  chatId
+}: {
+  chatId?: string
+}) => {
   const { chatMessages, isGenerating, setChatMessages, setSelectedChat, selectedChat } = useContext(TalkifyContext)
   const [loading, setLoading] = useState(true)
   const { handleFocusChatInput } = useChatHandler()
@@ -24,18 +29,16 @@ const ChatUI = () => {
     isOverflowing,
     scrollToTop
   } = useScroll({isGenerating, chatMessages})
-  const params = useParams()
   useEffect(() => {
-    const fetchData = async () => {
-      await fetchMessages()
-      await fetchChat()
+    const fetchData = async (chatId: string) => {
+      await fetchMessages(chatId)
+      await fetchChat(chatId)
 
       scrollToBottom()
       setIsAtBottom(true)
     }
-
-    if (params.chatid) {
-      fetchData().then(() => {
+    if (chatId) {
+      fetchData(chatId).then(() => {
         handleFocusChatInput()
         setLoading(false)
       })
@@ -43,13 +46,14 @@ const ChatUI = () => {
       setLoading(false)
     }
   }, [])
-  const fetchMessages = async () => {
-    const fetchedMessages = await getMessagesByChatId(params.chatid as string)
+  const fetchMessages = async (chatId: string) => {
+    const fetchedMessages = await getMessagesByChatId(chatId)
+    
     setChatMessages(fetchedMessages)
   }
 
-  const fetchChat = async () => {
-    const chat = await getChatById(params.chatid as string)
+  const fetchChat = async (chatId: string) => {
+    const chat = await getChatById(chatId)
     if (!chat) return
     setSelectedChat(chat)
   }

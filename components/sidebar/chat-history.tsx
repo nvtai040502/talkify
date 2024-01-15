@@ -4,10 +4,10 @@ import * as React from 'react'
 import Link from 'next/link'
 
 import { cn } from '@/lib/utils'
-import { SidebarList } from '@/components/haveChecked/Sidebar/sidebar-list'
+import { SidebarList } from '@/components/sidebar/sidebar-list'
 import { buttonVariants } from '@/components/ui/button'
 import { IconPlus } from '@/components/ui/icons'
-import { useChatHandler } from '@/lib/hooks/use-chat-handler'
+import { useChatHandler } from '@/lib/hooks/chat-hook/use-chat-handler'
 
 interface ChatHistoryProps {
   userId?: string

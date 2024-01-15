@@ -27,7 +27,7 @@ interface SidebarItemProps {
 export function SidebarItem({ index, chat, children }: SidebarItemProps) {
   const pathname = usePathname()
 
-  const isActive = pathname === chat.path
+  const isActive = pathname === `/chat/${chat.id}`
   const [newChatId, setNewChatId] = useLocalStorage('newChatId', null)
   const shouldAnimate = index === 0 && isActive && newChatId
 
@@ -54,7 +54,7 @@ export function SidebarItem({ index, chat, children }: SidebarItemProps) {
       }}
     >
       <div className="absolute flex items-center justify-center w-6 h-6 left-2 top-1">
-        {chat.sharePath ? (
+        {/* {chat.sharePath ? (
           <Tooltip delayDuration={1000}>
             <TooltipTrigger
               tabIndex={-1}
@@ -64,12 +64,12 @@ export function SidebarItem({ index, chat, children }: SidebarItemProps) {
             </TooltipTrigger>
             <TooltipContent>This is a shared chat.</TooltipContent>
           </Tooltip>
-        ) : (
+        ) : ( */}
           <IconMessage className="mr-2" />
-        )}
+        {/* )} */}
       </div>
       <Link
-        href={chat.path}
+        href={`/chat/${chat.id}`}
         className={cn(
           buttonVariants({ variant: 'ghost' }),
           'group w-full px-8 transition-colors hover:bg-zinc-200/40 dark:hover:bg-zinc-300/10',
