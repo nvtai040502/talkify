@@ -17,50 +17,41 @@ import { TextareaAutosize } from '../ui/textarea-autosize'
 import { MessageMarkdown } from './message-markdown'
 import { Button } from '../ui/button'
 import { TalkifyContext } from '@/lib/hooks/context'
+import { Message as PrismaMessage } from '@prisma/client'
 
 
 
 
-interface MessageProps extends Pick<
-UseChatHelpers,
-| 'setMessages'
-| 'isLoading'
-| 'reload'
-
-> {
-  message: MessageVercel
+interface MessageProps {
+  message: PrismaMessage
   isEditing: boolean
   isLast: boolean
-  onStartEdit: (message: MessageVercel) => void
+  onStartEdit: (message: PrismaMessage) => void
   onCancelEdit: () => void
-  chatId: string
+  // onSubmitEdit: (value: string, sequenceNumber: number) => void
 }
 export function Message({ 
   message, 
   isEditing,
-  isLoading,
   isLast,
-  reload,
-  setMessages,
   onStartEdit,
   onCancelEdit,
-  chatId
 }: MessageProps) {
   const { handleSendEdit } = useChatHandler()
   const [editedMessage, setEditedMessage] = useState<string>(message.content)
   const editInputRef = useRef<HTMLTextAreaElement>(null)    
   const [isHovering, setIsHovering] = useState(false)
   
-  const onSubmitEdit = () => {
-    handleSendEdit({
-      messageId: message.id, 
-      setMessages, 
-      reload, 
-      editedContent: editedMessage, 
-      chatId
-    })
-    onCancelEdit()
-  }
+  // const onSubmitEdit = () => {
+  //   handleSendEdit({
+  //     messageId: message.id, 
+  //     setMessages, 
+  //     reload, 
+  //     editedContent: editedMessage, 
+  //     chatId
+  //   })
+  //   onCancelEdit()
+  // }
   const handleCopy = () => {
     navigator.clipboard.writeText(message.content)
   }
@@ -69,7 +60,7 @@ export function Message({
   }
   const handleKeyDown = (event: React.KeyboardEvent) => {
     if (isEditing && event.key === "Enter") {
-      onSubmitEdit()
+      // onSubmitEdit()
     }
   }
   useEffect(() => {
@@ -97,9 +88,9 @@ export function Message({
             isLast={isLast}
             isEditing={isEditing}
             isHovering={isHovering}
-            isLoading={isLoading}
+            // isLoading={isLoading}
             onCopy={handleCopy}
-            reload={reload}
+            // reload={reload}
             onEdit={handleStartEdit}
             
           />

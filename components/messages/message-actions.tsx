@@ -6,18 +6,14 @@ import { Button } from '@/components/ui/button'
 import { useCopyToClipboard } from '@/lib/hooks/use-copy-to-clipboard'
 import { cn } from '@/lib/utils'
 import { Icons } from '../icons'
-import { useEffect, useState } from 'react'
+import { useContext, useEffect, useState } from 'react'
 import { WithTooltip } from '../ui/with-tooltip'
 import { UseChatHelpers } from 'ai/react/dist'
+import { TalkifyContext } from '@/lib/hooks/context'
 
 export const MESSAGE_ICON_SIZE = 18
 
-interface MessageActionsProps extends Pick<
-UseChatHelpers,
-| 'isLoading'
-| 'reload'
-
-> {
+interface MessageActionsProps {
   isAssistant: boolean
   isLast: boolean
   isEditing: boolean
@@ -30,12 +26,11 @@ export function MessageActions({
   isAssistant,
   isLast,
   isEditing,
-  isLoading,
-  reload,
   isHovering,
   onCopy,
   onEdit,
 }: MessageActionsProps) {
+  const { isGenerating } = useContext(TalkifyContext)
   // const { isCopied, copyToClipboard } = useCopyToClipboard({ timeout: 2000 })
 
   // const onCopy = () => {
@@ -62,8 +57,8 @@ export function MessageActions({
     }
   }, [showCheckmark])
 
-  return (isLast && isLoading) || isEditing ? null : (
-    <div className="text-muted-foreground flex items-center space-x-2 ">
+  return (isLast && isGenerating) || isEditing ? null : (
+    <div className="flex items-center space-x-2 text-muted-foreground ">
       {/* {((isAssistant && isHovering) || isLast) && (
         <WithTooltip
           delayDuration={1000}
@@ -122,7 +117,7 @@ export function MessageActions({
             <Icons.repeat
               className="cursor-pointer hover:opacity-50"
               size={MESSAGE_ICON_SIZE}
-              onClick={() => reload()}
+              // onClick={() => reload()}
             />
           }
         />

@@ -1,30 +1,18 @@
 "use client"
-import {useState} from 'react';
+import { TalkifyContext } from '@/lib/hooks/context';
+import { useChatHandler } from '@/lib/hooks/use-chat-handler';
+import { useContext, useEffect, useState } from 'react';
+import toast from 'react-hot-toast';
 
 export default function App() {
-  const [scrollTop, setScrollTop] = useState(0);
-
-  const handleScroll = event => {
-    setScrollTop(event.currentTarget.scrollTop);
-  };
-
+  const {chatMessages} = useContext(TalkifyContext)
+  const { handleSendMessage } = useChatHandler()
+  useEffect(() => {
+    handleSendMessage("hello", chatMessages, false)
+  }, [])
   return (
     <div>
-      <h2>Scroll Top: {scrollTop}</h2>
-
-      <div
-        style={{
-          border: '3px solid black',
-          width: '400px',
-          height: '100px',
-          overflow: 'scroll',
-        }}
-        onScroll={handleScroll}
-      >
-        {[...Array(20)].map((_, index) => (
-          <p key={index}>Content {index}</p>
-        ))}
-      </div>
+      <p>{chatMessages.length}</p>
     </div>
   );
 }

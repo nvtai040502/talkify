@@ -5,14 +5,49 @@ import { redirect } from 'next/navigation'
 import { kv } from '@vercel/kv'
 
 import { auth } from '@/auth'
-import { type Chat } from '@/lib/types'
 import { db } from '@/lib/db'
 import { JSONValue, Message as VercelMessage } from 'ai'
-import { Message as PrismaMessage, MessageRole } from '@prisma/client'
+import { Message as PrismaMessage, MessageRole, Message, Chat } from '@prisma/client'
 import { mapPrismaMessageToVercelMessage } from '@/lib/utils'
 // import { mapPrismaMessageToVercelMessage } from './(chat)/chat/[id]/page'
+import { v4 as uuidV4 } from 'uuid'
 
+export async function getMessagesByChatId(chatId: string) {
+  const messages = await db.message.findMany({
+    where: {
+      chatId
+    }, orderBy: {
+      sequence_number: "asc"
+    }
+  })
+  return messages
+}
+export async function createMessage({
+  content,
+  chatId,
+  role,
+  sequence_number
+}: Pick<Message, 'chatId' | 'content' | 'sequence_number' | 'role'>) {
+  const createdMessage = await db.message.create({
+    data: {
+      content,
+      chatId,
+      role,
+      sequence_number
+    }
+  })
+  return createdMessage
+}
 
+export async function createChat(name: string, path: string): Promise<Chat> {
+  const createdChat = await db.chat.create({
+    data: {
+      name,
+      path
+    }
+  })
+  return createdChat
+}
 
 export async function getPrismaMessages(chatId: string): Promise<PrismaMessage[]> {
   try {
@@ -21,7 +56,7 @@ export async function getPrismaMessages(chatId: string): Promise<PrismaMessage[]
         chatId
       }, 
       orderBy: {
-        index: "asc"
+        sequence_number: "asc"
       }
     });
 
@@ -69,8 +104,8 @@ export async function getVercelMessagesUpdated({
   await db.message.deleteMany({
     where: {
       chatId,
-      index: {
-        gt: prismaMessageUpdated.index
+      sequence_number: {
+        gt: prismaMessageUpdated.sequence_number
       }
     }
   });
@@ -97,7 +132,7 @@ export async function updateMessage(id: string, content: string) {
   return prismaMessage
 }
 
-export async function getChat(id: string) {
+export async function getChatById(id: string) {
   const chat = await db.chat.findUnique({
     where: {
       id: id

@@ -22,6 +22,7 @@ model Chat {
   id String @id @default(uuid())  @unique
   createdAt DateTime @default(now())
   updatedAt  DateTime   @updatedAt
+  
   path String
   sharePath String?
   name        String     @db.Text
@@ -41,17 +42,13 @@ enum MessageRole {
 }
 model Message {
   id String @id @default(uuid()) @unique
-  index Int @default(autoincrement())
-  tool_call_id String?
-  createdAt DateTime?
-  content String
+  createdAt DateTime @default(now())
+  updatedAt  DateTime   @updatedAt
   
-  ui String?
+  content String
+  sequence_number Int
   role MessageRole
-  name String?
-  function_call String?
-  data Json?
-  tool_calls Json?
+
   chatId String
   chat Chat @relation(fields: [chatId], references: [id], onDelete: Cascade)
 

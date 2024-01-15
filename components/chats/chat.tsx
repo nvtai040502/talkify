@@ -27,27 +27,28 @@ export interface ChatProps extends React.ComponentProps<'div'> {
 export function Chat({ id, initialMessages, className }: ChatProps) {
   const router = useRouter()
   const path = usePathname()
-  const { messages, append, reload, stop, isLoading, setMessages } =
-    useChat({
-      api: `/api/chat/hf`,
-      initialMessages,
-      sendExtraMessageFields: true,
-      body: {
-        chatId: id,
-      },
-      onResponse(response) {
-        if (response.status === 401) {  
-          toast.error(response.statusText)
-        }
-      },
-      onFinish() {
-        if (!path.includes('chat')) {
-          router.push(`/chat/${id}`, { scroll: false });
-          router.refresh();
-        }
+  const { chatMessages, isGenerating, setChatMessages } = useContext(TalkifyContext)
+  // const { messages, append, reload, stop, isLoading, setMessages } =
+  //   useChat({
+  //     api: `/api/chat/hf`,
+  //     initialMessages,
+  //     sendExtraMessageFields: true,
+  //     body: {
+  //       chatId: id,
+  //     },
+  //     onResponse(response) {
+  //       if (response.status === 401) {  
+  //         toast.error(response.statusText)
+  //       }
+  //     },
+  //     onFinish() {
+  //       if (!path.includes('chat')) {
+  //         router.push(`/chat/${id}`, { scroll: false });
+  //         router.refresh();
+  //       }
         
-      },
-    });
+  //     },
+  //   });
     
   const {
     messagesStartRef,
@@ -59,7 +60,7 @@ export function Chat({ id, initialMessages, className }: ChatProps) {
     isAtBottom,
     isOverflowing,
     scrollToTop
-  } = useScroll({isGenerating: isLoading, chatMessages: messages})
+  } = useScroll({isGenerating, chatMessages})
 
   useEffect(() => {
     if (path.includes('chat')) {
@@ -70,7 +71,7 @@ export function Chat({ id, initialMessages, className }: ChatProps) {
   return (
     <>
       <div className={cn('pb-[200px] pt-4 md:pt-10', className)}>
-        {messages.length ? (
+        {chatMessages.length ? (
           <>
           <div className="absolute right-4 top-2.5 flex justify-center">
             <ChatScrollButtons
@@ -81,15 +82,9 @@ export function Chat({ id, initialMessages, className }: ChatProps) {
               scrollToBottom={scrollToBottom}
             />
           </div>
-          <div className="h-72 overflow-auto" onScroll={handleScroll}>
+          <div className="overflow-auto h-72" onScroll={handleScroll}>
             <div ref={messagesStartRef} />
-              <ChatMessages 
-                messages={messages} 
-                isLoading={isLoading} 
-                setMessages={setMessages} 
-                reload={reload}
-                chatId={id}
-              />
+              <ChatMessages />
             <div ref={messagesEndRef} />
           </div>
 
@@ -100,7 +95,7 @@ export function Chat({ id, initialMessages, className }: ChatProps) {
         )}
       </div>
       
-      <ChatPanel
+      {/* <ChatPanel
         id={id}
         title="hel"
         isLoading={isLoading}
@@ -110,7 +105,7 @@ export function Chat({ id, initialMessages, className }: ChatProps) {
         setMessages={setMessages}
         messages={messages}
        
-      /> 
+      />  */}
 
       
     </>
