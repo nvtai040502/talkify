@@ -15,7 +15,7 @@ const ChatUI = ({
 }: {
   chatId?: string
 }) => {
-  const { chatMessages, isGenerating, setChatMessages, setSelectedChat, selectedChat } = useContext(TalkifyContext)
+  const { userInput,chatMessages, isGenerating, setChatMessages, setSelectedChat, selectedChat } = useContext(TalkifyContext)
   const [loading, setLoading] = useState(true)
   const { handleFocusChatInput } = useChatHandler()
   const {
@@ -30,6 +30,7 @@ const ChatUI = ({
     scrollToTop
   } = useScroll({isGenerating, chatMessages})
   useEffect(() => {
+    
     const fetchData = async (chatId: string) => {
       await fetchMessages(chatId)
       await fetchChat(chatId)
@@ -37,15 +38,12 @@ const ChatUI = ({
       scrollToBottom()
       setIsAtBottom(true)
     }
-    if (chatId) {
-      fetchData(chatId).then(() => {
-        handleFocusChatInput()
-        setLoading(false)
-      })
-    } else {
-      setLoading(false)
-    }
+    if (chatId) {fetchData(chatId)}
+    
+    setLoading(false)
+    
   }, [])
+  
   const fetchMessages = async (chatId: string) => {
     const fetchedMessages = await getMessagesByChatId(chatId)
     

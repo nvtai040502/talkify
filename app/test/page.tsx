@@ -1,18 +1,91 @@
-"use client"
-import { TalkifyContext } from '@/lib/hooks/context';
-import { useChatHandler } from '@/lib/hooks/chat-hook/use-chat-handler';
-import { useContext, useEffect, useState } from 'react';
-import toast from 'react-hot-toast';
+// pages/index.js or any other Next.js page
+"use client";
+import { Button } from '@/components/ui/button';
+import { useEffect, useState } from 'react';
 
-export default function App() {
-  const {chatMessages} = useContext(TalkifyContext)
-  const { handleSendMessage } = useChatHandler()
+const MyApp = () => {
+  const [abortController, setAbortController] = useState(new AbortController());
+  const [test, setTest] = useState(false);
+
   useEffect(() => {
-    handleSendMessage("hello", chatMessages, false)
-  }, [])
+    const fetchData = async () => {
+      // const controller = new AbortController();
+      const signal = abortController.signal;
+
+      try {
+        const response = await fetch('/api/chat/localhost/ollama', {
+          method: 'POST',
+          body: JSON.stringify("hello"),
+          signal: signal,
+        });
+
+        if (!response.ok) {
+          throw new Error(`HTTP error! Status: ${response.status}`);
+        }
+
+        const reader = response.body!.getReader();
+        console.log(response);
+
+        signal.addEventListener("abort", () => {
+          reader.cancel();
+          console.log('Fetch aborted...');
+        });
+
+        const decoder = new TextDecoder();
+
+        try {
+          while (true) {
+            const { done, value } = await reader.read();
+
+            if (done) {
+              break;
+            }
+
+            if (value) {
+              console.log(decoder.decode(value));
+              // Update your state with the received data if needed
+            }
+          }
+        } catch (error: any) {
+          if (error.name !== 'AbortError') {
+            console.error('Error during stream reading:', error);
+          }
+        } finally {
+          reader.releaseLock();
+        }
+      } catch (error: any) {
+        if (error.name !== 'AbortError') {
+          console.error('Fetch error:', error);
+        }
+      }
+    };
+
+    // Invoke fetchData
+    fetchData();
+
+  }, [test]);
+
   return (
     <div>
-      <p>{chatMessages.length}</p>
+      {/* Render the received stream data in the component */}
+      <Button
+        onClick={() => {
+          abortController.abort();
+        }}
+      >
+        hello
+      </Button>
+      <Button
+        onClick={() => {
+          setAbortController(new AbortController());
+          // Toggle 'test' to trigger the useEffect and invoke fetchData
+          setTest((prevTest) => !prevTest);
+        }}
+      >
+        hello2
+      </Button>
     </div>
   );
-}
+};
+
+export default MyApp;

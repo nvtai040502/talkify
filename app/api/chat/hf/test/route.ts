@@ -5,23 +5,19 @@ import { Message } from '@prisma/client';
 const Hf = new HfInference(process.env.HUGGINGFACE_API_KEY);
 export const runtime = "edge"
 export async function POST(req: Request) {
-  const json = await req.json()
-  const { messages } = json as {
-    messages: Message[]
-  }
+  const { messages }: {messages: string} = await req.json()
   try {
     const readableStream = new ReadableStream({
       async start(controller) {
         try {
           for await (const output of Hf.textGenerationStream({
             model: "google/flan-t5-xxl",
-            inputs: messages[0].content,
+            inputs: messages,
             parameters: { max_new_tokens: 250 }
           }))  {
-            console.log(output.token.text, output.generated_text);
 
-            const messageContent = output.generated_text;
-            controller.enqueue(new TextEncoder().encode(messageContent + '\n'));
+            const messageContent = output.token.text
+            controller.enqueue(new TextEncoder().encode(messageContent));
           }
 
           // Signal the end of the response

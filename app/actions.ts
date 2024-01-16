@@ -2,8 +2,6 @@
 
 import { revalidatePath } from 'next/cache'
 import { redirect } from 'next/navigation'
-import { kv } from '@vercel/kv'
-
 import { auth } from '@/auth'
 import { db } from '@/lib/db'
 import { JSONValue, Message as VercelMessage } from 'ai'
@@ -103,32 +101,3 @@ export async function getVercelMessagesUpdated({
 
 
 
-export async function getSharedChat(id: string) {
-  const chat = await db.chat.findUnique({
-    where: {
-      id
-    }
-  })
-
-  if (!chat || !chat.sharePath) {
-    return null
-  }
-
-  return chat
-}
-
-export async function shareChat(id: string) {
-  const chat = await db.chat.update({
-    where: {
-      id: id
-    }, data: {
-      sharePath: `/share/${id}`
-    }
-  })
-  if (!chat) {
-    return {
-      error: 'Something went wrong'
-    }
-  }
-  return chat
-}

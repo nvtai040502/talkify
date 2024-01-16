@@ -1,73 +1,56 @@
-import { db } from '@/lib/db';
-import { HfInference } from '@huggingface/inference';
-import { HuggingFaceStream, Message as VercelMessage, StreamingTextResponse } from 'ai';
-import { experimental_buildOpenAssistantPrompt } from 'ai/prompts';
-import { v4 as uuidV4 } from 'uuid';
+import { NextRequest, NextResponse } from "next/server";
+import { StreamingTextResponse } from "ai";
+import { HuggingFaceInference } from "@langchain/community/llms/hf";
+import { StringOutputParser } from "@langchain/core/output_parsers";
+import { PromptTemplate } from "@langchain/core/prompts";
+import { Message as PrismaMessage } from "@prisma/client";
+import { ChatPromptTemplate } from "@langchain/core/prompts";
+import { HuggingFaceInferenceEmbeddings } from "@langchain/community/embeddings/hf"
 
-const Hf = new HfInference(process.env.HUGGINGFACE_API_KEY);
 
-export async function POST(req: Request) {
+export const runtime = "edge";
+
+const formatMessage = (message: PrismaMessage) => {
+  return `${message.role}: ${message.content}`;
+};
+
+const TEMPLATE = `You are a world class technical documentation writer.
+
+Current conversation:
+{chat_history}
+
+User: {input}
+AI:`;
+export async function POST(req: NextRequest) {
   try {
-    const { messages, chatId }: { messages: VercelMessage[], chatId: string } = await req.json();
-    const existingChat = await db.chat.findUnique({ where: { id: chatId } });
-
-    const response = Hf.textGenerationStream({
-      model: "OpenAssistant/oasst-sft-4-pythia-12b-epoch-3.5",
-      inputs: experimental_buildOpenAssistantPrompt(messages),
-      parameters: {
-        max_new_tokens: 200,
-        repetition_penalty: 1,
-        truncate: 1000,
-        return_full_text: false,
-      },
+    const body = await req.json();
+    const messages = body.messages ?? [];
+    const formattedPreviousMessages = messages.slice(0, -1).map(formatMessage);
+    const currentMessageContent = messages[messages.length - 1].content;
+    // const prompt = PromptTemplate.fromTemplate(TEMPLATE);
+    const prompt = ChatPromptTemplate.fromMessages([
+      ["system", "You are a world class technical documentation writer."],
+      ["user", "{input}"],
+    ]);
+    const model = new HuggingFaceInference({
+      model: "gpt2",
+      apiKey: `${process.env.HUGGINGFACE_API_KEY}`, // In Node.js defaults to process.env.HUGGINGFACEHUB_API_KEY
     });
+    const embeddings = new HuggingFaceInferenceEmbeddings()
+    
+    const outputParser = new StringOutputParser();
+    const llmChain = prompt.pipe(model).pipe(outputParser);
 
-    const stream = HuggingFaceStream(response, {
-      async onCompletion(completion) {
-        if (existingChat) {
-          const userLastMessage = messages[messages.length - 1];
-          const existMessage = await db.message.findUnique({ where: { id: userLastMessage.id } });
-
-          if (existMessage) {
-            await db.message.create({
-              data: {
-                content: completion,
-                role: "assistant",
-                chatId,
-              },
-            });
-          } else {
-            await db.message.createMany({
-              data: [
-                { id: userLastMessage.id, content: userLastMessage.content, role: userLastMessage.role, chatId },
-                { content: completion, role: "assistant", chatId },
-              ],
-            });
-          }
-        } else {
-          const name = messages[0].content.substring(0, 100);
-          const allMessages = messages.map((message: VercelMessage) => ({
-            id: message.id,
-            content: message.content,
-            role: message.role,
-            chatId,
-          }));
-
-          await db.chat.create({
-            data: { id: chatId, name, path: `/chat/${chatId}` },
-          });
-
-          await db.message.createMany({
-            data: [...allMessages, { content: completion, role: "assistant", chatId }],
-          });
-        }
-      },
+    const res = await llmChain.invoke({
+      input: "what is LangSmith?",
     });
+    // const res  = await llmChain.invoke({
+    //   chat_history: formattedPreviousMessages,
+    //   input: currentMessageContent
+    // });
 
-    // Respond with the stream
-    return new StreamingTextResponse(stream);
-  } catch (error) {
-    console.error('Error in POST:', error);
-    return new Response('Internal Server Error', { status: 500 });
+    return NextResponse.json(res);
+  } catch (e: any) {
+    return NextResponse.json({ error: e.message }, { status: 500 });
   }
 }

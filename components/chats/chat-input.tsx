@@ -2,7 +2,7 @@
 import { TalkifyContext } from "@/lib/hooks/context";
 import { Icons } from "../icons";
 import { TextareaAutosize } from "../ui/textarea-autosize";
-import { useContext } from "react";
+import { useContext, useEffect } from "react";
 import { useChatHandler } from "@/lib/hooks/chat-hook/use-chat-handler";
 import { cn } from "@/lib/utils";
 
@@ -24,9 +24,12 @@ const ChatInput = () => {
       event.preventDefault()
       handleSendMessage(userInput, chatMessages, false)
     }
-
-    
   }
+
+  // fix bug not focus input when navigate from home page to chat page
+  useEffect(() => {
+    handleFocusChatInput()
+  }, [])
   return ( 
     <>
       {/* <ChatFilesDisplay /> */}

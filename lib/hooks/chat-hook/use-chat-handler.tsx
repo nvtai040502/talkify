@@ -1,13 +1,9 @@
 // Modified from https://github.com/mckaywrigley/chatbot-ui/blob/main/components/chat/chat-hooks/use-chat-handler.tsx
 import { useContext, useRef } from 'react';
 import { TalkifyContext } from '../context';
-import toast from 'react-hot-toast';
-import { v4 as uuidV4 } from 'uuid';
 import { Chat, Message } from '@prisma/client';
-import { ChatMessages } from '@/components/chats/chat-messages';
-import { db } from '../../db';
 import { createMessage, deleteMessagesIncludingAndAfter, updateMessage } from '@/actions/messages';
-import { handleCreateChat, handleHostedChat } from '@/lib/hooks/chat-hook/chat-helpers';
+import { createTempMessages, handleCreateChat, handleCreateMessages, handleHostedChat, handleLocalChat } from '@/lib/hooks/chat-hook/chat-helpers';
 import { deleteChat, updateChat } from '@/actions/chats';
 
 export const useChatHandler = () => {
@@ -24,98 +20,6 @@ export const useChatHandler = () => {
     chatMessages,
     selectedChat
   } = useContext(TalkifyContext)
-
- function createTempMessages (
-    messageContent: string,
-    chatMessages: Message[],
-    isRegeneration: boolean,
-    setChatMessages: React.Dispatch<React.SetStateAction<Message[]>>
-  ) {
-    let tempUserChatMessage: Message = {
-        chatId: "",
-        id: uuidV4(),
-        sequence_number: chatMessages.length,
-        createdAt: new Date(),
-        updatedAt: new Date(),
-        content: messageContent,
-        role: "user",
-    }
-  
-    let tempAssistantChatMessage: Message = {
-        chatId: "",
-        content: "",
-        createdAt: new Date(),
-        id: uuidV4(),
-        role: "assistant",
-        sequence_number: chatMessages.length + 1,
-        updatedAt: new Date(),
-    }
-  
-    let newMessages = []
-  
-    if (isRegeneration) {
-      const lastMessageIndex = chatMessages.length - 1
-      chatMessages[lastMessageIndex].content = ""
-      newMessages = [...chatMessages]
-    } else {
-      newMessages = [
-        ...chatMessages,
-        tempUserChatMessage,
-        tempAssistantChatMessage
-      ]
-    }
-  
-    setChatMessages(newMessages)
-  
-    return {
-      tempUserChatMessage,
-      tempAssistantChatMessage
-    }
-  }
-const handleCreateMessages = async (
-  chatMessages: Message[],
-  currentChat: Chat,
-  messageContent: string,
-  generatedText: string,
-  isRegeneration: boolean,
-  setChatMessages: React.Dispatch<React.SetStateAction<Message[]>>,
-) => {
-  const finalUserMessage = await createMessage({
-      content: messageContent,
-      chatId: currentChat.id,
-      sequence_number: chatMessages.length,
-      role: "user"
-  })
-
-  const finalAssistantMessage = await createMessage({
-      chatId: currentChat.id,
-      content: generatedText,
-      sequence_number: chatMessages.length,
-      role: "assistant",
-  })
-
-  let finalChatMessages: Message[] = []
-
-  if (isRegeneration) {
-    const lastStartingMessage = chatMessages[chatMessages.length - 1]
-
-    const updatedMessage = await updateMessage(lastStartingMessage.id, generatedText)
-    chatMessages[chatMessages.length - 1] = updatedMessage
-
-    finalChatMessages = [...chatMessages]
-
-    setChatMessages(finalChatMessages)
-  } else {
-    
-    finalChatMessages = [
-      ...chatMessages,
-      finalUserMessage,
-      finalAssistantMessage
-    ]
-    setChatMessages(finalChatMessages)
-  }
-}
-
 
   const handleSendMessage = async (
     messageContent: string,
@@ -153,7 +57,15 @@ const handleCreateMessages = async (
       
       let generatedText = ""
   
-        generatedText = await handleHostedChat(
+        // generatedText = await handleHostedChat(
+        //   payload,
+        //   tempAssistantChatMessage,
+        //   isRegeneration,
+        //   newAbortController,
+        //   setIsGenerating,
+        //   setChatMessages,
+        // )
+        generatedText = await handleLocalChat(
           payload,
           tempAssistantChatMessage,
           isRegeneration,
@@ -169,10 +81,9 @@ const handleCreateMessages = async (
           )
           window.history.pushState({}, "", `/chat/${currentChat.id}`)
           
-          // console.log("11111111111")
         
       } else {
-        console.log(currentChat.name)
+        // console.log(currentChat.name)
         const updatedChat = await updateChat(currentChat.id)
         setChats(prevChats => {
           const updatedChats = prevChats.map(prevChat =>
@@ -192,7 +103,6 @@ const handleCreateMessages = async (
         setChatMessages,
       )
       setIsGenerating(false)
-      setUserInput("")
     } catch (error) {
       setIsGenerating(false)
       setUserInput(startingInput)
@@ -211,6 +121,7 @@ const handleCreateMessages = async (
   const handleStopMessage = () => {
     if (abortController) {
       abortController.abort()
+      console.log('aborting...');
     }
   }
 
@@ -241,13 +152,6 @@ const handleCreateMessages = async (
     handleSendMessage(editedContent, filteredMessages, false)
   }
 
-  const handleRemoveChat = async (id: string) => {
-    await deleteChat(id)
-
-    setChats(prevState => prevState.filter(c => c.id !== id))
-
-    handleNewChat()
-  }
 
   return {
     chatInputRef,
@@ -256,6 +160,5 @@ const handleCreateMessages = async (
     handleSendMessage,
     handleNewChat,
     handleStopMessage,
-    handleRemoveChat
   };
 };
