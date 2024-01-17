@@ -5,6 +5,8 @@ import { Chat, Message } from '@prisma/client';
 import { createMessage, deleteMessagesIncludingAndAfter, updateMessage } from '@/actions/messages';
 import { createTempMessages, handleCreateChat, handleCreateMessages, handleHostedChat, handleLocalChat } from '@/lib/hooks/chat-hook/chat-helpers';
 import { deleteChat, updateChat } from '@/actions/chats';
+import { LLM_LIST } from '@/models/llm-list';
+import { ChatPayload } from '@/types/chat';
 
 export const useChatHandler = () => {
   const chatInputRef = useRef<HTMLTextAreaElement>(null);
@@ -13,11 +15,13 @@ export const useChatHandler = () => {
     setUserInput,
     setAbortController,
     abortController,
+    availableLocalModels,
     setIsGenerating,
     setChatMessages,
     setChats,
     setSelectedChat,
     chatMessages,
+    chatSettings,
     selectedChat
   } = useContext(TalkifyContext)
 
@@ -35,10 +39,22 @@ export const useChatHandler = () => {
       const newAbortController = new AbortController()
       setAbortController(newAbortController)
   
+      
+      if (!chatSettings) {
+        throw new Error("Chat Settings not found")
+      }
+      const modelData = [
+        ...LLM_LIST,
+        ...availableLocalModels,
+      ].find(llm => llm.modelId === chatSettings.model)
+
       if (!messageContent) {
         throw new Error("Message content not found")
       }
-  
+      if (!modelData) {
+        throw new Error("Model not found")
+      }
+
       let currentChat = selectedChat ? { ...selectedChat } : null
       
       const { tempUserChatMessage, tempAssistantChatMessage } = createTempMessages(
@@ -49,30 +65,34 @@ export const useChatHandler = () => {
         )
         
       
-      const payload: {chatMessages: Message[]} = {
+      const payload: ChatPayload = {
         chatMessages: isRegeneration
           ? [...chatMessages]
           : [...chatMessages, tempUserChatMessage],
-      }
+        chatSettings: chatSettings
+        }
       
       let generatedText = ""
-  
-        // generatedText = await handleHostedChat(
-        //   payload,
-        //   tempAssistantChatMessage,
-        //   isRegeneration,
-        //   newAbortController,
-        //   setIsGenerating,
-        //   setChatMessages,
-        // )
-        generatedText = await handleLocalChat(
-          payload,
-          tempAssistantChatMessage,
-          isRegeneration,
-          newAbortController,
-          setIsGenerating,
-          setChatMessages,
-        )
+        
+        if (modelData.provider === "ollama") {
+            generatedText = await handleLocalChat(
+            payload,
+            tempAssistantChatMessage,
+            isRegeneration,
+            newAbortController,
+            setIsGenerating,
+            setChatMessages,
+          )
+        } else if (modelData.provider === "hf") {
+            generatedText = await handleHostedChat(
+            payload,
+            tempAssistantChatMessage,
+            isRegeneration,
+            newAbortController,
+            setIsGenerating,
+            setChatMessages,
+          )
+        }
         if (!currentChat) {
           currentChat = await handleCreateChat(
             messageContent,

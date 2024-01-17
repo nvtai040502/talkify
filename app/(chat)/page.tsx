@@ -6,6 +6,7 @@ import { Icons } from "@/components/icons"
 import { TalkifyContext } from "@/lib/hooks/context"
 import { useChatHandler } from "@/lib/hooks/chat-hook/use-chat-handler"
 import { useContext } from "react"
+import { ChatSettings } from "@/components/chats/chat-settings"
 
 export default function IndexPage() {
   const { chatMessages } = useContext(TalkifyContext)
@@ -22,7 +23,7 @@ export default function IndexPage() {
           </div>
 
           <div className="absolute right-2 top-2">
-            {/* <ChatSettings /> */}
+            <ChatSettings />
           </div>
 
           <div className="flex flex-col items-center justify-center grow" />

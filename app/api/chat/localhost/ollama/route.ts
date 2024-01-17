@@ -2,25 +2,33 @@ import { ChatOllama } from "@langchain/community/chat_models/ollama";
 import { NextRequest, NextResponse } from "next/server";
 import { StringOutputParser } from "@langchain/core/output_parsers";
 import { ChatPromptTemplate } from "@langchain/core/prompts";
-import { StreamingTextResponse } from "ai";
-// export const runtime = "edge";
+import { Message } from "@prisma/client";
+
+export const runtime = "edge";
 
 export async function POST(req: NextRequest) {
   try {
-    const {message}:{message: string} = await req.json()
+    const {message}:{message: Message} = await req.json()
     const chatModel = new ChatOllama({
       baseUrl: `${process.env.NEXT_PUBLIC_OLLAMA_URL}`, 
-      model: "phi",
+      model: "phi:latest",
+      format: "json",
     })
-    const outputParser = new StringOutputParser();
+
+    // const outputParser = new StringOutputParser();
     const prompt = ChatPromptTemplate.fromMessages([
-      ["system", "You are a world class technical documentation writer."],
-      ["user", "{input}"],
+      [
+        "system",
+        `You are an expert translator. Format all responses as JSON objects with two keys: "original" and "translated".`,
+      ],
+      ["user", `Translate "{input}" into {language}.`],
     ]);
-    const llmChain = prompt.pipe(chatModel).pipe(outputParser);
-    const stream = await llmChain.stream({
-      input: message,
+    const chain = prompt.pipe(chatModel);
+    const stream = await chain.stream({
+      input: "I love programming",
+      language: "Vietnamese",
     });
+    // const stream = await chatModel.stream(message);
     return new Response(stream, {
       headers: {
         "Content-Type": "text/plain; charset=utf-8",

@@ -1,14 +1,12 @@
 export type ModelProvider =
-  | "openai"
-  | "google"
-  | "anthropic"
-  | "mistral"
-  | "llama"
-  | "perplexity"
   | "ollama"
+  | "hf"
+  export type LLMID =
+  | HfLLMID
 
-export type LLMID = 
-| "hf"
+  export type HfLLMID =
+  | "mistralai/Mixtral-8x7B-v0.1"
+
   export interface LLM {
     modelId: LLMID
     modelName: string

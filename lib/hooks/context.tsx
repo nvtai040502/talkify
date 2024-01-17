@@ -1,8 +1,8 @@
 // Modified from https://github.com/mckaywrigley/chatbot-ui/blob/main/context/context.tsx
-import { LLM } from "@/types/llms"
-import { Chat, Message, Message as PrismaMessage } from "@prisma/client"
+import { Chat, Message } from "@prisma/client"
 import { Dispatch, SetStateAction, createContext } from "react"
-import { Message as VercelMessage } from "ai"
+import { ChatSettings } from "@/types/chat"
+import { LLM } from "@/types/llms"
 interface TalkifyContextProps {
   userInput: string
   isGenerating: boolean
@@ -10,6 +10,10 @@ interface TalkifyContextProps {
   chatMessages: Message[]
   selectedChat: Chat | null
   abortController: AbortController | null
+  chatSettings: ChatSettings | null
+  availableLocalModels: LLM[]
+  setAvailableLocalModels: Dispatch<SetStateAction<LLM[]>>
+  setChatSettings: Dispatch<SetStateAction<ChatSettings>>
   setAbortController: Dispatch<SetStateAction<AbortController | null>>
   setChatMessages: Dispatch<SetStateAction<Message[]>>
   setSelectedChat: Dispatch<SetStateAction<Chat | null>>
@@ -19,6 +23,10 @@ interface TalkifyContextProps {
 }
 export const TalkifyContext = createContext<TalkifyContextProps>({
   chats: [],
+  chatSettings: null,
+  availableLocalModels: [],
+  setAvailableLocalModels: () => {},
+  setChatSettings: () => {},
   setChats: () => {},
   userInput: "",
   selectedChat: null,

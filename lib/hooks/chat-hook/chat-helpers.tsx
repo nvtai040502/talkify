@@ -6,6 +6,7 @@ import { createChat } from "../../../actions/chats"
 import { v4 as uuidV4 } from 'uuid';
 import { createMessage, updateMessage } from "@/actions/messages";
 import { buildFinalMessages } from "@/utils/built-prompt";
+import { ChatPayload } from "@/types/chat";
 
 export const fetchChatResponse = async (
   url: string,
@@ -35,7 +36,7 @@ export const fetchChatResponse = async (
     setIsGenerating(false)
     setChatMessages(prevMessages => prevMessages.slice(0, -2))
   }
-  console.log(response)
+  console.log(response.body)
   return response
 }
 
@@ -46,7 +47,7 @@ export async function consumeReadableStream(
 ): Promise<void> {
   const reader = stream.getReader()
   const decoder = new TextDecoder()
-  console.log("🚀 ~ await reader.read():", await reader.read())
+  // console.log("🚀 ~ await reader.read():", reader)
 
   signal.addEventListener("abort", () => reader.cancel(), { once: true })
 
@@ -78,6 +79,7 @@ export async function consumeReadableStream(
 export const processResponse = async (
   response: Response,
   lastChatMessage: Message,
+  isHosted: boolean,
   controller: AbortController,
   setChatMessages: React.Dispatch<React.SetStateAction<Message[]>>,
 ) => {
@@ -91,7 +93,7 @@ export const processResponse = async (
       response.body,
       chunk => {
         try {
-          contentToAdd = chunk
+          contentToAdd = isHosted ? chunk : JSON.parse(chunk).message.content
           fullText += contentToAdd
           // console.log(fullText)
         } catch (error) {
@@ -115,7 +117,7 @@ export const processResponse = async (
       },
       controller.signal
     )
-    // console.log(fullText)
+    console.log(fullText)
 
     return fullText
   } else {
@@ -123,7 +125,7 @@ export const processResponse = async (
   }
 }
 export const handleHostedChat = async (
-  payload: {chatMessages: Message[]},
+  payload: ChatPayload,
   tempAssistantChatMessage: Message,
   isRegeneration: boolean,
   newAbortController: AbortController,
@@ -131,12 +133,12 @@ export const handleHostedChat = async (
   setChatMessages: React.Dispatch<React.SetStateAction<Message[]>>,
 ) => {
     
-  // const formattedMessages = await buildFinalMessages(payload.chatMessages)
+  const formattedMessages = await buildFinalMessages(payload.chatMessages)
 
   const response = await fetchChatResponse(
     `/api/chat/hf/test`,
     {
-      messages: payload.chatMessages[0].content
+      messages: formattedMessages
     },
     newAbortController,
     true,
@@ -148,13 +150,14 @@ export const handleHostedChat = async (
     isRegeneration
       ? payload.chatMessages[payload.chatMessages.length - 1]
       : tempAssistantChatMessage,
+    true,
     newAbortController,
     setChatMessages,
   )
 }
 
 export const handleLocalChat = async (
-  payload: {chatMessages: Message[]},
+  payload: ChatPayload,
   tempAssistantMessage: Message,
   isRegeneration: boolean,
   newAbortController: AbortController,
@@ -162,11 +165,13 @@ export const handleLocalChat = async (
   setChatMessages: React.Dispatch<React.SetStateAction<Message[]>>,
 ) => {
 
-  const formattedMessages = await buildFinalMessages(payload.chatMessages)
+  // const formattedMessages = await buildFinalMessages(payload.chatMessages)
   const response = await fetchChatResponse(
-    `/api/chat/localhost/ollama`,
+    process.env.NEXT_PUBLIC_OLLAMA_URL + "/api/chat",
+    // "/api/chat/localhost/ollama", it's won't work when i try to using langchain and ollama, so weird 
     {
-      messages: formattedMessages
+      model: payload.chatSettings.model,
+      messages: payload.chatMessages,
     },
     newAbortController,
     false,
@@ -179,6 +184,7 @@ export const handleLocalChat = async (
     isRegeneration
       ? payload.chatMessages[payload.chatMessages.length - 1]
       : tempAssistantMessage,
+    false,
     newAbortController,
     setChatMessages,
   )
