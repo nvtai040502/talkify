@@ -7,7 +7,10 @@ import { cn } from '@/lib/utils'
 import { SidebarList } from '@/components/sidebar/sidebar-list'
 import { buttonVariants } from '@/components/ui/button'
 import { IconPlus } from '@/components/ui/icons'
-import { useChatHandler } from '@/lib/hooks/chat-hook/use-chat-handler'
+import { useChatHandler } from '@/hooks/use-chat-handler'
+import { Icons } from '../icons'
+import { WorkspaceSwitcher } from '../workspace/workspace-swicher'
+import { WorkspaceSettings } from '../workspace/workspace-settings'
 
 interface ChatHistoryProps {
   userId?: string
@@ -17,6 +20,11 @@ export function ChatHistory({ userId }: ChatHistoryProps) {
   const { handleNewChat } = useChatHandler()
   return (
     <div className="flex flex-col h-full">
+      <div className="flex items-center border-b-2 pb-2">
+          <WorkspaceSwitcher />
+
+          <WorkspaceSettings />
+        </div>
       <div className="px-2 my-4">
         <Link
           href="/"
@@ -26,7 +34,7 @@ export function ChatHistory({ userId }: ChatHistoryProps) {
           )}
           onClick={handleNewChat}
         >
-          <IconPlus className="-translate-x-2 stroke-2" />
+          <Icons.add className="-translate-x-2 stroke-2" />
           New Chat
         </Link>
       </div>

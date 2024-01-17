@@ -1,8 +1,8 @@
 // just used for hooks use-chat-handler
 
-import { Chat, Message } from "@prisma/client"
+import { Chat, Message, Workspace } from "@prisma/client"
 import toast from "react-hot-toast"
-import { createChat } from "../../../actions/chats"
+import { createChat } from "../actions/chats"
 import { v4 as uuidV4 } from 'uuid';
 import { createMessage, updateMessage } from "@/actions/messages";
 import { buildFinalMessages } from "@/utils/built-prompt";
@@ -200,11 +200,12 @@ export const handleLocalChat = async (
 }
 
 export const handleCreateChat = async (
+  selectedWorkspace: Workspace,
   messageContent: string,
   setSelectedChat: React.Dispatch<React.SetStateAction<Chat | null>>,
   setChats: React.Dispatch<React.SetStateAction<Chat[]>>,
 ) => {
-  const createdChat = await createChat(messageContent.substring(0, 100))
+  const createdChat = await createChat(selectedWorkspace.id, messageContent.substring(0, 100))
   
   setSelectedChat(createdChat)
   setChats(chats => [createdChat, ...chats])

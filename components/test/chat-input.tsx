@@ -1,9 +1,9 @@
 "use client"
-import { TalkifyContext } from "@/lib/hooks/context";
+import { TalkifyContext } from "@/hooks/context";
 import { Icons } from "../icons";
 import { TextareaAutosize } from "../ui/textarea-autosize";
 import { useContext, useEffect } from "react";
-import { useChatHandler } from "@/lib/hooks/chat-hook/use-chat-handler";
+import { useChatHandler } from "@/hooks/use-chat-handler";
 import { cn } from "@/lib/utils";
 
 const ChatInputTest = () => {

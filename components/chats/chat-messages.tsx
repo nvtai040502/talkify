@@ -4,10 +4,10 @@ import { type Message as MessageVercel } from 'ai'
 import { Separator } from '@/components/ui/separator'
 import { Message } from '@/components/messages/message'
 import { useContext, useEffect, useState } from 'react'
-import { useChatHandler } from '@/lib/hooks/chat-hook/use-chat-handler'
+import { useChatHandler } from '@/hooks/use-chat-handler'
 import { UseChatHelpers } from 'ai/react/dist'
 import { getPrismaMessages } from '@/app/actions'
-import { TalkifyContext } from '@/lib/hooks/context'
+import { TalkifyContext } from '@/hooks/context'
 import { Message as PrismaMessage} from '@prisma/client'
 
 

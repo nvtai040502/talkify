@@ -18,8 +18,8 @@ import {
 } from '@/components/ui/alert-dialog'
 import { IconSpinner } from '@/components/ui/icons'
 import { clearChats } from '@/actions/chats'
-import { useChatHandler } from '@/lib/hooks/chat-hook/use-chat-handler'
-import { TalkifyContext } from '@/lib/hooks/context'
+import { useChatHandler } from '@/hooks/use-chat-handler'
+import { TalkifyContext } from '@/hooks/context'
 
 interface ClearHistoryProps {
   isEnabled: boolean

@@ -2,8 +2,8 @@
 import { ClearHistory } from '@/components/sidebar/clear-history'
 import { SidebarItems } from '@/components/sidebar/sidebar-items'
 import { ThemeToggle } from '@/components/theme-toggle'
-import { TalkifyContext } from '@/lib/hooks/context'
-import { useChatHandler } from '@/lib/hooks/chat-hook/use-chat-handler'
+import { TalkifyContext } from '@/hooks/context'
+import { useChatHandler } from '@/hooks/use-chat-handler'
 import { cache, useContext } from 'react'
 
 interface SidebarListProps {

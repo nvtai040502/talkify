@@ -8,24 +8,33 @@ generator client {
   provider = "prisma-client-js"
 }
 
-// model Workspace {
-//   id          String     @id @db.Uuid
-//   createdAt   DateTime   @db.Timestamptz(6) @default(now())
-//   updatedAt   DateTime   @db.Timestamptz(6) @default(now()) @updatedAt
-//   name        String     @db.VarChar(255)
-//   description String?    @db.VarChar(255)
+model Workspace {
+  id String @id @default(uuid())  @unique
+  createdAt DateTime @default(now())
+  updatedAt  DateTime   @updatedAt
 
-//   chats       Chat[]
-// }
+  name String @db.Text
+  isHome Boolean @default(false)
+  description String @db.Text
+  defaultTemperature Float
+  defaultPrompt String @db.Text
+  defaultModel String
+  defaultMaxTokens Int
+  defaultTopK Int
+  defaultTopP Float
+  defaultRepetitionPenalty Float
+
+  chats Chat[]
+}
 
 model Chat {
   id String @id @default(uuid())  @unique
   createdAt DateTime @default(now())
-  updatedAt  DateTime   @updatedAt
-  name        String     @db.Text
+  updatedAt DateTime @updatedAt
+  name String @db.Text
   messages Message[]
-  // workspaceId String @db.Uuid
-  // workspace   Workspace  @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  workspaceId String
+  workspace Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
 
 }
 
@@ -51,13 +60,13 @@ model Message {
 
 }
 
-// model Presets {
-//   id String @id @default(uuid()) @unique
-//   createdAt DateTime @default(now())
-//   updatedAt  DateTime   @updatedAt
+model Presets {
+  id String @id @default(uuid()) @unique
+  createdAt DateTime @default(now())
+  updatedAt  DateTime   @updatedAt
 
-//   name String @db.Text
-//   description String @db.Text
-//   prompt String @db.Text
-//   temperature Float
-// }
+  name String @db.Text
+  description String @db.Text
+  prompt String @db.Text
+  temperature Float
+}

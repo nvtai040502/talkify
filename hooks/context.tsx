@@ -1,5 +1,5 @@
 // Modified from https://github.com/mckaywrigley/chatbot-ui/blob/main/context/context.tsx
-import { Chat, Message } from "@prisma/client"
+import { Chat, Message, Workspace } from "@prisma/client"
 import { Dispatch, SetStateAction, createContext } from "react"
 import { ChatSettings } from "@/types/chat"
 import { LLM } from "@/types/llms"
@@ -12,6 +12,10 @@ interface TalkifyContextProps {
   abortController: AbortController | null
   chatSettings: ChatSettings | null
   availableLocalModels: LLM[]
+  workspaces: Workspace[]
+  selectedWorkspace: Workspace | null
+  setSelectedWorkspace: Dispatch<SetStateAction<Workspace | null>>
+  setWorkspaces: Dispatch<SetStateAction<Workspace[]>> 
   setAvailableLocalModels: Dispatch<SetStateAction<LLM[]>>
   setChatSettings: Dispatch<SetStateAction<ChatSettings>>
   setAbortController: Dispatch<SetStateAction<AbortController | null>>
@@ -25,6 +29,10 @@ export const TalkifyContext = createContext<TalkifyContextProps>({
   chats: [],
   chatSettings: null,
   availableLocalModels: [],
+  workspaces: [],
+  selectedWorkspace: null,
+  setSelectedWorkspace: () => {},
+  setWorkspaces: () => {},
   setAvailableLocalModels: () => {},
   setChatSettings: () => {},
   setChats: () => {},

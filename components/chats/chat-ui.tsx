@@ -1,10 +1,10 @@
 "use client"
-import { TalkifyContext } from "@/lib/hooks/context";
+import { TalkifyContext } from "@/hooks/context";
 import { ChatScrollButtons } from "./chat-scroll-button";
 import { useContext, useEffect, useState } from "react";
-import { useScroll } from "@/lib/hooks/use-scroll";
+import { useScroll } from "@/hooks/use-scroll";
 import { useParams } from "next/navigation";
-import { useChatHandler } from "@/lib/hooks/chat-hook/use-chat-handler";
+import { useChatHandler } from "@/hooks/use-chat-handler";
 import ChatInput from "./chat-input";
 import { ChatMessages } from "./chat-messages";
 import { getMessagesByChatId } from "@/actions/messages";

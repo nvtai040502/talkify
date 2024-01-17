@@ -16,8 +16,11 @@ export async function getChatById(id: string) {
   return chat
 }
 
-export async function getChats(userId?: string | null) {
+export async function getChatsByWorkspaceId(workspaceId: string) {
   const chats = await db.chat.findMany({
+    where: {
+      workspaceId
+    },
     orderBy: {
       updatedAt: "desc"
     }
@@ -25,10 +28,11 @@ export async function getChats(userId?: string | null) {
   return chats
 }
 
-export async function createChat(name: string): Promise<Chat> {
+export async function createChat(workspaceId: string,name: string): Promise<Chat> {
   const createdChat = await db.chat.create({
     data: {
       name,
+      workspaceId  
     }
   })
   return createdChat

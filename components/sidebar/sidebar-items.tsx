@@ -6,7 +6,7 @@ import { AnimatePresence, motion } from 'framer-motion'
 import { SidebarActions } from '@/components/sidebar/sidebar-actions'
 import { SidebarItem } from '@/components/sidebar/sidebar-item'
 import { Chat } from '@prisma/client'
-import { useChatHandler } from '@/lib/hooks/chat-hook/use-chat-handler'
+import { useChatHandler } from '@/hooks/use-chat-handler'
 
 interface SidebarItemsProps {
   chats?: Chat[]

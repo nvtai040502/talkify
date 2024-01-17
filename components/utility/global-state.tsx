@@ -2,11 +2,13 @@
 
 "use client"
 
-import { getChats } from "@/actions/chats"
-import { TalkifyContext } from "@/lib/hooks/context"
+import { getChatsByWorkspaceId } from "@/actions/chats"
+import { createWorkspace, getWorkSpaces } from "@/actions/workspaces"
+import { DEFAULT_CHAT_SETTINGS } from "@/constants/chat"
+import { TalkifyContext } from "@/hooks/context"
 import { ChatSettings } from "@/types/chat"
 import { LLM, LLMID } from "@/types/llms"
-import { Chat, Message } from "@prisma/client"
+import { Chat, Message, Workspace } from "@prisma/client"
 import { FC, useEffect, useState } from "react"
 
 interface GlobalStateProps {
@@ -20,6 +22,8 @@ export const GlobalState: FC<GlobalStateProps> = ({children}) => {
   const [abortController, setAbortController] = useState<AbortController | null>(null)
   const [chats, setChats] = useState<Chat[]>([])
   const [chatMessages, setChatMessages] = useState<Message[]>([])
+  const [workspaces, setWorkspaces] = useState<Workspace[]>([])
+  const [selectedWorkspace, setSelectedWorkspace] = useState<Workspace | null>(null)
   const [chatSettings, setChatSettings] = useState<ChatSettings>({
     model: "mistralai/Mixtral-8x7B-v0.1",
     prompt: "You are a helpful AI assistant.",
@@ -33,7 +37,6 @@ export const GlobalState: FC<GlobalStateProps> = ({children}) => {
   // THIS COMPONENT
   const [loading, setLoading] = useState<boolean>(true)
   useEffect(() => {
-    
     if (process.env.NEXT_PUBLIC_OLLAMA_URL) {
       fetchOllamaModels()
     }
@@ -41,14 +44,73 @@ export const GlobalState: FC<GlobalStateProps> = ({children}) => {
     fetchStartingData()
   }, [])
 
+  useEffect(() => {
+    const isInChat = window?.location?.pathname === "/chat"
+
+    if (!selectedWorkspace && !isInChat) {
+      setLoading(false)
+      return
+    }
+
+    setUserInput("")
+    setChatMessages([])
+    setSelectedChat(null)
+    setIsGenerating(false)
+
+    if (selectedWorkspace?.id) {
+      fetchData(selectedWorkspace.id)
+    }
+  }, [selectedWorkspace])
+ 
+
 
   const fetchStartingData = async () => {
-    setLoading(true)
-    const chats = await getChats()
-    setChats(chats)
-    setLoading(false)
-  }
 
+      const workspaces = await getWorkSpaces()
+      setWorkspaces(workspaces)
+
+      let homeWorkspace: Workspace | undefined = undefined
+      homeWorkspace = workspaces.find(
+        workspace => workspace.isHome === true
+      )
+      if (!homeWorkspace) {
+        homeWorkspace = await createWorkspace({
+          defaultMaxTokens: DEFAULT_CHAT_SETTINGS.maxTokens,
+          defaultModel: DEFAULT_CHAT_SETTINGS.model,
+          defaultPrompt: DEFAULT_CHAT_SETTINGS.prompt,
+          defaultTopK: DEFAULT_CHAT_SETTINGS.topK,
+          defaultTopP: DEFAULT_CHAT_SETTINGS.topP,
+          defaultRepetitionPenalty: DEFAULT_CHAT_SETTINGS.repetitionPenalty,
+          defaultTemperature: DEFAULT_CHAT_SETTINGS.temperature,
+          name: 'Home',
+          description: '',
+          isHome: true,
+        });
+      }
+      
+      // DB guarantees there will always be a home workspace
+      setSelectedWorkspace(homeWorkspace)
+
+      setChatSettings({
+        model: (homeWorkspace.defaultModel) as LLMID,
+        prompt: homeWorkspace?.defaultPrompt,
+        temperature: homeWorkspace?.defaultTemperature || 0.8,
+        topK: homeWorkspace?.defaultTopK || 40,
+        topP: homeWorkspace?.defaultTopP || 0.9,
+        repetitionPenalty: homeWorkspace?.defaultRepetitionPenalty || 1.1,
+        maxTokens: homeWorkspace?.defaultMaxTokens || 128
+      })
+    }
+    
+    const fetchData = async (workspaceId: string) => {
+      setLoading(true)
+  
+      const chats = await getChatsByWorkspaceId(workspaceId)
+      setChats(chats)
+  
+      setLoading(false)
+    }
+  
   const fetchOllamaModels = async () => {
     setLoading(true)
 
@@ -89,6 +151,10 @@ export const GlobalState: FC<GlobalStateProps> = ({children}) => {
         chats,
         chatSettings,
         availableLocalModels,
+        workspaces,
+        selectedWorkspace,
+        setSelectedWorkspace,
+        setWorkspaces,
         setAvailableLocalModels,
         setChatSettings,
         setChats,

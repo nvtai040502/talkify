@@ -1,4 +1,4 @@
-import { TalkifyContext } from "@/lib/hooks/context"
+import { TalkifyContext } from "@/hooks/context"
 import { LLM, LLMID } from "@/types/llms"
 import { FC, useContext, useEffect, useRef, useState } from "react"
 import { DropdownMenu, DropdownMenuContent, DropdownMenuTrigger } from "../ui/dropdown-menu"

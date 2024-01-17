@@ -1,4 +1,4 @@
-import { TalkifyContext } from "@/lib/hooks/context"
+import { TalkifyContext } from "@/hooks/context"
 import { LLM } from "@/types/llms"
 import { FC, useContext, useEffect } from "react"
 import { Icons } from "../icons"

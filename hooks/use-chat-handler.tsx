@@ -1,9 +1,9 @@
 // Modified from https://github.com/mckaywrigley/chatbot-ui/blob/main/components/chat/chat-hooks/use-chat-handler.tsx
 import { useContext, useRef } from 'react';
-import { TalkifyContext } from '../context';
+import { TalkifyContext } from './context';
 import { Chat, Message } from '@prisma/client';
 import { createMessage, deleteMessagesIncludingAndAfter, updateMessage } from '@/actions/messages';
-import { createTempMessages, handleCreateChat, handleCreateMessages, handleHostedChat, handleLocalChat } from '@/lib/hooks/chat-hook/chat-helpers';
+import { createTempMessages, handleCreateChat, handleCreateMessages, handleHostedChat, handleLocalChat } from '@/lib/chat-helpers';
 import { deleteChat, updateChat } from '@/actions/chats';
 import { LLM_LIST } from '@/models/llm-list';
 import { ChatPayload } from '@/types/chat';
@@ -17,6 +17,7 @@ export const useChatHandler = () => {
     abortController,
     availableLocalModels,
     setIsGenerating,
+    selectedWorkspace,
     setChatMessages,
     setChats,
     setSelectedChat,
@@ -95,6 +96,7 @@ export const useChatHandler = () => {
         }
         if (!currentChat) {
           currentChat = await handleCreateChat(
+            selectedWorkspace!,
             messageContent,
             setSelectedChat,
             setChats,

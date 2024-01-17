@@ -13,11 +13,11 @@ import { usePathname, useRouter } from 'next/navigation'
 import axios from "axios"
 import { db } from '@/lib/db'
 import { useCallback, useContext, useEffect, useState } from 'react'
-import { useScroll } from '@/lib/hooks/use-scroll'
+import { useScroll } from '@/hooks/use-scroll'
 import { ChatScrollButtons } from './chat-scroll-button'
 import { v4 as uuidV4 } from 'uuid'
-import { TalkifyContext } from '@/lib/hooks/context'
-import { useChatHandler } from '@/lib/hooks/chat-hook/use-chat-handler'
+import { TalkifyContext } from '@/hooks/context'
+import { useChatHandler } from '@/hooks/use-chat-handler'
 import { getPrismaMessages } from '@/app/actions'
 export interface ChatProps extends React.ComponentProps<'div'> {
   initialMessages?: Message[]

@@ -3,7 +3,7 @@ import { UseChatHelpers } from 'ai/react'
 import { Button } from '@/components/ui/button'
 import { ExternalLink } from '@/components/external-link'
 import { IconArrowRight } from '@/components/ui/icons'
-import { TalkifyContext } from '@/lib/hooks/context'
+import { TalkifyContext } from '@/hooks/context'
 import { useContext } from 'react'
 
 const exampleMessages = [

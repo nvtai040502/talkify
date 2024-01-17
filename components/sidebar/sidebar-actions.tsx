@@ -23,9 +23,9 @@ import {
   TooltipTrigger
 } from '@/components/ui/tooltip'
 import { Chat } from '@prisma/client'
-import { useChatHandler } from '@/lib/hooks/chat-hook/use-chat-handler'
+import { useChatHandler } from '@/hooks/use-chat-handler'
 import { deleteChat } from '@/actions/chats'
-import { TalkifyContext } from '@/lib/hooks/context'
+import { TalkifyContext } from '@/hooks/context'
 
 interface SidebarActionsProps {
   chat: Chat
