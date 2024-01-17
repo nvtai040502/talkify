@@ -51,3 +51,13 @@ model Message {
 
 }
 
+// model Presets {
+//   id String @id @default(uuid()) @unique
+//   createdAt DateTime @default(now())
+//   updatedAt  DateTime   @updatedAt
+
+//   name String @db.Text
+//   description String @db.Text
+//   prompt String @db.Text
+//   temperature Float
+// }

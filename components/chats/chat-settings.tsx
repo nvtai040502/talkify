@@ -6,6 +6,7 @@ import { Button } from "../ui/button"
 import { Icons } from "../icons"
 import { ChatSettingsForm } from "./chat-settings-form"
 import { Settings2, SlidersHorizontal } from "lucide-react"
+import { ScrollArea } from "../ui/scroll-area"
 
 interface ChatSettingsProps {}
 
@@ -48,15 +49,18 @@ export const ChatSettings: FC<ChatSettingsProps> = ({}) => {
         </Button>
       </PopoverTrigger>
 
+      <ScrollArea>
       <PopoverContent
         className="bg-background border-input relative flex max-h-[calc(100vh-60px)] w-[300px] flex-col space-y-4 overflow-auto rounded-lg border-2 p-6 sm:w-[400px] md:w-[500px] lg:w-[600px] dark:border-none"
         align="end"
       >
+
         <ChatSettingsForm
           chatSettings={chatSettings}
           onChangeChatSettings={setChatSettings}
         />
       </PopoverContent>
+      </ScrollArea>
     </Popover>
   )
 }

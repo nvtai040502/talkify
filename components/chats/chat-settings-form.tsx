@@ -7,6 +7,13 @@ import { Label } from "../ui/label"
 import { ModelSelect } from "../models/model-select"
 import { LLM_LIST } from "@/models/llm-list"
 import { TextareaAutosize } from "../ui/textarea-autosize"
+import { Slider } from "../ui/slider"
+import { Checkbox } from "../ui/checkbox"
+import { WithTooltip } from "../ui/with-tooltip"
+import { Icons } from "../icons"
+import { Select } from "../ui/select"
+import { AdvancedSettings } from "./advanced-settings"
+import { ScrollArea } from "../ui/scroll-area"
 
 interface ChatSettingsFormProps {
   chatSettings: ChatSettings
@@ -53,7 +60,7 @@ export const ChatSettingsForm: FC<ChatSettingsFormProps> = ({
         />
       </div>
 
-      {/* {useAdvancedDropdown ? (
+      {useAdvancedDropdown ? (
         <AdvancedSettings>
           <AdvancedContent
             chatSettings={chatSettings}
@@ -69,166 +76,132 @@ export const ChatSettingsForm: FC<ChatSettingsFormProps> = ({
             showTooltip={showTooltip}
           />
         </div>
-      )} */}
+      )}
     </div>
   )
 }
 
-// interface AdvancedContentProps {
-//   chatSettings: ChatSettings
-//   onChangeChatSettings: (value: ChatSettings) => void
-//   showTooltip: boolean
-// }
+interface AdvancedContentProps {
+  chatSettings: ChatSettings
+  onChangeChatSettings: (value: ChatSettings) => void
+  showTooltip: boolean
+}
 
-// const AdvancedContent: FC<AdvancedContentProps> = ({
-//   chatSettings,
-//   onChangeChatSettings,
-//   showTooltip
-// }) => {
-//   const {
-//     profile,
-//     selectedWorkspace,
-//     availableOpenRouterModels,
-//     selectedAssistant
-//   } = useContext(ChatbotUIContext)
+const AdvancedContent: FC<AdvancedContentProps> = ({
+  chatSettings,
+  onChangeChatSettings,
+  showTooltip
+}) => {
+  
+  return (
+    
+    <div className="mt-5 mb-10">
+      <div className="space-y-3">
+        <Label className="flex items-center space-x-1">
+          <div>Temperature:</div>
 
-//   function findOpenRouterModel(modelId: string) {
-//     return availableOpenRouterModels.find(model => model.modelId === modelId)
-//   }
+          <div>{chatSettings.temperature}</div>
+        </Label>
 
-//   const MODEL_LIMITS = CHAT_SETTING_LIMITS[chatSettings.model] || {
-//     MIN_TEMPERATURE: 0,
-//     MAX_TEMPERATURE: 1,
-//     MAX_CONTEXT_LENGTH:
-//       findOpenRouterModel(chatSettings.model)?.maxContext || 4096
-//   }
+        <Slider
+          value={[chatSettings.temperature]}
+          onValueChange={temperature => {
+            onChangeChatSettings({
+              ...chatSettings,
+              temperature: temperature[0]
+            })
+          }}
+          min={0}
+          max={1}
+          step={0.01}
+        />
+      </div>
 
-//   return (
-//     <div className="mt-5">
-//       <div className="space-y-3">
-//         <Label className="flex items-center space-x-1">
-//           <div>Temperature:</div>
+      <div className="mt-6 space-y-3">
+        <Label className="flex items-center space-x-1">
+          <div>Max Tokens:</div>
 
-//           <div>{chatSettings.temperature}</div>
-//         </Label>
+          <div>{chatSettings.maxTokens}</div>
+        </Label>
 
-//         <Slider
-//           value={[chatSettings.temperature]}
-//           onValueChange={temperature => {
-//             onChangeChatSettings({
-//               ...chatSettings,
-//               temperature: temperature[0]
-//             })
-//           }}
-//           min={MODEL_LIMITS.MIN_TEMPERATURE}
-//           max={MODEL_LIMITS.MAX_TEMPERATURE}
-//           step={0.01}
-//         />
-//       </div>
+        <Slider
+          value={[chatSettings.maxTokens]}
+          onValueChange={maxTokens => {
+            onChangeChatSettings({
+              ...chatSettings,
+              maxTokens: maxTokens[0]
+            })
+          }}
+          min={50}
+          // max={MODEL_LIMITS.MAX_CONTEXT_LENGTH - 200} // 200 is a minimum buffer for token output
+          max={1024}
+          step={1}
+        />
+      </div>
+      <div className="mt-6 space-y-3">
+        <Label className="flex items-center space-x-1">
+          <div>Top K:</div>
 
-//       <div className="mt-6 space-y-3">
-//         <Label className="flex items-center space-x-1">
-//           <div>Context Length:</div>
+          <div>{chatSettings.topK}</div>
+        </Label>
 
-//           <div>{chatSettings.contextLength}</div>
-//         </Label>
+        <Slider
+          value={[chatSettings.topK]}
+          onValueChange={topK => {
+            onChangeChatSettings({
+              ...chatSettings,
+              topK: topK[0]
+            })
+          }}
+          min={1}
+          // max={MODEL_LIMITS.MAX_CONTEXT_LENGTH - 200} // 200 is a minimum buffer for token output
+          max={500}
+          step={1}
+        />
+      </div>
+      <div className="mt-6 space-y-3">
+        <Label className="flex items-center space-x-1">
+          <div>Top P:</div>
 
-//         <Slider
-//           value={[chatSettings.contextLength]}
-//           onValueChange={contextLength => {
-//             onChangeChatSettings({
-//               ...chatSettings,
-//               contextLength: contextLength[0]
-//             })
-//           }}
-//           min={0}
-//           max={MODEL_LIMITS.MAX_CONTEXT_LENGTH - 200} // 200 is a minimum buffer for token output
-//           step={1}
-//         />
-//       </div>
+          <div>{chatSettings.topP}</div>
+        </Label>
 
-//       <div className="flex items-center space-x-2 mt-7">
-//         <Checkbox
-//           checked={chatSettings.includeProfileContext}
-//           onCheckedChange={(value: boolean) =>
-//             onChangeChatSettings({
-//               ...chatSettings,
-//               includeProfileContext: value
-//             })
-//           }
-//         />
+        <Slider
+          value={[chatSettings.topP]}
+          onValueChange={topP => {
+            onChangeChatSettings({
+              ...chatSettings,
+              topP: topP[0]
+            })
+          }}
+          min={0.1}
+          // max={MODEL_LIMITS.MAX_CONTEXT_LENGTH - 200} // 200 is a minimum buffer for token output
+          max={2}
+          step={0.01}
+        />
+      </div>
+      <div className="mt-6 space-y-3">
+        <Label className="flex items-center space-x-1">
+          <div>Repetition Penalty:</div>
 
-//         <Label>Chats Include Profile Context</Label>
+          <div>{chatSettings.repetitionPenalty}</div>
+        </Label>
 
-//         {showTooltip && (
-//           <WithTooltip
-//             delayDuration={0}
-//             display={
-//               <div className="w-[400px] p-3">
-//                 {profile?.profile_context || "No profile context."}
-//               </div>
-//             }
-//             trigger={
-//               <IconInfoCircle className="cursor-hover:opacity-50" size={16} />
-//             }
-//           />
-//         )}
-//       </div>
-
-//       <div className="flex items-center mt-4 space-x-2">
-//         <Checkbox
-//           checked={chatSettings.includeWorkspaceInstructions}
-//           onCheckedChange={(value: boolean) =>
-//             onChangeChatSettings({
-//               ...chatSettings,
-//               includeWorkspaceInstructions: value
-//             })
-//           }
-//         />
-
-//         <Label>Chats Include Workspace Instructions</Label>
-
-//         {showTooltip && (
-//           <WithTooltip
-//             delayDuration={0}
-//             display={
-//               <div className="w-[400px] p-3">
-//                 {selectedWorkspace?.instructions ||
-//                   "No workspace instructions."}
-//               </div>
-//             }
-//             trigger={
-//               <IconInfoCircle className="cursor-hover:opacity-50" size={16} />
-//             }
-//           />
-//         )}
-//       </div>
-
-//       <div className="mt-5">
-//         <Label>Embeddings Provider</Label>
-
-//         <Select
-//           value={chatSettings.embeddingsProvider}
-//           onValueChange={(embeddingsProvider: "openai" | "local") => {
-//             onChangeChatSettings({
-//               ...chatSettings,
-//               embeddingsProvider
-//             })
-//           }}
-//         >
-//           <SelectTrigger>
-//             <SelectValue defaultValue="openai" />
-//           </SelectTrigger>
-
-//           <SelectContent>
-//             <SelectItem value="openai">OpenAI</SelectItem>
-
-//             {window.location.hostname === "localhost" && (
-//               <SelectItem value="local">Local</SelectItem>
-//             )}
-//           </SelectContent>
-//         </Select>
-//       </div>
-//     </div>
-//   )
-// }
+        <Slider
+          value={[chatSettings.repetitionPenalty]}
+          onValueChange={repetitionPenalty => {
+            onChangeChatSettings({
+              ...chatSettings,
+              repetitionPenalty: repetitionPenalty[0]
+            })
+          }}
+          min={0.1}
+          // max={MODEL_LIMITS.MAX_CONTEXT_LENGTH - 200} // 200 is a minimum buffer for token output
+          max={2}
+          step={0.01}
+        />
+      </div>
+      
+    </div>
+  )
+}

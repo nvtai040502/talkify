@@ -4,6 +4,11 @@ import { LLMID } from "./llms";
 export interface ChatSettings {
   model: LLMID
   prompt: string
+  temperature: number
+  maxTokens: number
+  topK: number
+  topP: number
+  repetitionPenalty: number
 }
 
 export interface ChatPayload {

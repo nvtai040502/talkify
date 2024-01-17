@@ -25,32 +25,35 @@ export async function POST(req: NextRequest) {
   try {
     const body = await req.json();
     const messages = body.messages ?? [];
-    const formattedPreviousMessages = messages.slice(0, -1).map(formatMessage);
-    const currentMessageContent = messages[messages.length - 1].content;
-    // const prompt = PromptTemplate.fromTemplate(TEMPLATE);
-    const prompt = ChatPromptTemplate.fromMessages([
-      ["system", "You are a world class technical documentation writer."],
-      ["user", "{input}"],
-    ]);
+    // const formattedPreviousMessages = messages.slice(0, -1).map(formatMessage);
+    // const currentMessageContent = messages[messages.length - 1].content;
+    // // const prompt = PromptTemplate.fromTemplate(TEMPLATE);
+    // const prompt = ChatPromptTemplate.fromMessages([
+    //   ["system", "You are a world class technical documentation writer."],
+    //   ["user", "{input}"],
+    // ]);
     const model = new HuggingFaceInference({
       model: "gpt2",
       apiKey: `${process.env.HUGGINGFACE_API_KEY}`, // In Node.js defaults to process.env.HUGGINGFACEHUB_API_KEY
     });
-    const embeddings = new HuggingFaceInferenceEmbeddings()
+    // const embeddings = new HuggingFaceInferenceEmbeddings()
     
-    const outputParser = new StringOutputParser();
-    const llmChain = prompt.pipe(model).pipe(outputParser);
+    // const outputParser = new StringOutputParser();
+    // const llmChain = prompt.pipe(model).pipe(outputParser);
 
-    const res = await llmChain.invoke({
-      input: "what is LangSmith?",
-    });
+    const res = await model.stream("hello");
     // const res  = await llmChain.invoke({
     //   chat_history: formattedPreviousMessages,
     //   input: currentMessageContent
     // });
 
-    return NextResponse.json(res);
+    return new Response(res, {
+      headers: {
+        "Content-Type": "text/plain; charset=utf-8",
+      },
+    })
   } catch (e: any) {
+    console.log(e)
     return NextResponse.json({ error: e.message }, { status: 500 });
   }
 }

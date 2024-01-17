@@ -8,6 +8,38 @@ import { createMessage, updateMessage } from "@/actions/messages";
 import { buildFinalMessages } from "@/utils/built-prompt";
 import { ChatPayload } from "@/types/chat";
 
+export const handleHostedChat = async (
+  payload: ChatPayload,
+  tempAssistantChatMessage: Message,
+  isRegeneration: boolean,
+  newAbortController: AbortController,
+  setIsGenerating: React.Dispatch<React.SetStateAction<boolean>>,
+  setChatMessages: React.Dispatch<React.SetStateAction<Message[]>>,
+) => {
+    
+  const formattedMessages = await buildFinalMessages(payload.chatMessages)
+
+  const response = await fetchChatResponse(
+    `/api/chat/hosted/hf`,
+    {
+      messages: formattedMessages
+    },
+    newAbortController,
+    true,
+    setIsGenerating,
+    setChatMessages
+  )
+  return await processResponse(
+    response,
+    isRegeneration
+      ? payload.chatMessages[payload.chatMessages.length - 1]
+      : tempAssistantChatMessage,
+    true,
+    newAbortController,
+    setChatMessages,
+  )
+}
+
 export const fetchChatResponse = async (
   url: string,
   body: object,
@@ -124,37 +156,7 @@ export const processResponse = async (
     throw new Error("Response body is null")
   }
 }
-export const handleHostedChat = async (
-  payload: ChatPayload,
-  tempAssistantChatMessage: Message,
-  isRegeneration: boolean,
-  newAbortController: AbortController,
-  setIsGenerating: React.Dispatch<React.SetStateAction<boolean>>,
-  setChatMessages: React.Dispatch<React.SetStateAction<Message[]>>,
-) => {
-    
-  const formattedMessages = await buildFinalMessages(payload.chatMessages)
 
-  const response = await fetchChatResponse(
-    `/api/chat/hf/test`,
-    {
-      messages: formattedMessages
-    },
-    newAbortController,
-    true,
-    setIsGenerating,
-    setChatMessages
-  )
-  return await processResponse(
-    response,
-    isRegeneration
-      ? payload.chatMessages[payload.chatMessages.length - 1]
-      : tempAssistantChatMessage,
-    true,
-    newAbortController,
-    setChatMessages,
-  )
-}
 
 export const handleLocalChat = async (
   payload: ChatPayload,
@@ -172,6 +174,13 @@ export const handleLocalChat = async (
     {
       model: payload.chatSettings.model,
       messages: payload.chatMessages,
+      options: {
+        "num_predict": payload.chatSettings.maxTokens,
+        "top_k": payload.chatSettings.topK,
+        "top_p": payload.chatSettings.topP,
+        "temperature": payload.chatSettings.temperature,
+        "repeat_penalty": payload.chatSettings.repetitionPenalty,
+      }
     },
     newAbortController,
     false,

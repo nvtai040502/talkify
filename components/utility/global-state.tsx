@@ -23,6 +23,11 @@ export const GlobalState: FC<GlobalStateProps> = ({children}) => {
   const [chatSettings, setChatSettings] = useState<ChatSettings>({
     model: "mistralai/Mixtral-8x7B-v0.1",
     prompt: "You are a helpful AI assistant.",
+    temperature: 1,
+    maxTokens: 128,
+    topK: 40,
+    topP: 0.9,
+    repetitionPenalty: 1.1
   })
   const [availableLocalModels, setAvailableLocalModels] = useState<LLM[]>([])
   // THIS COMPONENT

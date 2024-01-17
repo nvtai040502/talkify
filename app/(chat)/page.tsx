@@ -7,6 +7,7 @@ import { TalkifyContext } from "@/lib/hooks/context"
 import { useChatHandler } from "@/lib/hooks/chat-hook/use-chat-handler"
 import { useContext } from "react"
 import { ChatSettings } from "@/components/chats/chat-settings"
+// import { QuickSettings } from "@/components/chats/quick-settings"
 
 export default function IndexPage() {
   const { chatMessages } = useContext(TalkifyContext)
