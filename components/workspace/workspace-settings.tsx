@@ -5,7 +5,6 @@ import { LLMID } from "@/types/llms"
 import { FC, useContext, useRef, useState } from "react"
 import toast from "react-hot-toast"
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "../ui/sheet"
-import { WithTooltip } from "../ui/with-tooltip"
 import { Icons } from "../icons"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "../ui/tabs"
 import { Label } from "../ui/label"
@@ -16,6 +15,7 @@ import { DeleteWorkspace } from "./delete-workspace"
 import { Button } from "../ui/button"
 import { ScrollArea, ScrollBar } from "../ui/scroll-area"
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "../ui/tooltip"
+import { DEFAULT_CHAT_SETTINGS } from "@/constants/chat"
 
 interface WorkspaceSettingsProps {}
 
@@ -26,8 +26,9 @@ export const WorkspaceSettings: FC<WorkspaceSettingsProps> = ({}) => {
     setWorkspaces,
     setChatSettings
   } = useContext(TalkifyContext)
+  // console.log(selectedWorkspace)
 
-  // const buttonRef = useRef<HTMLButtonElement>(null)
+  const buttonRef = useRef<HTMLButtonElement>(null)
 
   const [isOpen, setIsOpen] = useState(false)
 
@@ -35,9 +36,9 @@ export const WorkspaceSettings: FC<WorkspaceSettingsProps> = ({}) => {
   const [description, setDescription] = useState(
     selectedWorkspace?.description || ""
   )
-  // const [instructions, setInstructions] = useState(
-  //   selectedWorkspace?.instructions || ""
-  // )
+  const [instructions, setInstructions] = useState(
+    selectedWorkspace?.instructions || ""
+  )
 
   const [defaultChatSettings, setDefaultChatSettings] = useState({
     model: selectedWorkspace?.defaultModel,
@@ -47,25 +48,32 @@ export const WorkspaceSettings: FC<WorkspaceSettingsProps> = ({}) => {
     topK: selectedWorkspace?.defaultTopK,
     topP: selectedWorkspace?.defaultTopP,
     repetitionPenalty: selectedWorkspace?.defaultRepetitionPenalty,
+    includeWorkspaceInstructions: selectedWorkspace?.includeWorkspaceInstructions
   })
-
+  // console.log("🚀 ~ defaultChatSettings:", defaultChatSettings.includeWorkspaceInstructions)
+  
   const handleSave = async () => {
     if (!selectedWorkspace) return
 
     const updatedWorkspace = await updateWorkspace({
       name,
       description,
+      instructions,
       id: selectedWorkspace.id,
-      defaultMaxTokens: selectedWorkspace.defaultMaxTokens,
-      defaultModel: selectedWorkspace.defaultModel,
-      defaultPrompt: selectedWorkspace.defaultPrompt,
-      defaultRepetitionPenalty: selectedWorkspace.defaultRepetitionPenalty,
-      defaultTemperature: selectedWorkspace.defaultTemperature,
-      defaultTopK: selectedWorkspace.defaultTopK,
-      defaultTopP: selectedWorkspace.defaultTopP,
-      isHome: selectedWorkspace.isHome
+      defaultMaxTokens: defaultChatSettings.maxTokens || selectedWorkspace.defaultMaxTokens,
+      defaultModel: defaultChatSettings.model || selectedWorkspace.defaultModel,
+      defaultPrompt: defaultChatSettings.prompt || selectedWorkspace.defaultPrompt,
+      defaultRepetitionPenalty: defaultChatSettings.repetitionPenalty || selectedWorkspace.defaultRepetitionPenalty,
+      defaultTemperature: defaultChatSettings.temperature || selectedWorkspace.defaultTemperature,
+      defaultTopK: defaultChatSettings.topK || selectedWorkspace.defaultTopK,
+      defaultTopP: defaultChatSettings.topP || selectedWorkspace.defaultTopP,
+      isHome: selectedWorkspace.isHome,
+      includeWorkspaceInstructions: 
+        defaultChatSettings.includeWorkspaceInstructions !== undefined
+          ? defaultChatSettings.includeWorkspaceInstructions
+          : selectedWorkspace.includeWorkspaceInstructions,
     })
-    console.log(updatedWorkspace)
+    // console.log(updatedWorkspace)
     if (
       defaultChatSettings.model &&
       defaultChatSettings.prompt &&
@@ -74,8 +82,10 @@ export const WorkspaceSettings: FC<WorkspaceSettingsProps> = ({}) => {
       defaultChatSettings.temperature &&
       defaultChatSettings.topK &&
       defaultChatSettings.topP &&
-      defaultChatSettings.repetitionPenalty
+      defaultChatSettings.repetitionPenalty &&
+      defaultChatSettings.includeWorkspaceInstructions !== undefined
     ) {
+      
       setChatSettings({
         model: defaultChatSettings.model as LLMID,
         prompt: defaultChatSettings.prompt,
@@ -83,9 +93,11 @@ export const WorkspaceSettings: FC<WorkspaceSettingsProps> = ({}) => {
         maxTokens: defaultChatSettings.maxTokens,
         repetitionPenalty: defaultChatSettings.repetitionPenalty,
         topK: defaultChatSettings.topK,
-        topP: defaultChatSettings.topP
+        topP: defaultChatSettings.topP,
+        includeWorkspaceInstructions: defaultChatSettings.includeWorkspaceInstructions
       })
     }
+    
 
     setSelectedWorkspace(updatedWorkspace)
     setWorkspaces(workspaces => {
@@ -111,11 +123,11 @@ export const WorkspaceSettings: FC<WorkspaceSettingsProps> = ({}) => {
     toast.success("Workspace updated!")
   }
 
-  // const handleKeyDown = (e: React.KeyboardEvent<HTMLDivElement>) => {
-  //   if (e.key === "Enter" && !e.shiftKey) {
-  //     buttonRef.current?.click()
-  //   }
-  // }
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLDivElement>) => {
+    if (e.key === "Enter" && !e.shiftKey) {
+      buttonRef.current?.click()
+    }
+  }
 
   if (!selectedWorkspace) return null
 
@@ -182,7 +194,7 @@ export const WorkspaceSettings: FC<WorkspaceSettingsProps> = ({}) => {
                   How would you like the AI to respond in this workspace?
                 </Label>
 
-                {/* <TextareaAutosize
+                <TextareaAutosize
                   placeholder="Instructions... (optional)"
                   value={instructions}
                   onValueChange={setInstructions}
@@ -190,10 +202,7 @@ export const WorkspaceSettings: FC<WorkspaceSettingsProps> = ({}) => {
                   maxRows={10}
                 />
 
-                <LimitDisplay
-                  used={instructions.length}
-                  limit={WORKSPACE_INSTRUCTIONS_MAX}
-                /> */}
+                
               </div>
             </TabsContent>
 

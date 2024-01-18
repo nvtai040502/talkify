@@ -7,5 +7,6 @@ export const DEFAULT_CHAT_SETTINGS: ChatSettings = {
   temperature: 0.8,
   topK: 40,
   topP: 0.8,
-  repetitionPenalty: 1.1
+  repetitionPenalty: 1.1,
+  includeWorkspaceInstructions: true
 }

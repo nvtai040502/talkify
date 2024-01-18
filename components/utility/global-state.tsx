@@ -9,7 +9,7 @@ import { TalkifyContext } from "@/hooks/context"
 import { ChatSettings } from "@/types/chat"
 import { LLM, LLMID } from "@/types/llms"
 import { Chat, Message, Workspace } from "@prisma/client"
-import { FC, useEffect, useState } from "react"
+import { FC, useEffect, useRef, useState } from "react"
 
 interface GlobalStateProps {
   children: React.ReactNode
@@ -24,24 +24,21 @@ export const GlobalState: FC<GlobalStateProps> = ({children}) => {
   const [chatMessages, setChatMessages] = useState<Message[]>([])
   const [workspaces, setWorkspaces] = useState<Workspace[]>([])
   const [selectedWorkspace, setSelectedWorkspace] = useState<Workspace | null>(null)
-  const [chatSettings, setChatSettings] = useState<ChatSettings>({
-    model: "mistralai/Mixtral-8x7B-v0.1",
-    prompt: "You are a helpful AI assistant.",
-    temperature: 1,
-    maxTokens: 128,
-    topK: 40,
-    topP: 0.9,
-    repetitionPenalty: 1.1
-  })
+  const [chatSettings, setChatSettings] = useState<ChatSettings>(DEFAULT_CHAT_SETTINGS)
   const [availableLocalModels, setAvailableLocalModels] = useState<LLM[]>([])
   // THIS COMPONENT
   const [loading, setLoading] = useState<boolean>(true)
+  const hasInitializedRef = useRef(false);
   useEffect(() => {
-    if (process.env.NEXT_PUBLIC_OLLAMA_URL) {
-      fetchOllamaModels()
-    }
+    // if (process.env.NEXT_PUBLIC_OLLAMA_URL) {
+    //   fetchOllamaModels()
+    // }
 
-    fetchStartingData()
+    if (!hasInitializedRef.current) {
+      // Perform the initialization logic (create Home workspace) here
+      fetchStartingData();
+      hasInitializedRef.current = true;
+    }
   }, [])
 
   useEffect(() => {
@@ -56,7 +53,7 @@ export const GlobalState: FC<GlobalStateProps> = ({children}) => {
     setChatMessages([])
     setSelectedChat(null)
     setIsGenerating(false)
-
+    // console.log("After setSelectedWorkspace:", selectedWorkspace);
     if (selectedWorkspace?.id) {
       fetchData(selectedWorkspace.id)
     }
@@ -65,17 +62,18 @@ export const GlobalState: FC<GlobalStateProps> = ({children}) => {
 
 
   const fetchStartingData = async () => {
-
-      const workspaces = await getWorkSpaces()
-      setWorkspaces(workspaces)
-
-      let homeWorkspace: Workspace | undefined = undefined
-      homeWorkspace = workspaces.find(
-        workspace => workspace.isHome === true
-      )
+    try {
+      const workspaces = await getWorkSpaces();
+      setWorkspaces(workspaces);
+  
+      let homeWorkspace: Workspace | undefined = workspaces.find(
+        (workspace) => workspace.isHome === true
+      );
+  
       if (!homeWorkspace) {
         homeWorkspace = await createWorkspace({
           defaultMaxTokens: DEFAULT_CHAT_SETTINGS.maxTokens,
+          instructions: "",
           defaultModel: DEFAULT_CHAT_SETTINGS.model,
           defaultPrompt: DEFAULT_CHAT_SETTINGS.prompt,
           defaultTopK: DEFAULT_CHAT_SETTINGS.topK,
@@ -87,20 +85,26 @@ export const GlobalState: FC<GlobalStateProps> = ({children}) => {
           isHome: true,
         });
       }
-      
-      // DB guarantees there will always be a home workspace
-      setSelectedWorkspace(homeWorkspace)
+  
+      // console.log("Before setSelectedWorkspace:", homeWorkspace);
+      setSelectedWorkspace(homeWorkspace);
+      // console.log("After setSelectedWorkspace:", selectedWorkspace?.include_workspace_instruction);
 
+  
       setChatSettings({
-        model: (homeWorkspace.defaultModel) as LLMID,
-        prompt: homeWorkspace?.defaultPrompt,
-        temperature: homeWorkspace?.defaultTemperature || 0.8,
-        topK: homeWorkspace?.defaultTopK || 40,
-        topP: homeWorkspace?.defaultTopP || 0.9,
-        repetitionPenalty: homeWorkspace?.defaultRepetitionPenalty || 1.1,
-        maxTokens: homeWorkspace?.defaultMaxTokens || 128
-      })
+        model: homeWorkspace.defaultModel as LLMID,
+        prompt: homeWorkspace.defaultPrompt,
+        temperature: homeWorkspace.defaultTemperature,
+        topK: homeWorkspace.defaultTopK,
+        topP: homeWorkspace.defaultTopP,
+        repetitionPenalty: homeWorkspace.defaultRepetitionPenalty,
+        maxTokens: homeWorkspace.defaultMaxTokens,
+        includeWorkspaceInstructions: homeWorkspace.includeWorkspaceInstructions,
+      });
+    } catch (error) {
+      console.log(error);
     }
+  };
     
     const fetchData = async (workspaceId: string) => {
       setLoading(true)

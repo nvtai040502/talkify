@@ -9,9 +9,11 @@ export interface ChatSettings {
   topK: number
   topP: number
   repetitionPenalty: number
+  includeWorkspaceInstructions: boolean
 }
 
 export interface ChatPayload {
   chatSettings: ChatSettings
   chatMessages: Message[]
+  workspaceInstructions: string
 }

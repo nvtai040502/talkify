@@ -16,8 +16,9 @@ export const handleHostedChat = async (
   setIsGenerating: React.Dispatch<React.SetStateAction<boolean>>,
   setChatMessages: React.Dispatch<React.SetStateAction<Message[]>>,
 ) => {
-    
-  const formattedMessages = await buildFinalMessages(payload.chatMessages)
+  // console.log(payload.chatSettings)
+  const formattedMessages = await buildFinalMessages(payload)
+  // console.log(formattedMessages)
 
   const response = await fetchChatResponse(
     `/api/chat/hosted/hf`,
@@ -167,13 +168,13 @@ export const handleLocalChat = async (
   setChatMessages: React.Dispatch<React.SetStateAction<Message[]>>,
 ) => {
 
-  // const formattedMessages = await buildFinalMessages(payload.chatMessages)
+  const formattedMessages = await buildFinalMessages(payload)
   const response = await fetchChatResponse(
     process.env.NEXT_PUBLIC_OLLAMA_URL + "/api/chat",
     // "/api/chat/localhost/ollama", it's won't work when i try to using langchain and ollama, so weird 
     {
       model: payload.chatSettings.model,
-      messages: payload.chatMessages,
+      messages: formattedMessages,
       options: {
         "num_predict": payload.chatSettings.maxTokens,
         "top_k": payload.chatSettings.topK,

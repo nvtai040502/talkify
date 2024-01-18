@@ -56,6 +56,10 @@ export const useChatHandler = () => {
         throw new Error("Model not found")
       }
 
+      if (!selectedWorkspace) {
+        throw new Error("WorkSpace not found")
+      }
+      
       let currentChat = selectedChat ? { ...selectedChat } : null
       
       const { tempUserChatMessage, tempAssistantChatMessage } = createTempMessages(
@@ -70,7 +74,8 @@ export const useChatHandler = () => {
         chatMessages: isRegeneration
           ? [...chatMessages]
           : [...chatMessages, tempUserChatMessage],
-        chatSettings: chatSettings
+        chatSettings: chatSettings,
+        workspaceInstructions: selectedWorkspace.instructions || "",
         }
       
       let generatedText = ""

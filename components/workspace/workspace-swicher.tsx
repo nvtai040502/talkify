@@ -32,6 +32,7 @@ export const WorkspaceSwitcher: FC<WorkspaceSwitcherProps> = ({}) => {
 
     const createdWorkspace = await createWorkspace({
       defaultMaxTokens: selectedWorkspace.defaultMaxTokens,
+      instructions: "",
       defaultModel: selectedWorkspace.defaultModel,
       defaultPrompt: selectedWorkspace.defaultPrompt,
       defaultTemperature: selectedWorkspace.defaultTemperature,

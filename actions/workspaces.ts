@@ -30,18 +30,22 @@ export async function updateWorkspace({
   defaultTemperature,
   defaultTopK,
   defaultTopP,
-  isHome
+  isHome,
+  instructions,
+  includeWorkspaceInstructions
 }: Pick<Workspace,
   |"id"
   |'name' 
   |'description' 
   |"defaultMaxTokens" 
   |"defaultModel"
+  |"includeWorkspaceInstructions"
   |"defaultPrompt"
   |"defaultTopK"
   |"defaultTopP"
   |"defaultTemperature"
   |"defaultRepetitionPenalty"
+  |"instructions"
   |"isHome"
 
 >) {
@@ -52,6 +56,7 @@ export async function updateWorkspace({
     data: {
       name,
       description,
+      instructions,
       defaultMaxTokens,
       defaultModel,
       defaultPrompt,
@@ -59,7 +64,8 @@ export async function updateWorkspace({
       defaultTemperature,
       defaultTopK,
       defaultTopP,
-      isHome
+      includeWorkspaceInstructions,
+      isHome,
     }
   });
   return workspace
@@ -76,12 +82,14 @@ export async function createWorkspace({
   defaultTemperature,
   defaultTopK,
   defaultTopP,
+  instructions,
   isHome
 }: Pick<Workspace, 
   |'name' 
   |'description' 
   |"defaultMaxTokens" 
   |"defaultModel"
+  |"instructions"
   |"defaultPrompt"
   |"defaultTopK"
   |"defaultTopP"
@@ -94,6 +102,7 @@ export async function createWorkspace({
     data: {
       name,
       description,
+      instructions,
       defaultMaxTokens,
       defaultModel,
       defaultPrompt,

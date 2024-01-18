@@ -3,11 +3,14 @@ import {
   CollapsibleContent,
   CollapsibleTrigger
 } from "@/components/ui/collapsible"
-import { FC, useState } from "react"
+import { FC, useContext, useState } from "react"
 import { Icons } from "../icons"
 import { ChatSettings } from "@/types/chat"
 import { Label } from "../ui/label"
 import { Slider } from "../ui/slider"
+import { Checkbox } from "../ui/checkbox"
+import { WithTooltip } from "../ui/with-tooltip"
+import { TalkifyContext } from "@/hooks/context"
 
 interface AdvancedSettingsProps {
   children: React.ReactNode
@@ -53,7 +56,9 @@ export const AdvancedContent: FC<AdvancedContentProps> = ({
   onChangeChatSettings,
   showTooltip
 }) => {
-  
+  const {
+    selectedWorkspace,
+  } = useContext(TalkifyContext)
   return (
     
     <div className="mt-5 mb-10">
@@ -162,6 +167,36 @@ export const AdvancedContent: FC<AdvancedContentProps> = ({
           step={0.01}
         />
       </div>
+      <div className="mt-4 flex items-center space-x-2">
+        <Checkbox
+          checked={chatSettings.includeWorkspaceInstructions}
+          onCheckedChange={(value: boolean) =>
+            // console.log(value)
+            onChangeChatSettings({
+              ...chatSettings,
+              includeWorkspaceInstructions: value
+            })
+          }
+        />
+
+        <Label>Chats Include Workspace Instructions</Label>
+
+        {showTooltip && (
+          <WithTooltip
+            delayDuration={0}
+            display={
+              <div className="w-[400px] p-3">
+                {selectedWorkspace?.instructions ||
+                  "No workspace instructions."}
+              </div>
+            }
+            trigger={
+              <Icons.plusCircle className="cursor-hover:opacity-50" size={16} />
+            }
+          />
+        )}
+      </div>
+
       
     </div>
   )

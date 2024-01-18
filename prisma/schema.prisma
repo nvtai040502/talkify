@@ -14,10 +14,12 @@ model Workspace {
   updatedAt  DateTime   @updatedAt
 
   name String @db.Text
+  instructions String @db.Text
   isHome Boolean @default(false)
   description String @db.Text
   defaultTemperature Float
   defaultPrompt String @db.Text
+  includeWorkspaceInstructions Boolean @default(true)
   defaultModel String
   defaultMaxTokens Int
   defaultTopK Int
