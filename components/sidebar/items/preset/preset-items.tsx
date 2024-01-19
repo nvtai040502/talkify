@@ -2,9 +2,9 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Preset } from "@prisma/client"
 import { FC, useState } from "react"
-import { SidebarItem } from "../sidebar-item"
 import { Icons } from "@/components/icons"
 import { ChatSettingsForm } from "@/components/chats/chat-settings-form"
+import { SidebarItem } from "../all/sidebar-display-item"
 
 interface PresetItemProps {
   preset: Preset
@@ -17,9 +17,8 @@ export const PresetItem: FC<PresetItemProps> = ({ preset }) => {
     model: preset.model,
     prompt: preset.prompt,
     temperature: preset.temperature,
-    includeWorkspaceInstructions: preset.include_workspace_instructions
-    // contextLength: preset.context_length,
-    // includeProfileContext: preset.include_profile_context,
+    includeWorkspaceInstructions: preset.includeWorkspaceInstructions
+    
   })
 
   return (
@@ -32,13 +31,11 @@ export const PresetItem: FC<PresetItemProps> = ({ preset }) => {
       updateState={{
         name,
         description,
-        include_workspace_instructions:
-        presetChatSettings.includeWorkspaceInstructions,
+        id: preset.id,
+        include_workspace_instructions: presetChatSettings.includeWorkspaceInstructions,
         model: presetChatSettings.model,
         prompt: presetChatSettings.prompt,
-        temperature: presetChatSettings.temperature
-        // include_profile_context: presetChatSettings.includeProfileContext,
-        // context_length: presetChatSettings.contextLength,
+        temperature: presetChatSettings.temperature,
       }}
       renderInputs={() => (
         <>
@@ -53,16 +50,16 @@ export const PresetItem: FC<PresetItemProps> = ({ preset }) => {
             />
           </div>
 
-          {/* <div className="space-y-1">
+          <div className="space-y-1">
             <Label>Description (optional)</Label>
 
             <Input
               placeholder="Preset description..."
-              value={description}
+              value={description || ""}
               onChange={e => setDescription(e.target.value)}
-              maxLength={PRESET_DESCRIPTION_MAX}
+              // maxLength={PRESET_DESCRIPTION_MAX}
             />
-          </div> */}
+          </div>
 
           <ChatSettingsForm
             chatSettings={presetChatSettings as any}

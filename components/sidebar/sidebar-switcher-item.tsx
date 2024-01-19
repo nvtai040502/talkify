@@ -2,6 +2,7 @@ import { FC } from "react"
 import { TabsTrigger } from "../ui/tabs"
 import { WithTooltip } from "../ui/with-tooltip"
 import { ContentType } from "@/types/content"
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "../ui/tooltip"
 
 interface SidebarSwitchItemProps {
   contentType: ContentType
@@ -15,11 +16,9 @@ interface SidebarSwitchItemProps {
   onContentTypeChange
 }) => {
   return (
-    <WithTooltip
-      display={
-        <div>{contentType[0].toUpperCase() + contentType.substring(1)}</div>
-      }
-      trigger={
+    <TooltipProvider>
+      <Tooltip>
+        <TooltipTrigger asChild>
         <TabsTrigger
           className="hover:opacity-50"
           value={contentType}
@@ -27,7 +26,12 @@ interface SidebarSwitchItemProps {
         >
           {icon}
         </TabsTrigger>
-      }
-    />
+        </TooltipTrigger>
+      <TooltipContent side="right">
+        <div>{contentType[0].toUpperCase() + contentType.substring(1)}</div>
+      </TooltipContent>
+      </Tooltip>
+    </TooltipProvider>
+    
   )
 }

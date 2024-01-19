@@ -38,11 +38,12 @@ export async function createChat(workspaceId: string,name?: string): Promise<Cha
   return createdChat
 }
 
-export async function updateChat(id: string) {
+export async function updateChat(id: string, name?: string) {
   const updatedChat = await db.chat.update({
     where: {
       id
     }, data: {
+      name,
       updatedAt: new Date()
     }
   })

@@ -1,39 +1,45 @@
-import { updateChat } from "@/actions/chats"
+
+import { deleteChat } from "@/actions/chats"
 import { Button } from "@/components/ui/button"
 import {
   Dialog,
   DialogContent,
+  DialogDescription,
   DialogFooter,
   DialogHeader,
   DialogTitle,
   DialogTrigger
 } from "@/components/ui/dialog"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
 import { TalkifyContext } from "@/global/context"
+import { useChatHandler } from "@/hooks/use-chat-handler"
 import { Chat } from "@prisma/client"
-import { IconEdit } from "@tabler/icons-react"
+import { IconTrash } from "@tabler/icons-react"
+import { usePathname, useRouter } from "next/navigation"
 import { FC, useContext, useRef, useState } from "react"
 
-interface UpdateChatProps {
+interface DeleteChatProps {
   chat: Chat
 }
 
-export const UpdateChat: FC<UpdateChatProps> = ({ chat }) => {
-  const { setChats } = useContext(TalkifyContext)
+export const DeleteChat: FC<DeleteChatProps> = ({ chat }) => {
+  // useHotkey("Backspace", () => setShowChatDialog(true))
 
+  const { setChats } = useContext(TalkifyContext)
+  const { handleNewChat } = useChatHandler()
+  const router = useRouter()
   const buttonRef = useRef<HTMLButtonElement>(null)
 
   const [showChatDialog, setShowChatDialog] = useState(false)
-  const [name, setName] = useState(chat.name)
 
-  const handleUpdateChat = async (e: React.MouseEvent<HTMLButtonElement>) => {
-    const updatedChat = await updateChat(chat.id)
-    setChats(prevState =>
-      prevState.map(c => (c.id === chat.id ? updatedChat : c))
-    )
+  const handleDeleteChat = async () => {
+    await deleteChat(chat.id)
+
+    setChats(prevState => prevState.filter(c => c.id !== chat.id))
 
     setShowChatDialog(false)
+
+    handleNewChat()
+    router.push("/")
   }
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLDivElement>) => {
@@ -45,27 +51,29 @@ export const UpdateChat: FC<UpdateChatProps> = ({ chat }) => {
   return (
     <Dialog open={showChatDialog} onOpenChange={setShowChatDialog}>
       <DialogTrigger asChild>
-        <IconEdit className="hover:opacity-50" size={18} />
+        <IconTrash className="hover:opacity-50" size={18} />
       </DialogTrigger>
 
       <DialogContent onKeyDown={handleKeyDown}>
         <DialogHeader>
-          <DialogTitle>Edit Chat</DialogTitle>
+          <DialogTitle>Delete {chat.name}</DialogTitle>
+
+          <DialogDescription>
+            Are you sure you want to delete this chat?
+          </DialogDescription>
         </DialogHeader>
-
-        <div className="space-y-1">
-          <Label>Name</Label>
-
-          <Input value={name} onChange={e => setName(e.target.value)} />
-        </div>
 
         <DialogFooter>
           <Button variant="ghost" onClick={() => setShowChatDialog(false)}>
             Cancel
           </Button>
 
-          <Button ref={buttonRef} onClick={handleUpdateChat}>
-            Save
+          <Button
+            ref={buttonRef}
+            variant="destructive"
+            onClick={handleDeleteChat}
+          >
+            Delete
           </Button>
         </DialogFooter>
       </DialogContent>

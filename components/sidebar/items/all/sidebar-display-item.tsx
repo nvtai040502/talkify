@@ -32,37 +32,10 @@ export const SidebarItem: FC<SidebarItemProps> = ({
 
   const [isHovering, setIsHovering] = useState(false)
 
-  // const actionMap = {
-  //   chats: async (item: any) => {},
-  //   presets: async (item: any) => {},
-  //   prompts: async (item: any) => {},
-  //   files: async (item: any) => {},
-  //   collections: async (item: any) => {},
-  //   assistants: async (assistant: Tables<"assistants">) => {
-  //     if (!selectedWorkspace) return
-
-  //     const createdChat = await createChat({
-  //       user_id: assistant.user_id,
-  //       workspace_id: selectedWorkspace.id,
-  //       assistant_id: assistant.id,
-  //       context_length: assistant.context_length,
-  //       include_profile_context: assistant.include_profile_context,
-  //       include_workspace_instructions:
-  //         assistant.include_workspace_instructions,
-  //       model: assistant.model,
-  //       name: `Chat with ${assistant.name}`,
-  //       prompt: assistant.prompt,
-  //       temperature: assistant.temperature,
-  //       embeddings_provider: assistant.embeddings_provider
-  //     })
-
-  //     setChats(prevState => [createdChat, ...prevState])
-  //     setSelectedAssistant(assistant)
-
-  //     router.push(`/chat/${createdChat.id}`)
-  //   },
-  //   tools: async (item: any) => {}
-  // }
+  const actionMap = {
+    chats: async (item: any) => {},
+    presets: async (item: any) => {},
+  }
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLDivElement>) => {
     if (e.key === "Enter") {
@@ -71,15 +44,15 @@ export const SidebarItem: FC<SidebarItemProps> = ({
     }
   }
 
-  // const handleClickAction = async (
-  //   e: React.MouseEvent<SVGSVGElement, MouseEvent>
-  // ) => {
-  //   e.stopPropagation()
+  const handleClickAction = async (
+    e: React.MouseEvent<SVGSVGElement, MouseEvent>
+  ) => {
+    e.stopPropagation()
 
-  //   const action = actionMap[contentType]
+    const action = actionMap[contentType]
 
-  //   await action(item as any)
-  // }
+    await action(item as any)
+  }
 
   return (
     <SidebarUpdateItem

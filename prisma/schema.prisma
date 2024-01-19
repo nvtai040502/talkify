@@ -69,11 +69,11 @@ model Preset {
   updatedAt  DateTime   @updatedAt
 
   name String @db.Text
-  description String @db.Text
-  include_workspace_instructions Boolean
+  description String? @db.Text
+  includeWorkspaceInstructions Boolean? @default(true)
   model String
-  prompt String @db.Text
-  temperature Float
+  prompt String? @db.Text
+  temperature Float? @default(0.8)
   
   workspaceId String
   workspace Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)

@@ -32,12 +32,6 @@ export const SidebarCreateItem: FC<SidebarCreateItemProps> = ({
     selectedWorkspace,
     setChats,
     setPresets,
-    // setPrompts,
-    // setFiles,
-    // setCollections,
-    // setAssistants,
-    // setAssistantImages,
-    // setTools
   } = useContext(TalkifyContext)
 
   const buttonRef = useRef<HTMLButtonElement>(null)
@@ -47,95 +41,11 @@ export const SidebarCreateItem: FC<SidebarCreateItemProps> = ({
   const createFunctions = {
     chats: createChat,
     presets: createPreset,
-    // prompts: createPrompt,
-    // files: async (
-    //   createState: { file: File } & TablesInsert<"files">,
-    //   workspaceId: string
-    // ) => {
-    //   if (!selectedWorkspace) return
-
-    //   const { file, ...rest } = createState
-
-    //   const createdFile = await createFileBasedOnExtension(
-    //     file,
-    //     rest,
-    //     workspaceId,
-    //     selectedWorkspace.embeddings_provider as "openai" | "local"
-    //   )
-
-    //   return createdFile
-    // },
-    // collections: async (
-    //   createState: {
-    //     image: File
-    //     collectionFiles: TablesInsert<"collection_files">[]
-    //   } & Tables<"collections">,
-    //   workspaceId: string
-    // ) => {
-    //   const { collectionFiles, ...rest } = createState
-
-    //   const createdCollection = await createCollection(rest, workspaceId)
-
-    //   const finalCollectionFiles = collectionFiles.map(collectionFile => ({
-    //     ...collectionFile,
-    //     collection_id: createdCollection.id
-    //   }))
-
-    //   await createCollectionFiles(finalCollectionFiles)
-
-    //   return createdCollection
-    // },
-    // assistants: async (
-    //   createState: {
-    //     image: File
-    //   } & Tables<"assistants">,
-    //   workspaceId: string
-    // ) => {
-    //   const { image, ...rest } = createState
-
-    //   const createdAssistant = await createAssistant(rest, workspaceId)
-
-    //   let updatedAssistant = createdAssistant
-
-    //   if (image) {
-    //     const filePath = await uploadAssistantImage(createdAssistant, image)
-
-    //     const updatedAssistant = await updateAssistant(createdAssistant.id, {
-    //       image_path: filePath
-    //     })
-
-    //     const url = (await getAssistantImageFromStorage(filePath)) || ""
-
-    //     if (url) {
-    //       const response = await fetch(url)
-    //       const blob = await response.blob()
-    //       const base64 = await convertBlobToBase64(blob)
-
-    //       setAssistantImages(prev => [
-    //         ...prev,
-    //         {
-    //           assistantId: updatedAssistant.id,
-    //           path: filePath,
-    //           base64,
-    //           url
-    //         }
-    //       ])
-    //     }
-    //   }
-
-    //   return updatedAssistant
-    // },
-    // tools: createTool
   }
 
   const stateUpdateFunctions = {
     chats: setChats,
     presets: setPresets,
-    // prompts: setPrompts,
-    // files: setFiles,
-    // collections: setCollections,
-    // assistants: setAssistants,
-    // tools: setTools
   }
 
   const handleCreate = async () => {

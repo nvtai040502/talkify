@@ -1,6 +1,6 @@
-import { ContentType } from "@/types"
 import { FC } from "react"
 import { Input } from "../ui/input"
+import { ContentType } from "@/types/content"
 
 interface SidebarSearchProps {
   contentType: ContentType

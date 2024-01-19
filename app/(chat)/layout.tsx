@@ -1,5 +1,4 @@
 import Sidebar from "@/components/sidebar/sidebar"
-import { searchParamsSchema } from "@/validations/search-params"
 
 interface ChatLayoutProps {
   children: React.ReactNode,

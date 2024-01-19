@@ -8,6 +8,7 @@ import { useChatHandler } from "@/hooks/use-chat-handler"
 import { useContext } from "react"
 import { ChatSettings } from "@/components/chats/chat-settings"
 import { QuickSettings } from "@/components/chats/quick-settings"
+import { createPreset } from "@/actions/presets"
 // import { QuickSettings } from "@/components/chats/quick-settings"
 
 export default function IndexPage() {

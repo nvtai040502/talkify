@@ -8,7 +8,7 @@ import { Tabs } from "../ui/tabs";
 import { ContentType } from "@/types/content";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { SidebarSwitcher } from "./sidebar-switcher";
-import { Sidebar1 } from "./sidebar1";
+import { SidebarContentContainer } from "./sidebar-content-container";
 import { searchParamsSchema } from "@/validations/search-params";
 
 const Sidebar = () => {
@@ -63,7 +63,7 @@ const Sidebar = () => {
           >
             <SidebarSwitcher onContentTypeChange={setContentType} />
 
-            <Sidebar1 contentType={contentType} showSidebar={showSidebar} />
+            <SidebarContentContainer contentType={contentType} showSidebar={showSidebar} />
           </Tabs>
         )}
       </div>

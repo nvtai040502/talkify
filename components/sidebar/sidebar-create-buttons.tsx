@@ -4,7 +4,8 @@ import { ContentType } from "@/types/content"
 import { FC, useContext, useState } from "react"
 import { Button } from "../ui/button"
 import { IconFolderPlus, IconPlus } from "@tabler/icons-react"
-import { CreatePreset } from "./items/create-preset"
+import { CreatePreset } from "./items/preset/create-preset"
+import Link from "next/link"
 
 interface SidebarCreateButtonsProps {
   contentType: ContentType
@@ -17,22 +18,14 @@ export const SidebarCreateButtons: FC<SidebarCreateButtonsProps> = ({
 }) => {
   const { 
     selectedWorkspace, 
-    // profile, 
-    // folders, 
-    // setFolders 
+    
   } =
     useContext(TalkifyContext)
   const { handleNewChat } = useChatHandler()
 
-  const [isCreatingPrompt, setIsCreatingPrompt] = useState(false)
   const [isCreatingPreset, setIsCreatingPreset] = useState(false)
-  const [isCreatingFile, setIsCreatingFile] = useState(false)
-  const [isCreatingCollection, setIsCreatingCollection] = useState(false)
-  const [isCreatingAssistant, setIsCreatingAssistant] = useState(false)
-  const [isCreatingTool, setIsCreatingTool] = useState(false)
 
   const handleCreateFolder = async () => {
-    // if (!profile) return
     if (!selectedWorkspace) return
 
     // const createdFolder = await createFolder({
@@ -57,31 +50,6 @@ export const SidebarCreateButtons: FC<SidebarCreateButtonsProps> = ({
           setIsCreatingPreset(true)
         }
 
-      // case "prompts":
-      //   return async () => {
-      //     setIsCreatingPrompt(true)
-      //   }
-
-      // case "files":
-      //   return async () => {
-      //     setIsCreatingFile(true)
-      //   }
-
-      // case "collections":
-      //   return async () => {
-      //     setIsCreatingCollection(true)
-      //   }
-
-      // case "assistants":
-      //   return async () => {
-      //     setIsCreatingAssistant(true)
-      //   }
-
-      // case "tools":
-      //   return async () => {
-      //     setIsCreatingTool(true)
-      //   }
-
       default:
         break
     }
@@ -89,13 +57,14 @@ export const SidebarCreateButtons: FC<SidebarCreateButtonsProps> = ({
 
   return (
     <div className="flex w-full space-x-2">
-      <Button className="flex h-[36px] grow" onClick={getCreateFunction()}>
-        <IconPlus className="mr-1" size={20} />
-        New{" "}
-        {contentType.charAt(0).toUpperCase() +
-          contentType.slice(1, contentType.length - 1)}
-      </Button>
-
+      <Link href="/" className="w-full">
+        <Button className="flex h-[36px] grow w-full" onClick={getCreateFunction()}>
+          <IconPlus className="mr-1" size={20} />
+          New{" "}
+          {contentType.charAt(0).toUpperCase() +
+            contentType.slice(1, contentType.length - 1)}
+        </Button>
+      </Link>
       {hasData && (
         <Button className="h-[36px] w-[36px] p-1" onClick={handleCreateFolder}>
           <IconFolderPlus size={20} />

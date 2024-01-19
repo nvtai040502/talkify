@@ -2,7 +2,7 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { TalkifyContext } from "@/global/context"
 import { FC, useContext, useState } from "react"
-import { SidebarCreateItem } from "./sidebar-create-item"
+import { SidebarCreateItem } from "../all/sidebar-create-item"
 import { Preset } from "@prisma/client"
 import { ChatSettingsForm } from "@/components/chats/chat-settings-form"
 
@@ -16,7 +16,6 @@ export const CreatePreset: FC<CreatePresetProps> = ({
   onOpenChange
 }) => {
   const { 
-    // profile, 
     selectedWorkspace } = useContext(TalkifyContext)
 
   const [name, setName] = useState("")
@@ -27,12 +26,8 @@ export const CreatePreset: FC<CreatePresetProps> = ({
     temperature: selectedWorkspace?.defaultTemperature,
     includeWorkspaceInstructions:
     selectedWorkspace?.includeWorkspaceInstructions,
-    // contextLength: selectedWorkspace?.default_context_length,
-    // includeProfileContext: selectedWorkspace?.include_profile_context,
-    // embeddingsProvider: selectedWorkspace?.embeddings_provider
   })
 
-  // if (!profile) return null
   if (!selectedWorkspace) return null
 
   return (
@@ -42,17 +37,13 @@ export const CreatePreset: FC<CreatePresetProps> = ({
       onOpenChange={onOpenChange}
       createState={
         {
-          // user_id: profile.user_id,
+          model: presetChatSettings.model,
           name,
           description,
-          include_workspace_instructions:
-          presetChatSettings.includeWorkspaceInstructions,
-          model: presetChatSettings.model,
+          includeWorkspaceInstructions: presetChatSettings.includeWorkspaceInstructions,
           prompt: presetChatSettings.prompt,
           temperature: presetChatSettings.temperature,
-          // // include_profile_context: presetChatSettings.includeProfileContext,
-          // context_length: presetChatSettings.contextLength,
-          // embeddings_provider: presetChatSettings.embeddingsProvider
+          workspaceId: selectedWorkspace.id
         } as Preset
       }
       renderInputs={() => (
@@ -68,16 +59,16 @@ export const CreatePreset: FC<CreatePresetProps> = ({
             />
           </div>
 
-          {/* <div className="space-y-1">
+          <div className="space-y-1">
             <Label>Description (optional)</Label>
 
             <Input
               placeholder="Preset description..."
               value={description}
               onChange={e => setDescription(e.target.value)}
-              maxLength={PRESET_DESCRIPTION_MAX}
+              // maxLength={PRESET_DESCRIPTION_MAX}
             />
-          </div> */}
+          </div>
 
           <ChatSettingsForm
             chatSettings={presetChatSettings as any}
