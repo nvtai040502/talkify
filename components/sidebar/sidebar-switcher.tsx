@@ -7,6 +7,7 @@ import { Icons } from "../icons"
 import { Settings2 } from "lucide-react"
 import { SidebarSwitchItem } from "./sidebar-switcher-item"
 import ProfileSettings from "../profile/profile-settings"
+import { ThemeToggle } from "../theme-toggle"
 
 export const SIDEBAR_ICON_SIZE = 28
 
@@ -21,13 +22,13 @@ export const SidebarSwitcher: FC<SidebarSwitcherProps> = ({
     <div className="flex flex-col justify-between pb-5 border-r-2">
       <TabsList className="bg-background grid h-[400px] grid-rows-7">
         <SidebarSwitchItem
-          icon={<IconMessage />}
+          icon={<Icons.media size={SIDEBAR_ICON_SIZE}/>}
           contentType="chats"
           onContentTypeChange={onContentTypeChange}
         />
 
         <SidebarSwitchItem
-        icon={<Settings2 size={SIDEBAR_ICON_SIZE} />}
+        icon={<Icons.settings size={SIDEBAR_ICON_SIZE} />}
         contentType="presets"
         onContentTypeChange={onContentTypeChange}
         />
@@ -63,13 +64,17 @@ export const SidebarSwitcher: FC<SidebarSwitcherProps> = ({
         /> */}
       </TabsList>
 
-      <div className="flex flex-col items-center space-y-4">
+      <div className="flex flex-col items-center gap-4">
         {/* TODO */}
         {/* <WithTooltip display={<div>Import</div>} trigger={<Import />} /> */}
 
         {/* TODO */}
         {/* <Alerts /> */}
-
+        <WithTooltip
+          display={<div>Theme Mode</div>}
+          trigger={<ThemeToggle />}
+          side="right"
+        />
         <WithTooltip
           display={<div>Profile Settings</div>}
           trigger={<ProfileSettings />}

@@ -5,7 +5,7 @@ import { cn } from '@/lib/utils'
 import { auth } from '@/auth'
 import { clearChats } from '@/app/actions'
 import { Button, buttonVariants } from '@/components/ui/button'
-import { Sidebar } from '@/components/sidebar/sidebar'
+import { Sidebar1 } from '@/components/sidebar/sidebar1'
 import { SidebarList } from '@/components/sidebar/sidebar-list'
 import {
   IconGitHub,

@@ -1,111 +1,74 @@
-import { FC, useContext } from "react"
-import { TabsContent } from "../ui/tabs"
-import { WorkspaceSettings } from "../workspace/workspace-settings"
-import { SidebarContent } from "./sidebar-content"
-import { ContentType } from "@/types/content"
-import { TalkifyContext } from "@/global/context"
-import { SIDEBAR_WIDTH } from "@/app/(chat)/layout"
-import { WorkspaceSwitcher } from "../workspace/workspace-swicher"
+"use client"
+import { cn, createUrl, parsedSearchParams } from "@/lib/utils";
+import { Button } from "../ui/button";
+import { useState } from "react";
+import { SIDEBAR_WIDTH } from "@/app/(chat)/layout";
+import { IconChevronCompactRight } from "@tabler/icons-react";
+import { Tabs } from "../ui/tabs";
+import { ContentType } from "@/types/content";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
+import { SidebarSwitcher } from "./sidebar-switcher";
+import { Sidebar1 } from "./sidebar1";
+import { searchParamsSchema } from "@/validations/search-params";
 
-interface SidebarProps {
-  contentType: ContentType
-  showSidebar: boolean
-}
-
-export const Sidebar: FC<SidebarProps> = ({ contentType, showSidebar }) => {
-  const {
-    chats,
-    presets,
-    // folders,
-    // prompts,
-    // files,
-    // collections,
-    // assistants,
-    // tools
-  } = useContext(TalkifyContext)
-
-  // const chatFolders = folders.filter(folder => folder.type === "chats")
-  // const presetFolders = folders.filter(folder => folder.type === "presets")
-  // const promptFolders = folders.filter(folder => folder.type === "prompts")
-  // const filesFolders = folders.filter(folder => folder.type === "files")
-  // const collectionFolders = folders.filter(
-  //   folder => folder.type === "collections"
-  // )
-  // const assistantFolders = folders.filter(
-  //   folder => folder.type === "assistants"
-  // )
-  // const toolFolders = folders.filter(folder => folder.type === "tools")
-
-  const renderSidebarContent = (
-    contentType: ContentType,
-    data: any[],
-    // folders: Tables<"folders">[]
-  ) => {
-    return (
-      <SidebarContent contentType={contentType} data={data} 
-      // folders={folders} 
-      />
-    )
-  }
-
-  return (
-    <TabsContent
-      className="m-0 w-full space-y-2"
-      style={{
-        // Sidebar - SidebarSwitcher
-        minWidth: showSidebar ? `calc(${SIDEBAR_WIDTH}px - 60px)` : "0px",
-        maxWidth: showSidebar ? `calc(${SIDEBAR_WIDTH}px - 60px)` : "0px",
-        width: showSidebar ? `calc(${SIDEBAR_WIDTH}px - 60px)` : "0px"
-      }}
-      value={contentType}
-    >
-      <div className="flex h-full flex-col p-3">
-        <div className="flex items-center border-b-2 pb-2">
-          <WorkspaceSwitcher />
-
-          <WorkspaceSettings />
-        </div>
-
-        {(() => {
-          switch (contentType) {
-            case "chats":
-              return renderSidebarContent("chats", chats, 
-              // chatFolders
-              )
-
-            case "presets":
-              return renderSidebarContent("presets", presets, 
-              // presetFolders
-              )
-
-            // case "prompts":
-            //   return renderSidebarContent("prompts", prompts, promptFolders)
-
-            // case "files":
-            //   return renderSidebarContent("files", files, filesFolders)
-
-            // case "collections":
-            //   return renderSidebarContent(
-            //     "collections",
-            //     collections,
-            //     collectionFolders
-            //   )
-
-            // case "assistants":
-            //   return renderSidebarContent(
-            //     "assistants",
-            //     assistants,
-            //     assistantFolders
-            //   )
-
-            // case "tools":
-            //   return renderSidebarContent("tools", tools, toolFolders)
-
-            default:
-              return null
-          }
-        })()}
-      </div>
-    </TabsContent>
+const Sidebar = () => {
+  const router = useRouter()
+  const pathname = usePathname()
+  const searchParams = useSearchParams()
+  const {tab: tabValue} = searchParamsSchema.parse(parsedSearchParams(searchParams))
+  const [showSidebar, setShowSidebar] = useState(
+    localStorage.getItem("showSidebar") === "true"
   )
+  const [contentType, setContentType] = useState<ContentType>(tabValue || "chats")
+  const handleToggleSidebar = () => {
+    setShowSidebar(prevState => !prevState)
+    localStorage.setItem("showSidebar", String(!showSidebar))
+  }
+  return ( 
+    <>
+    <Button
+        className={cn(
+          "absolute left-[4px] top-[50%] z-10 h-[32px] w-[32px] cursor-pointer"
+        )}
+        style={{
+          marginLeft: showSidebar ? `${SIDEBAR_WIDTH}px` : "0px",
+          transform: showSidebar ? "rotate(180deg)" : "rotate(0deg)"
+        }}
+        variant="ghost"
+        size="icon"
+        onClick={handleToggleSidebar}
+      >
+        <IconChevronCompactRight size={24} />
+      </Button>
+
+      <div
+        className={cn("border-r-2 duration-200 dark:border-none")}
+        style={{
+          // Sidebar
+          minWidth: showSidebar ? `${SIDEBAR_WIDTH}px` : "0px",
+          maxWidth: showSidebar ? `${SIDEBAR_WIDTH}px` : "0px",
+          width: showSidebar ? `${SIDEBAR_WIDTH}px` : "0px"
+        }}
+      >
+        {showSidebar && (
+          <Tabs
+            className="flex h-full"
+            value={contentType}
+            onValueChange={(tabValue: string) => {
+              setContentType(tabValue as ContentType);
+              const newSearchParams = new URLSearchParams(searchParams);
+              newSearchParams.set("tab", tabValue);
+              router.replace(createUrl(pathname, newSearchParams));
+            }}
+          >
+            <SidebarSwitcher onContentTypeChange={setContentType} />
+
+            <Sidebar1 contentType={contentType} showSidebar={showSidebar} />
+          </Tabs>
+        )}
+      </div>
+    </>
+  );
 }
+ 
+export default Sidebar;

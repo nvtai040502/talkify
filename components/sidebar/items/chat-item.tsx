@@ -8,6 +8,8 @@ import { IconRobotFace } from "@tabler/icons-react"
 import Image from "next/image"
 import { useParams, useRouter } from "next/navigation"
 import { FC, useContext, useRef } from "react"
+import { UpdateChat } from "./update-chat"
+import { DeleteChat } from "./delete-chat"
 
 interface ChatItemProps {
   chat: Chat
@@ -96,9 +98,9 @@ export const ChatItem: FC<ChatItemProps> = ({ chat }) => {
           }}
           className="flex ml-2 space-x-2"
         >
-          {/* <UpdateChat chat={chat} />
+          <UpdateChat chat={chat} />
 
-          <DeleteChat chat={chat} /> */}
+          <DeleteChat chat={chat} />
         </div>
       )}
     </div>
