@@ -28,10 +28,10 @@ export async function getChatsByWorkspaceId(workspaceId: string) {
   return chats
 }
 
-export async function createChat(workspaceId: string,name: string): Promise<Chat> {
+export async function createChat(workspaceId: string,name?: string): Promise<Chat> {
   const createdChat = await db.chat.create({
     data: {
-      name,
+      name: name || "Hello",
       workspaceId  
     }
   })

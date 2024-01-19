@@ -19,8 +19,8 @@ interface ChatHistoryProps {
 export function ChatHistory({ userId }: ChatHistoryProps) {
   const { handleNewChat } = useChatHandler()
   return (
-    <div className="flex flex-col h-full">
-      <div className="flex items-center border-b-2 pb-2">
+    <div className="flex flex-col w-5/6 h-full ">
+      <div className="flex items-center pb-2 border-b-2">
           <WorkspaceSwitcher />
 
           <WorkspaceSettings />

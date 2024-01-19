@@ -1,5 +1,5 @@
 import { updateWorkspace } from "@/actions/workspaces"
-import { TalkifyContext } from "@/hooks/context"
+import { TalkifyContext } from "@/global/context"
 import { ChatSettings } from "@/types/chat"
 import { LLMID } from "@/types/llms"
 import { FC, useContext, useRef, useState } from "react"
@@ -44,11 +44,11 @@ export const WorkspaceSettings: FC<WorkspaceSettingsProps> = ({}) => {
     model: selectedWorkspace?.defaultModel,
     prompt: selectedWorkspace?.defaultPrompt,
     temperature: selectedWorkspace?.defaultTemperature,
-    maxTokens: selectedWorkspace?.defaultMaxTokens,
-    topK: selectedWorkspace?.defaultTopK,
-    topP: selectedWorkspace?.defaultTopP,
-    repetitionPenalty: selectedWorkspace?.defaultRepetitionPenalty,
     includeWorkspaceInstructions: selectedWorkspace?.includeWorkspaceInstructions
+    // maxTokens: selectedWorkspace?.defaultMaxTokens,
+    // topK: selectedWorkspace?.defaultTopK,
+    // topP: selectedWorkspace?.defaultTopP,
+    // repetitionPenalty: selectedWorkspace?.defaultRepetitionPenalty,
   })
   // console.log("🚀 ~ defaultChatSettings:", defaultChatSettings.includeWorkspaceInstructions)
   
@@ -60,29 +60,29 @@ export const WorkspaceSettings: FC<WorkspaceSettingsProps> = ({}) => {
       description,
       instructions,
       id: selectedWorkspace.id,
-      defaultMaxTokens: defaultChatSettings.maxTokens || selectedWorkspace.defaultMaxTokens,
       defaultModel: defaultChatSettings.model || selectedWorkspace.defaultModel,
       defaultPrompt: defaultChatSettings.prompt || selectedWorkspace.defaultPrompt,
-      defaultRepetitionPenalty: defaultChatSettings.repetitionPenalty || selectedWorkspace.defaultRepetitionPenalty,
       defaultTemperature: defaultChatSettings.temperature || selectedWorkspace.defaultTemperature,
-      defaultTopK: defaultChatSettings.topK || selectedWorkspace.defaultTopK,
-      defaultTopP: defaultChatSettings.topP || selectedWorkspace.defaultTopP,
       isHome: selectedWorkspace.isHome,
       includeWorkspaceInstructions: 
-        defaultChatSettings.includeWorkspaceInstructions !== undefined
-          ? defaultChatSettings.includeWorkspaceInstructions
-          : selectedWorkspace.includeWorkspaceInstructions,
+      defaultChatSettings.includeWorkspaceInstructions !== undefined
+      ? defaultChatSettings.includeWorkspaceInstructions
+      : selectedWorkspace.includeWorkspaceInstructions,
+      // defaultTopK: defaultChatSettings.topK || selectedWorkspace.defaultTopK,
+      // defaultTopP: defaultChatSettings.topP || selectedWorkspace.defaultTopP,
+      // defaultMaxTokens: defaultChatSettings.maxTokens || selectedWorkspace.defaultMaxTokens,
+      // defaultRepetitionPenalty: defaultChatSettings.repetitionPenalty || selectedWorkspace.defaultRepetitionPenalty,
     })
     // console.log(updatedWorkspace)
     if (
       defaultChatSettings.model &&
       defaultChatSettings.prompt &&
       defaultChatSettings.temperature &&
-      defaultChatSettings.maxTokens &&
       defaultChatSettings.temperature &&
-      defaultChatSettings.topK &&
-      defaultChatSettings.topP &&
-      defaultChatSettings.repetitionPenalty &&
+      // defaultChatSettings.maxTokens &&
+      // defaultChatSettings.topK &&
+      // defaultChatSettings.topP &&
+      // defaultChatSettings.repetitionPenalty &&
       defaultChatSettings.includeWorkspaceInstructions !== undefined
     ) {
       
@@ -90,11 +90,11 @@ export const WorkspaceSettings: FC<WorkspaceSettingsProps> = ({}) => {
         model: defaultChatSettings.model as LLMID,
         prompt: defaultChatSettings.prompt,
         temperature: defaultChatSettings.temperature,
-        maxTokens: defaultChatSettings.maxTokens,
-        repetitionPenalty: defaultChatSettings.repetitionPenalty,
-        topK: defaultChatSettings.topK,
-        topP: defaultChatSettings.topP,
         includeWorkspaceInstructions: defaultChatSettings.includeWorkspaceInstructions
+        // repetitionPenalty: defaultChatSettings.repetitionPenalty,
+        // maxTokens: defaultChatSettings.maxTokens,
+        // topK: defaultChatSettings.topK,
+        // topP: defaultChatSettings.topP,
       })
     }
     

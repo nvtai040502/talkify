@@ -2,7 +2,7 @@
 import { ClearHistory } from '@/components/sidebar/clear-history'
 import { SidebarItems } from '@/components/sidebar/sidebar-items'
 import { ThemeToggle } from '@/components/theme-toggle'
-import { TalkifyContext } from '@/hooks/context'
+import { TalkifyContext } from '@/global/context'
 import { useChatHandler } from '@/hooks/use-chat-handler'
 import { cache, useContext } from 'react'
 
@@ -28,7 +28,7 @@ export function SidebarList({ userId }: SidebarListProps) {
           </div>
         ) : (
           <div className="p-8 text-center">
-            <p className="text-sm text-muted-foreground">No chat history</p>
+  <p className="text-sm text-muted-foreground">No chat history</p>
           </div>
         )}
       </div>

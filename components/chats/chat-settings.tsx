@@ -1,5 +1,5 @@
-import { TalkifyContext } from "@/hooks/context"
-import { LLM_LIST } from "@/models/llm-list"
+import { TalkifyContext } from "@/global/context"
+import { LLM_LIST } from "@/constants/models/llm-list"
 import { FC, useContext, useEffect, useRef } from "react"
 import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover"
 import { Button } from "../ui/button"

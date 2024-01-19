@@ -1,5 +1,5 @@
 "use client"
-import { TalkifyContext } from "@/hooks/context";
+import { TalkifyContext } from "@/global/context";
 import { Icons } from "../icons";
 import { TextareaAutosize } from "../ui/textarea-autosize";
 import { useContext, useEffect } from "react";

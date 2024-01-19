@@ -21,12 +21,13 @@ model Workspace {
   defaultPrompt String @db.Text
   includeWorkspaceInstructions Boolean @default(true)
   defaultModel String
-  defaultMaxTokens Int
-  defaultTopK Int
-  defaultTopP Float
-  defaultRepetitionPenalty Float
+  // defaultMaxTokens Int
+  // defaultTopK Int
+  // defaultTopP Float
+  // defaultRepetitionPenalty Float
 
   chats Chat[]
+  presets Preset[]
 }
 
 model Chat {
@@ -62,13 +63,18 @@ model Message {
 
 }
 
-model Presets {
+model Preset {
   id String @id @default(uuid()) @unique
   createdAt DateTime @default(now())
   updatedAt  DateTime   @updatedAt
 
   name String @db.Text
   description String @db.Text
+  include_workspace_instructions Boolean
+  model String
   prompt String @db.Text
   temperature Float
+  
+  workspaceId String
+  workspace Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
 }

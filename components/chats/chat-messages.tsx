@@ -7,7 +7,7 @@ import { useContext, useEffect, useState } from 'react'
 import { useChatHandler } from '@/hooks/use-chat-handler'
 import { UseChatHelpers } from 'ai/react/dist'
 import { getPrismaMessages } from '@/app/actions'
-import { TalkifyContext } from '@/hooks/context'
+import { TalkifyContext } from '@/global/context'
 import { Message as PrismaMessage} from '@prisma/client'
 
 

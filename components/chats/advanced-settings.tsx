@@ -10,7 +10,7 @@ import { Label } from "../ui/label"
 import { Slider } from "../ui/slider"
 import { Checkbox } from "../ui/checkbox"
 import { WithTooltip } from "../ui/with-tooltip"
-import { TalkifyContext } from "@/hooks/context"
+import { TalkifyContext } from "@/global/context"
 
 interface AdvancedSettingsProps {
   children: React.ReactNode
@@ -83,7 +83,7 @@ export const AdvancedContent: FC<AdvancedContentProps> = ({
         />
       </div>
 
-      <div className="mt-6 space-y-3">
+      {/* <div className="mt-6 space-y-3">
         <Label className="flex items-center space-x-1">
           <div>Max Tokens:</div>
 
@@ -166,7 +166,7 @@ export const AdvancedContent: FC<AdvancedContentProps> = ({
           max={2}
           step={0.01}
         />
-      </div>
+      </div> */}
       <div className="mt-4 flex items-center space-x-2">
         <Checkbox
           checked={chatSettings.includeWorkspaceInstructions}

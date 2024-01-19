@@ -12,12 +12,6 @@ import { v4 as uuidV4 } from 'uuid'
 import { ChatMessage } from '@/lib/types'
 import { updateMessage } from '@/actions/messages'
 
-
-
-
-
-
-
 export async function getPrismaMessages(chatId: string): Promise<PrismaMessage[]> {
   try {
     const prismaMessages = await db.message.findMany({

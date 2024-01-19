@@ -1,7 +1,7 @@
 // Modified from https://github.com/mckaywrigley/chatbot-ui/blob/main/components/chat/chat-hooks/use-scroll.tsx
 
 import { useCallback, useContext, useEffect, useRef, useState } from "react"
-import { TalkifyContext } from "./context"
+import { TalkifyContext } from "../global/context"
 import { Message } from "ai"
 
 export const useScroll = ({

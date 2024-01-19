@@ -10,7 +10,7 @@ import {
 } from '@/components/ui/tooltip'
 import { IconArrowElbow, IconPlus } from '@/components/ui/icons'
 import { useRouter } from 'next/navigation'
-import { TalkifyContext } from '@/hooks/context'
+import { TalkifyContext } from '@/global/context'
 import { useChatHandler } from '@/hooks/use-chat-handler'
 
 export interface PromptProps

@@ -9,7 +9,7 @@ import { Icons } from '../icons'
 import { useContext, useEffect, useState } from 'react'
 import { WithTooltip } from '../ui/with-tooltip'
 import { UseChatHelpers } from 'ai/react/dist'
-import { TalkifyContext } from '@/hooks/context'
+import { TalkifyContext } from '@/global/context'
 
 export const MESSAGE_ICON_SIZE = 18
 

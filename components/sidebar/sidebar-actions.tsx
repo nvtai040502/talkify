@@ -25,7 +25,7 @@ import {
 import { Chat } from '@prisma/client'
 import { useChatHandler } from '@/hooks/use-chat-handler'
 import { deleteChat } from '@/actions/chats'
-import { TalkifyContext } from '@/hooks/context'
+import { TalkifyContext } from '@/global/context'
 
 interface SidebarActionsProps {
   chat: Chat

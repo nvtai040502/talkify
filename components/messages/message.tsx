@@ -16,7 +16,7 @@ import Image from 'next/image'
 import { TextareaAutosize } from '../ui/textarea-autosize'
 import { MessageMarkdown } from './message-markdown'
 import { Button } from '../ui/button'
-import { TalkifyContext } from '@/hooks/context'
+import { TalkifyContext } from '@/global/context'
 import { Message as PrismaMessage } from '@prisma/client'
 
 

@@ -3,12 +3,13 @@
 "use client"
 
 import { getChatsByWorkspaceId } from "@/actions/chats"
+import { createPreset, getPresetWorkspacesByWorkspaceId } from "@/actions/presets"
 import { createWorkspace, getWorkSpaces } from "@/actions/workspaces"
 import { DEFAULT_CHAT_SETTINGS } from "@/constants/chat"
-import { TalkifyContext } from "@/hooks/context"
+import { TalkifyContext } from "@/global/context"
 import { ChatSettings } from "@/types/chat"
 import { LLM, LLMID } from "@/types/llms"
-import { Chat, Message, Workspace } from "@prisma/client"
+import { Chat, Message, Preset, Workspace } from "@prisma/client"
 import { FC, useEffect, useRef, useState } from "react"
 
 interface GlobalStateProps {
@@ -26,13 +27,15 @@ export const GlobalState: FC<GlobalStateProps> = ({children}) => {
   const [selectedWorkspace, setSelectedWorkspace] = useState<Workspace | null>(null)
   const [chatSettings, setChatSettings] = useState<ChatSettings>(DEFAULT_CHAT_SETTINGS)
   const [availableLocalModels, setAvailableLocalModels] = useState<LLM[]>([])
+  const [presets, setPresets] = useState<Preset[]>([])
+  const [selectedPreset, setSelectedPreset] = useState<Preset | null>(null)
   // THIS COMPONENT
   const [loading, setLoading] = useState<boolean>(true)
   const hasInitializedRef = useRef(false);
   useEffect(() => {
-    // if (process.env.NEXT_PUBLIC_OLLAMA_URL) {
-    //   fetchOllamaModels()
-    // }
+    if (process.env.NEXT_PUBLIC_OLLAMA_URL) {
+      fetchOllamaModels()
+    }
 
     if (!hasInitializedRef.current) {
       // Perform the initialization logic (create Home workspace) here
@@ -72,17 +75,17 @@ export const GlobalState: FC<GlobalStateProps> = ({children}) => {
   
       if (!homeWorkspace) {
         homeWorkspace = await createWorkspace({
-          defaultMaxTokens: DEFAULT_CHAT_SETTINGS.maxTokens,
           instructions: "",
           defaultModel: DEFAULT_CHAT_SETTINGS.model,
           defaultPrompt: DEFAULT_CHAT_SETTINGS.prompt,
-          defaultTopK: DEFAULT_CHAT_SETTINGS.topK,
-          defaultTopP: DEFAULT_CHAT_SETTINGS.topP,
-          defaultRepetitionPenalty: DEFAULT_CHAT_SETTINGS.repetitionPenalty,
           defaultTemperature: DEFAULT_CHAT_SETTINGS.temperature,
           name: 'Home',
           description: '',
           isHome: true,
+          // defaultRepetitionPenalty: DEFAULT_CHAT_SETTINGS.repetitionPenalty,
+          // defaultTopP: DEFAULT_CHAT_SETTINGS.topP,
+          // defaultTopK: DEFAULT_CHAT_SETTINGS.topK,
+          // defaultMaxTokens: DEFAULT_CHAT_SETTINGS.maxTokens,
         });
       }
   
@@ -95,11 +98,11 @@ export const GlobalState: FC<GlobalStateProps> = ({children}) => {
         model: homeWorkspace.defaultModel as LLMID,
         prompt: homeWorkspace.defaultPrompt,
         temperature: homeWorkspace.defaultTemperature,
-        topK: homeWorkspace.defaultTopK,
-        topP: homeWorkspace.defaultTopP,
-        repetitionPenalty: homeWorkspace.defaultRepetitionPenalty,
-        maxTokens: homeWorkspace.defaultMaxTokens,
         includeWorkspaceInstructions: homeWorkspace.includeWorkspaceInstructions,
+        // topK: homeWorkspace.defaultTopK,
+        // topP: homeWorkspace.defaultTopP,
+        // repetitionPenalty: homeWorkspace.defaultRepetitionPenalty,
+        // maxTokens: homeWorkspace.defaultMaxTokens,
       });
     } catch (error) {
       console.log(error);
@@ -111,7 +114,16 @@ export const GlobalState: FC<GlobalStateProps> = ({children}) => {
   
       const chats = await getChatsByWorkspaceId(workspaceId)
       setChats(chats)
-  
+
+      let presetData = await getPresetWorkspacesByWorkspaceId(workspaceId)
+      console.log(presetData.length)
+      if (!presetData.length) {
+        const apresetData = await createPreset(workspaceId, "a", "a", "a", 1, "a", true)
+        console.log(apresetData)
+        presetData = [apresetData, apresetData]
+      }
+      setPresets(presetData)
+
       setLoading(false)
     }
   
@@ -157,6 +169,10 @@ export const GlobalState: FC<GlobalStateProps> = ({children}) => {
         availableLocalModels,
         workspaces,
         selectedWorkspace,
+        presets,
+        selectedPreset,
+        setSelectedPreset,
+        setPresets,
         setSelectedWorkspace,
         setWorkspaces,
         setAvailableLocalModels,

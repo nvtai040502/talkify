@@ -1,5 +1,5 @@
 "use client"
-import { TalkifyContext } from "@/hooks/context";
+import { TalkifyContext } from "@/global/context";
 import { ChatScrollButtons } from "./chat-scroll-button";
 import { useContext, useEffect, useState } from "react";
 import { useScroll } from "@/hooks/use-scroll";

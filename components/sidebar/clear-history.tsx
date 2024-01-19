@@ -19,7 +19,7 @@ import {
 import { IconSpinner } from '@/components/ui/icons'
 import { clearChats } from '@/actions/chats'
 import { useChatHandler } from '@/hooks/use-chat-handler'
-import { TalkifyContext } from '@/hooks/context'
+import { TalkifyContext } from '@/global/context'
 
 interface ClearHistoryProps {
   isEnabled: boolean

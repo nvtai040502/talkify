@@ -10,7 +10,7 @@ import {
 } from "@/components/ui/dialog"
 import { FC, useContext, useRef, useState } from "react"
 import { Input } from "../ui/input"
-import { TalkifyContext } from "@/hooks/context"
+import { TalkifyContext } from "@/global/context"
 import { useChatHandler } from "@/hooks/use-chat-handler"
 import { Workspace } from "@prisma/client"
 import { deleteWorkspace } from "@/actions/workspaces"

@@ -1,11 +1,11 @@
 "use client"
 
-import { TalkifyContext } from "@/hooks/context"
+import { TalkifyContext } from "@/global/context"
 import { ChatSettings } from "@/types/chat"
 import { FC, useContext } from "react"
 import { Label } from "../ui/label"
 import { ModelSelect } from "../models/model-select"
-import { LLM_LIST } from "@/models/llm-list"
+import { LLM_LIST } from "@/constants/models/llm-list"
 import { TextareaAutosize } from "../ui/textarea-autosize"
 import { Slider } from "../ui/slider"
 import { Checkbox } from "../ui/checkbox"

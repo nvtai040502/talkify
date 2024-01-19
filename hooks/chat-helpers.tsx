@@ -41,6 +41,49 @@ export const handleHostedChat = async (
   )
 }
 
+
+export const handleLocalChat = async (
+  payload: ChatPayload,
+  tempAssistantMessage: Message,
+  isRegeneration: boolean,
+  newAbortController: AbortController,
+  setIsGenerating: React.Dispatch<React.SetStateAction<boolean>>,
+  setChatMessages: React.Dispatch<React.SetStateAction<Message[]>>,
+) => {
+
+  const formattedMessages = await buildFinalMessages(payload)
+  const response = await fetchChatResponse(
+    process.env.NEXT_PUBLIC_OLLAMA_URL + "/api/chat",
+    // "/api/chat/localhost/ollama", it's won't work when i try to using langchain and ollama, so weird 
+    {
+      model: payload.chatSettings.model,
+      messages: formattedMessages,
+      options: {
+        "temperature": payload.chatSettings.temperature,
+        // "top_k": payload.chatSettings.topK,
+        // "top_p": payload.chatSettings.topP,
+        // "num_predict": payload.chatSettings.maxTokens,
+        // "repeat_penalty": payload.chatSettings.repetitionPenalty,
+      }
+    },
+    newAbortController,
+    false,
+    setIsGenerating,
+    setChatMessages
+  )
+
+  return await processResponse(
+    response,
+    isRegeneration
+      ? payload.chatMessages[payload.chatMessages.length - 1]
+      : tempAssistantMessage,
+    false,
+    newAbortController,
+    setChatMessages,
+  )
+}
+
+
 export const fetchChatResponse = async (
   url: string,
   body: object,
@@ -159,46 +202,6 @@ export const processResponse = async (
 }
 
 
-export const handleLocalChat = async (
-  payload: ChatPayload,
-  tempAssistantMessage: Message,
-  isRegeneration: boolean,
-  newAbortController: AbortController,
-  setIsGenerating: React.Dispatch<React.SetStateAction<boolean>>,
-  setChatMessages: React.Dispatch<React.SetStateAction<Message[]>>,
-) => {
-
-  const formattedMessages = await buildFinalMessages(payload)
-  const response = await fetchChatResponse(
-    process.env.NEXT_PUBLIC_OLLAMA_URL + "/api/chat",
-    // "/api/chat/localhost/ollama", it's won't work when i try to using langchain and ollama, so weird 
-    {
-      model: payload.chatSettings.model,
-      messages: formattedMessages,
-      options: {
-        "num_predict": payload.chatSettings.maxTokens,
-        "top_k": payload.chatSettings.topK,
-        "top_p": payload.chatSettings.topP,
-        "temperature": payload.chatSettings.temperature,
-        "repeat_penalty": payload.chatSettings.repetitionPenalty,
-      }
-    },
-    newAbortController,
-    false,
-    setIsGenerating,
-    setChatMessages
-  )
-
-  return await processResponse(
-    response,
-    isRegeneration
-      ? payload.chatMessages[payload.chatMessages.length - 1]
-      : tempAssistantMessage,
-    false,
-    newAbortController,
-    setChatMessages,
-  )
-}
 
 export const handleCreateChat = async (
   selectedWorkspace: Workspace,

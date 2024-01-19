@@ -23,30 +23,30 @@ export async function updateWorkspace({
   id,
   name,
   description,
-  defaultMaxTokens,
   defaultModel,
   defaultPrompt,
-  defaultRepetitionPenalty,
   defaultTemperature,
-  defaultTopK,
-  defaultTopP,
   isHome,
   instructions,
   includeWorkspaceInstructions
+  // defaultTopP,
+  // defaultTopK,
+  // defaultRepetitionPenalty,
+  // defaultMaxTokens,
 }: Pick<Workspace,
   |"id"
   |'name' 
   |'description' 
-  |"defaultMaxTokens" 
   |"defaultModel"
   |"includeWorkspaceInstructions"
   |"defaultPrompt"
-  |"defaultTopK"
-  |"defaultTopP"
   |"defaultTemperature"
-  |"defaultRepetitionPenalty"
   |"instructions"
   |"isHome"
+  // |"defaultRepetitionPenalty"
+  // |"defaultMaxTokens" 
+  // |"defaultTopK"
+  // |"defaultTopP"
 
 >) {
   const workspace = await db.workspace.update({
@@ -57,15 +57,15 @@ export async function updateWorkspace({
       name,
       description,
       instructions,
-      defaultMaxTokens,
       defaultModel,
       defaultPrompt,
-      defaultRepetitionPenalty,
       defaultTemperature,
-      defaultTopK,
-      defaultTopP,
       includeWorkspaceInstructions,
       isHome,
+      // defaultMaxTokens,
+      // defaultRepetitionPenalty,
+      // defaultTopK,
+      // defaultTopP,
     }
   });
   return workspace
@@ -75,27 +75,27 @@ export async function updateWorkspace({
 export async function createWorkspace({
   name,
   description,
-  defaultMaxTokens,
   defaultModel,
   defaultPrompt,
-  defaultRepetitionPenalty,
   defaultTemperature,
-  defaultTopK,
-  defaultTopP,
   instructions,
   isHome
+  // defaultMaxTokens,
+  // defaultRepetitionPenalty,
+  // defaultTopK,
+  // defaultTopP,
 }: Pick<Workspace, 
   |'name' 
   |'description' 
-  |"defaultMaxTokens" 
   |"defaultModel"
   |"instructions"
   |"defaultPrompt"
-  |"defaultTopK"
-  |"defaultTopP"
   |"defaultTemperature"
-  |"defaultRepetitionPenalty"
   |"isHome"
+  // |"defaultMaxTokens" 
+  // |"defaultTopK"
+  // |"defaultTopP"
+  // |"defaultRepetitionPenalty"
 
 >) {
   const workspace = await db.workspace.create({
@@ -103,14 +103,14 @@ export async function createWorkspace({
       name,
       description,
       instructions,
-      defaultMaxTokens,
       defaultModel,
       defaultPrompt,
-      defaultRepetitionPenalty,
       defaultTemperature,
-      defaultTopK,
-      defaultTopP,
       isHome
+      // defaultRepetitionPenalty,
+      // defaultMaxTokens,
+      // defaultTopK,
+      // defaultTopP,
     }
   });
   return workspace
