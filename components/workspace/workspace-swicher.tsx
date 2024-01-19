@@ -31,15 +31,15 @@ export const WorkspaceSwitcher: FC<WorkspaceSwitcherProps> = ({}) => {
     if (!selectedWorkspace) return
 
     const createdWorkspace = await createWorkspace({
-      defaultMaxTokens: selectedWorkspace.defaultMaxTokens,
       instructions: "",
       defaultModel: selectedWorkspace.defaultModel,
       defaultPrompt: selectedWorkspace.defaultPrompt,
       defaultTemperature: selectedWorkspace.defaultTemperature,
       description: "",
-      defaultRepetitionPenalty: selectedWorkspace.defaultRepetitionPenalty,
-      defaultTopK: selectedWorkspace.defaultTopK,
-      defaultTopP: selectedWorkspace.defaultTopP,
+      // defaultMaxTokens: selectedWorkspace.defaultMaxTokens,
+      // defaultRepetitionPenalty: selectedWorkspace.defaultRepetitionPenalty,
+      // defaultTopK: selectedWorkspace.defaultTopK,
+      // defaultTopP: selectedWorkspace.defaultTopP,
       isHome: false,
       name: "New Workspace"
     })
@@ -88,13 +88,13 @@ export const WorkspaceSwitcher: FC<WorkspaceSwitcherProps> = ({}) => {
           {getWorkspaceName(value) || "Select workspace..."}
         </div>
 
-        <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+        <ChevronsUpDown className="w-4 h-4 ml-2 opacity-50 shrink-0" />
       </PopoverTrigger>
 
       <PopoverContent className="p-2">
         <div className="space-y-2">
           <Button
-            className="flex w-full items-center space-x-2"
+            className="flex items-center w-full space-x-2"
             size="sm"
             onClick={handleCreateWorkspace}
           >

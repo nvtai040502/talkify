@@ -19,7 +19,9 @@ export const SidebarContentContainer: FC<SidebarContentContainerProps> = ({ cont
     chats,
     presets,
   } = useContext(TalkifyContext)
-
+    // console.log("🚀 ~ presets:", presets)
+    // console.log("🚀 ~ chats:", chats)
+  
   const renderSidebarContent = (
     contentType: ContentType,
     data: DataListType,
@@ -31,7 +33,7 @@ export const SidebarContentContainer: FC<SidebarContentContainerProps> = ({ cont
 
   return (
     <TabsContent
-      className="m-0 w-full space-y-2"
+      className="w-full m-0 space-y-2"
       style={{
         // Sidebar - SidebarSwitcher
         minWidth: showSidebar ? `calc(${SIDEBAR_WIDTH}px - 60px)` : "0px",
@@ -40,8 +42,8 @@ export const SidebarContentContainer: FC<SidebarContentContainerProps> = ({ cont
       }}
       value={contentType}
     >
-      <div className="flex h-full flex-col p-3">
-        <div className="flex items-center border-b-2 pb-2">
+      <div className="flex flex-col h-full p-3">
+        <div className="flex items-center pb-2 border-b-2">
           <WorkspaceSwitcher />
 
           <WorkspaceSettings />

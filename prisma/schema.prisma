@@ -27,7 +27,7 @@ model Workspace {
   // defaultRepetitionPenalty Float
 
   chats Chat[]
-  presets Preset[]
+  presets WorkspacePreset[]
 }
 
 model Chat {
@@ -62,6 +62,15 @@ model Message {
   chat Chat @relation(fields: [chatId], references: [id], onDelete: Cascade)
 
 }
+model WorkspacePreset {
+  workspaceId String   
+  presetId String    
+
+  workspace Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  preset Preset @relation(fields: [presetId], references: [id], onDelete: Cascade)
+
+  @@id([workspaceId, presetId], name: "workspace_preset_unique")
+}
 
 model Preset {
   id String @id @default(uuid()) @unique
@@ -75,6 +84,5 @@ model Preset {
   prompt String? @db.Text
   temperature Float? @default(0.8)
   
-  workspaceId String
-  workspace Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  workspaces WorkspacePreset[]
 }

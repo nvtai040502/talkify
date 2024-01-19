@@ -50,9 +50,9 @@ export const QuickSettings: FC<QuickSettingsProps> = ({}) => {
     setSelectedPreset(item)
     setChatSettings({
       model: item.model as LLMID,
-      prompt: item.prompt,
-      temperature: item.temperature,
-      includeWorkspaceInstructions: item.include_workspace_instructions,
+      prompt: item.prompt || "",
+      temperature: item.temperature || 0.8,
+      includeWorkspaceInstructions: item.includeWorkspaceInstructions !== null ? item.includeWorkspaceInstructions : true,
       // contextLength: item.context_length,
       // includeProfileContext: item.include_profile_context,
       // embeddingsProvider: item.embeddings_provider as "openai" | "local"
@@ -64,7 +64,7 @@ export const QuickSettings: FC<QuickSettingsProps> = ({}) => {
 
     if (selectedPreset) {
       if (
-        selectedPreset.include_workspace_instructions !==
+        selectedPreset.includeWorkspaceInstructions !==
         chatSettings.includeWorkspaceInstructions ||
         selectedPreset.model !== chatSettings.model ||
         selectedPreset.prompt !== chatSettings.prompt ||
@@ -109,7 +109,8 @@ export const QuickSettings: FC<QuickSettingsProps> = ({}) => {
   //   : assistantImages.find(
   //       image => image.path === selectedAssistant?.image_path
   //     )?.base64 || ""
-
+  if (presets.length === 0) return null
+  // console.log(presets)
   return (
     <DropdownMenu
       open={isOpen}
@@ -158,11 +159,7 @@ export const QuickSettings: FC<QuickSettingsProps> = ({}) => {
         className="min-w-[300px] max-w-[500px] space-y-4"
         align="start"
       >
-        {presets.length === 0 
-        // && assistants.length === 0 
-        ? (
-          <div className="p-8 text-center">No items found.</div>
-        ) : (
+        
           <>
             <Input
               ref={inputRef}
@@ -235,7 +232,6 @@ export const QuickSettings: FC<QuickSettingsProps> = ({}) => {
                 />
               ))}
           </>
-        )}
       </DropdownMenuContent>
     </DropdownMenu>
   )

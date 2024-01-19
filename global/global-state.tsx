@@ -116,12 +116,6 @@ export const GlobalState: FC<GlobalStateProps> = ({children}) => {
       setChats(chats)
 
       let presetData = await getPresetWorkspacesByWorkspaceId(workspaceId)
-      console.log(presetData.length)
-      if (!presetData.length) {
-        const apresetData = await createPreset(workspaceId, "a", "a", "a", 1, "a", true)
-        console.log(apresetData)
-        presetData = [apresetData, apresetData]
-      }
       setPresets(presetData)
 
       setLoading(false)
