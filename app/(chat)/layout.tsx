@@ -6,12 +6,12 @@ interface ChatLayoutProps {
 export const SIDEBAR_WIDTH = 350
 export default async function ChatLayout({ children}: ChatLayoutProps) {
   return (
-    <div className="flex h-full w-full">
+    <div className="flex w-full h-full">
       {/* <CommandK /> */}
 
       <Sidebar/>
 
-      <div className="bg-muted/50 flex grow flex-col">
+      <div className="flex flex-col bg-muted/50 grow">
           {children}
       </div>
     </div>

@@ -4,12 +4,13 @@
 
 import { getChatsByWorkspaceId } from "@/actions/chats"
 import { createPreset, getPresetWorkspacesByWorkspaceId } from "@/actions/presets"
+import { getPromptWorkspacesByWorkspaceId } from "@/actions/prompt"
 import { createWorkspace, getWorkSpaces } from "@/actions/workspaces"
 import { DEFAULT_CHAT_SETTINGS } from "@/constants/chat"
 import { TalkifyContext } from "@/global/context"
 import { ChatSettings } from "@/types/chat"
 import { LLM, LLMID } from "@/types/llms"
-import { Chat, Message, Preset, Workspace } from "@prisma/client"
+import { Chat, Message, Preset, Prompt, Workspace } from "@prisma/client"
 import { FC, useEffect, useRef, useState } from "react"
 
 interface GlobalStateProps {
@@ -29,6 +30,8 @@ export const GlobalState: FC<GlobalStateProps> = ({children}) => {
   const [availableLocalModels, setAvailableLocalModels] = useState<LLM[]>([])
   const [presets, setPresets] = useState<Preset[]>([])
   const [selectedPreset, setSelectedPreset] = useState<Preset | null>(null)
+  const [prompts, setPrompts] = useState<Prompt[]>([])
+  const [selectedPrompt, setSelectedPrompt] = useState<Prompt | null>(null)
   // THIS COMPONENT
   const [loading, setLoading] = useState<boolean>(true)
   const hasInitializedRef = useRef(false);
@@ -118,6 +121,8 @@ export const GlobalState: FC<GlobalStateProps> = ({children}) => {
       let presetData = await getPresetWorkspacesByWorkspaceId(workspaceId)
       setPresets(presetData)
 
+      let promptData = await getPromptWorkspacesByWorkspaceId(workspaceId)
+      setPrompts(promptData)
       setLoading(false)
     }
   
@@ -165,6 +170,10 @@ export const GlobalState: FC<GlobalStateProps> = ({children}) => {
         selectedWorkspace,
         presets,
         selectedPreset,
+        prompts,
+        selectedPrompt,
+        setSelectedPrompt,
+        setPrompts,
         setSelectedPreset,
         setPresets,
         setSelectedWorkspace,

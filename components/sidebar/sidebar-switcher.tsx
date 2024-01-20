@@ -7,6 +7,7 @@ import ProfileSettings from "../profile/profile-settings"
 import { ThemeToggle } from "../theme-toggle"
 import { MessageSquare, Settings2 } from "lucide-react"
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "../ui/tooltip"
+import { IconPencil } from "@tabler/icons-react"
 
 export const SIDEBAR_ICON_SIZE = 28
 
@@ -31,8 +32,13 @@ export const SidebarSwitcher: FC<SidebarSwitcherProps> = ({
         contentType="presets"
         onContentTypeChange={onContentTypeChange}
         />
+        <SidebarSwitchItem
+          icon={<IconPencil size={SIDEBAR_ICON_SIZE}/>}
+          contentType="prompts"
+          onContentTypeChange={onContentTypeChange}
+        />
       </TabsList>
-
+      
       <div className="flex flex-col items-center gap-4 mb-4">
         <ThemeToggle side="right"/>
         <TooltipProvider>

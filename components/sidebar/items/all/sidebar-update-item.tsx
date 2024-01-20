@@ -1,6 +1,6 @@
 import { updateChat } from "@/actions/chats"
 import { createPresetWorkspaces, deletePresetWorkspaces, updatePreset } from "@/actions/presets"
-import { getWorkspacesByPresetId } from "@/actions/workspaces"
+import { getWorkspacesByPresetId, getWorkspacesByPromptId } from "@/actions/workspaces"
 import { Button } from "@/components/ui/button"
 import { Label } from "@/components/ui/label"
 import {
@@ -15,10 +15,11 @@ import { AssignWorkspaces } from "@/components/workspace/assign-workspaces"
 import { TalkifyContext } from "@/global/context"
 import { ContentType } from "@/types/content"
 import { DataItemType } from "@/types/sidebar-data"
-import { Preset, Workspace } from "@prisma/client"
+import { Preset, Prompt, Workspace } from "@prisma/client"
 import { FC, useContext, useEffect, useRef, useState } from "react"
 import toast from "react-hot-toast"
 import { SidebarDeleteItem } from "./sidebar-delete-item"
+import { createPromptWorkspaces, deletePromptWorkspaces, updatePrompt } from "@/actions/prompt"
 interface SidebarUpdateItemProps {
   isTyping: boolean
   item: DataItemType
@@ -41,6 +42,7 @@ export const SidebarUpdateItem: FC<SidebarUpdateItemProps> = ({
     selectedWorkspace,
     setChats,
     setPresets,
+    setPrompts
   } = useContext(TalkifyContext)
 
   const buttonRef = useRef<HTMLButtonElement>(null)
@@ -70,17 +72,23 @@ export const SidebarUpdateItem: FC<SidebarUpdateItemProps> = ({
   const renderState = {
     chats: null,
     presets: null,
+    prompts: null
   }
 
   const fetchDataFunctions = {
     chats: null,
     presets: null,
+    prompts: null
   }
 
   const fetchWorkpaceFunctions = {
     chats: null,
     presets: async (presetId: string) => {
       const item = await getWorkspacesByPresetId(presetId)
+      return item
+    },
+    prompts: async (promptId: string) => {
+      const item = await getWorkspacesByPromptId(promptId)
       return item
     },
   }
@@ -170,11 +178,26 @@ export const SidebarUpdateItem: FC<SidebarUpdateItemProps> = ({
 
       return updatedPreset
     },
+    prompts: async (promptId: string, updateState: Prompt) => {
+      const updatedPrompt = await updatePrompt(updateState)
+
+      await handleWorkspaceUpdates(
+        startingWorkspaces,
+        selectedWorkspaces,
+        promptId,
+        deletePromptWorkspaces as any,
+        createPromptWorkspaces as any,
+        "promptId"
+      )
+
+      return updatedPrompt
+    },
   }
 
   const stateUpdateFunctions = {
     chats: setChats,
     presets: setPresets,
+    prompts: setPrompts
   }
 
   const handleUpdate = async () => {

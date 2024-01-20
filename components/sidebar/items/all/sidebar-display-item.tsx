@@ -12,6 +12,7 @@ interface SidebarItemProps {
   icon: React.ReactNode
   updateState: any
   renderInputs: (renderState: any) => JSX.Element
+  isTyping: boolean
 }
 
 export const SidebarItem: FC<SidebarItemProps> = ({
@@ -19,7 +20,8 @@ export const SidebarItem: FC<SidebarItemProps> = ({
   contentType,
   updateState,
   renderInputs,
-  icon
+  icon,
+  isTyping
 }) => {
   const { selectedWorkspace, setChats, 
     // setSelectedAssistant 
@@ -44,15 +46,15 @@ export const SidebarItem: FC<SidebarItemProps> = ({
     }
   }
 
-  const handleClickAction = async (
-    e: React.MouseEvent<SVGSVGElement, MouseEvent>
-  ) => {
-    e.stopPropagation()
+  // const handleClickAction = async (
+  //   e: React.MouseEvent<SVGSVGElement, MouseEvent>
+  // ) => {
+  //   e.stopPropagation()
 
-    const action = actionMap[contentType]
+  //   const action = actionMap[contentType]
 
-    await action(item as any)
-  }
+  //   await action(item as any)
+  // }
 
   return (
     <SidebarUpdateItem
@@ -60,7 +62,7 @@ export const SidebarItem: FC<SidebarItemProps> = ({
       contentType={contentType}
       updateState={updateState}
       renderInputs={renderInputs}
-      isTyping={true}
+      isTyping={isTyping}
     >
       <div
         ref={itemRef}

@@ -1,17 +1,11 @@
 
-import { Chat, Preset } from "@prisma/client"
+import { Chat, Preset, Prompt } from "@prisma/client"
 export type DataListType =
 | Chat[]
 | Preset[]
-// | Tables<"collections">[]
-//   | Tables<"prompts">[]
-//   | Tables<"files">[]
-//   | Tables<"assistants">[]
+| Prompt[]
 
 export type DataItemType =
 | Chat
 | Preset
-// | Tables<"collections">
-//   | Tables<"prompts">
-//   | Tables<"files">
-//   | Tables<"assistants">
+| Prompt

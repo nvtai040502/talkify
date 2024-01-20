@@ -12,6 +12,7 @@ import { TalkifyContext } from "@/global/context"
 import { ContentType } from "@/types/content"
 import { FC, useContext, useRef, useState } from "react"
 import toast from "react-hot-toast"
+import { createPrompt } from "../../../../actions/prompt"
 
 interface SidebarCreateItemProps {
   isOpen: boolean
@@ -19,6 +20,7 @@ interface SidebarCreateItemProps {
   contentType: ContentType
   renderInputs: () => JSX.Element
   createState: any
+  isTyping: boolean
 }
 
 export const SidebarCreateItem: FC<SidebarCreateItemProps> = ({
@@ -26,12 +28,14 @@ export const SidebarCreateItem: FC<SidebarCreateItemProps> = ({
   onOpenChange,
   contentType,
   renderInputs,
-  createState
+  createState,
+  isTyping
 }) => {
   const {
     selectedWorkspace,
     setChats,
     setPresets,
+    setPrompts
   } = useContext(TalkifyContext)
 
   const buttonRef = useRef<HTMLButtonElement>(null)
@@ -41,11 +45,13 @@ export const SidebarCreateItem: FC<SidebarCreateItemProps> = ({
   const createFunctions = {
     chats: createChat,
     presets: createPreset,
+    prompts: createPrompt
   }
 
   const stateUpdateFunctions = {
     chats: setChats,
     presets: setPresets,
+    prompts: setPrompts
   }
 
   const handleCreate = async () => {

@@ -18,6 +18,7 @@ export const SidebarContentContainer: FC<SidebarContentContainerProps> = ({ cont
   const {
     chats,
     presets,
+    prompts
   } = useContext(TalkifyContext)
     // console.log("🚀 ~ presets:", presets)
     // console.log("🚀 ~ chats:", chats)
@@ -57,6 +58,8 @@ export const SidebarContentContainer: FC<SidebarContentContainerProps> = ({ cont
 
             case "presets":
               return renderSidebarContent("presets", presets)
+            case "prompts":
+              return renderSidebarContent("prompts", prompts)
             default:
               return null
           }

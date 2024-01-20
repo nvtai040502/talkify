@@ -2,10 +2,11 @@ import { FC, useContext, useEffect, useRef, useState } from "react"
 import { ContentType } from "@/types/content"
 import { DataItemType, DataListType } from "@/types/sidebar-data"
 import { TalkifyContext } from "@/global/context"
-import { Chat, Preset } from "@prisma/client"
+import { Chat, Preset, Prompt } from "@prisma/client"
 import { PresetItem } from "./items/preset/preset-items"
 import { cn, getChatsSortedByDate } from "@/lib/utils"
 import { ChatItem } from "./items/chat/chat-item"
+import { PromptItem } from "./items/prompts/prompt-item"
 
 interface SidebarDataListProps {
   contentType: ContentType
@@ -28,6 +29,8 @@ export const SidebarDataList: FC<SidebarDataListProps> = ({
       case "presets":
         return <PresetItem key={item.id} preset={item as Preset} />
 
+      case "prompts":
+        return <PromptItem key={item.id} prompt={item as Prompt} />
       default:
         return null
     }

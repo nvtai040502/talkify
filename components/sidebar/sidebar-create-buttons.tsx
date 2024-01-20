@@ -6,6 +6,7 @@ import { Button } from "../ui/button"
 import { IconFolderPlus, IconPlus } from "@tabler/icons-react"
 import { CreatePreset } from "./items/preset/create-preset"
 import Link from "next/link"
+import { CreatePrompt } from "./items/prompts/create-prompt"
 
 interface SidebarCreateButtonsProps {
   contentType: ContentType
@@ -24,7 +25,7 @@ export const SidebarCreateButtons: FC<SidebarCreateButtonsProps> = ({
   const { handleNewChat } = useChatHandler()
 
   const [isCreatingPreset, setIsCreatingPreset] = useState(false)
-
+  const [isCreatingPrompt, setIsCreatingPrompt] = useState(false)
   const handleCreateFolder = async () => {
     if (!selectedWorkspace) return
 
@@ -49,7 +50,10 @@ export const SidebarCreateButtons: FC<SidebarCreateButtonsProps> = ({
         return async () => {
           setIsCreatingPreset(true)
         }
-
+      case "prompts":
+        return async () => {
+          setIsCreatingPrompt(true)
+        }
       default:
         break
     }
@@ -79,13 +83,13 @@ export const SidebarCreateButtons: FC<SidebarCreateButtonsProps> = ({
         />
         )}
 
-        {/* {isCreatingPrompt && (
-          <CreatePrompt
-            isOpen={isCreatingPrompt}
-            onOpenChange={setIsCreatingPrompt}
-          />
-        )}
-      {isCreatingFile && (
+      {isCreatingPrompt && (
+        <CreatePrompt
+          isOpen={isCreatingPrompt}
+          onOpenChange={setIsCreatingPrompt}
+        />
+      )}
+      {/* {isCreatingFile && (
         <CreateFile isOpen={isCreatingFile} onOpenChange={setIsCreatingFile} />
       )}
 

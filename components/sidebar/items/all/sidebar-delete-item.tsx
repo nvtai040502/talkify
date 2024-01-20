@@ -1,5 +1,6 @@
 import { deleteChat } from "@/actions/chats"
 import { deletePreset } from "@/actions/presets"
+import { deletePrompt } from "@/actions/prompt"
 import { Button } from "@/components/ui/button"
 import {
   Dialog,
@@ -13,7 +14,7 @@ import {
 import { TalkifyContext } from "@/global/context"
 import { ContentType } from "@/types/content"
 import { DataItemType } from "@/types/sidebar-data"
-import { Chat, Preset } from "@prisma/client"
+import { Chat, Preset, Prompt } from "@prisma/client"
 import { FC, useContext, useRef, useState } from "react"
 
 interface SidebarDeleteItemProps {
@@ -28,6 +29,7 @@ export const SidebarDeleteItem: FC<SidebarDeleteItemProps> = ({
   const {
     setChats,
     setPresets,
+    setPrompts
   } = useContext(TalkifyContext)
 
   const buttonRef = useRef<HTMLButtonElement>(null)
@@ -41,13 +43,16 @@ export const SidebarDeleteItem: FC<SidebarDeleteItemProps> = ({
     presets: async (preset: Preset) => {
       await deletePreset(preset.id)
     },
+    prompts: async (prompt: Prompt) => {
+      await deletePrompt(prompt.id)
+    },
     
   }
 
   const stateUpdateFunctions = {
     chats: setChats,
     presets: setPresets,
-    
+    prompts: setPrompts
   }
 
   const handleDelete = async () => {

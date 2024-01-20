@@ -23,6 +23,21 @@ export async function getWorkspacesByPresetId(presetId: string) {
 
   return workspacesInPreset;
 }
+
+export async function getWorkspacesByPromptId(promptId: string) {
+  const workspacesInPrompt = await db.workspace.findMany({
+    where: {
+      prompts: {
+        some: {
+          promptId,
+        },
+      },
+    },
+  });
+
+  return workspacesInPrompt;
+}
+
 export async function deleteWorkspace(id: string) {
   await db.workspace.delete({
     where: {

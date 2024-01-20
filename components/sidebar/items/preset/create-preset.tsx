@@ -17,7 +17,7 @@ export const CreatePreset: FC<CreatePresetProps> = ({
 }) => {
   const { 
     selectedWorkspace } = useContext(TalkifyContext)
-
+  const [isTyping, setIsTyping] = useState(false)
   const [name, setName] = useState("")
   const [description, setDescription] = useState("")
   const [presetChatSettings, setPresetChatSettings] = useState({
@@ -32,6 +32,7 @@ export const CreatePreset: FC<CreatePresetProps> = ({
 
   return (
     <SidebarCreateItem
+      isTyping={isTyping}
       contentType="presets"
       isOpen={isOpen}
       onOpenChange={onOpenChange}

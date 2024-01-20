@@ -11,6 +11,8 @@ import { getMessagesByChatId } from "@/actions/messages";
 import { getChatById } from "@/actions/chats";
 import { KEYBOARD_SHORTCUT } from "@/config/keyboard-shortcut";
 import useHotkey from "@/hooks/use-hotkey";
+import { ChatHelp } from "../keyboard-shortcut/chat-help";
+import { ChatSecondaryButtons } from "./chat-secondary-buttons";
 
 const ChatUI = ({
   chatId
@@ -85,7 +87,7 @@ const ChatUI = ({
       </div>
 
       <div className="absolute right-4 top-1 flex h-[40px] items-center space-x-2">
-        {/* <ChatSecondaryButtons /> */}
+        <ChatSecondaryButtons />
       </div>
 
       <div className="bg-secondary flex max-h-[50px] min-h-[50px] w-full items-center justify-center border-b-2 px-20 font-bold">
@@ -110,7 +112,7 @@ const ChatUI = ({
       </div>
 
       <div className="absolute hidden bottom-2 right-2 md:block lg:bottom-4 lg:right-4">
-        {/* <ChatHelp /> */}
+        <ChatHelp />
       </div>
     </div>
    );
