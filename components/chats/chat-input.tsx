@@ -5,6 +5,8 @@ import { TextareaAutosize } from "../ui/textarea-autosize";
 import { useContext, useEffect } from "react";
 import { useChatHandler } from "@/hooks/use-chat-handler";
 import { cn } from "@/lib/utils";
+import { KEYBOARD_SHORTCUT } from "@/config/keyboard-shortcut";
+import useHotkey from "@/hooks/use-hotkey";
 
 const ChatInput = () => {
   const {
@@ -17,7 +19,7 @@ const ChatInput = () => {
     chatInputRef,
     handleSendMessage,
     handleFocusChatInput,
-    handleStopMessage
+    handleStopMessage,
   } = useChatHandler()
   const handleKeyDown = (event: React.KeyboardEvent) => {
     if (event.key === "Enter" && !event.shiftKey) {
@@ -25,7 +27,12 @@ const ChatInput = () => {
       handleSendMessage(userInput, chatMessages, false)
     }
   }
+  const focusChatShortcut = KEYBOARD_SHORTCUT.find((item) => item.key === "FOCUS_CHAT");
+  if (!focusChatShortcut) {
+    console.log("may be the key in focus chat input will be changed")
+  }
 
+  useHotkey(focusChatShortcut!.keyboard, () => handleFocusChatInput(userInput))
   // fix bug not focus input when navigate from home page to chat page
   useEffect(() => {
     handleFocusChatInput()

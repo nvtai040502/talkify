@@ -65,7 +65,7 @@ export async function updatePreset({
   } 
 }
 export async function deletePresetWorkspaces(workspacePresetUniqueList: { workspaceId: string, presetId: string }[]) {
-  console.log("🚀 ~ deletePresetWorkspaces ~ workspacePresetUniqueList:", workspacePresetUniqueList);
+  // console.log("🚀 ~ deletePresetWorkspaces ~ workspacePresetUniqueList:", workspacePresetUniqueList);
   if (workspacePresetUniqueList.length) {
     const presetId = workspacePresetUniqueList[0].presetId
       await db.workspacePreset.deleteMany({

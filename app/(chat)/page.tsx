@@ -9,6 +9,7 @@ import { useContext } from "react"
 import { ChatSettings } from "@/components/chats/chat-settings"
 import { QuickSettings } from "@/components/chats/quick-settings"
 import { createPreset } from "@/actions/presets"
+import { ChatHelp } from "@/components/keyboard-shortcut/chat-help"
 // import { QuickSettings } from "@/components/chats/quick-settings"
 
 export default function IndexPage() {
@@ -36,7 +37,7 @@ export default function IndexPage() {
           </div>
 
           <div className="absolute hidden bottom-2 right-2 md:block lg:bottom-4 lg:right-4">
-            {/* <ChatHelp /> */}
+            <ChatHelp />
           </div>
         </div>
       ) : (

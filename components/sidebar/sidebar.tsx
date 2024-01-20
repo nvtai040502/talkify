@@ -10,6 +10,8 @@ import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { SidebarSwitcher } from "./sidebar-switcher";
 import { SidebarContentContainer } from "./sidebar-content-container";
 import { searchParamsSchema } from "@/validations/search-params";
+import { KEYBOARD_SHORTCUT } from "@/config/keyboard-shortcut";
+import useHotkey from "@/hooks/use-hotkey";
 
 const Sidebar = () => {
   const router = useRouter()
@@ -24,6 +26,12 @@ const Sidebar = () => {
     setShowSidebar(prevState => !prevState)
     localStorage.setItem("showSidebar", String(!showSidebar))
   }
+  const toggleSidebarShortcut = KEYBOARD_SHORTCUT.find((item) => item.key === "TOGGLE_SIDEBAR");
+  if (!toggleSidebarShortcut) {
+    console.log("may be the key in toggle sidebar will be changed")
+  }
+
+  useHotkey(toggleSidebarShortcut!.keyboard, () => handleToggleSidebar)
   return ( 
     <>
     <Button

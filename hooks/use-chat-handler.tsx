@@ -7,6 +7,7 @@ import { createTempMessages, handleCreateChat, handleCreateMessages, handleHoste
 import { deleteChat, updateChat } from '@/actions/chats';
 import { LLM_LIST } from '@/constants/models/llm-list';
 import { ChatPayload } from '@/types/chat';
+import { useRouter } from 'next/navigation';
 
 export const useChatHandler = () => {
   const chatInputRef = useRef<HTMLTextAreaElement>(null);
@@ -25,7 +26,7 @@ export const useChatHandler = () => {
     chatSettings,
     selectedChat
   } = useContext(TalkifyContext)
-
+  const router = useRouter()
   const handleSendMessage = async (
     messageContent: string,
     chatMessages: Message[],
@@ -152,11 +153,14 @@ export const useChatHandler = () => {
     }
   }
 
-  const handleNewChat = () => {
+  const handleNewChat = (isPush?: boolean) => {
     setUserInput("")
     setChatMessages([])
     setSelectedChat(null)
     setIsGenerating(false)
+    if (isPush) {
+      router.push("/")
+    }
   }
   
   const handleSendEdit = async (

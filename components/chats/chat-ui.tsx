@@ -9,15 +9,27 @@ import ChatInput from "./chat-input";
 import { ChatMessages } from "./chat-messages";
 import { getMessagesByChatId } from "@/actions/messages";
 import { getChatById } from "@/actions/chats";
+import { KEYBOARD_SHORTCUT } from "@/config/keyboard-shortcut";
+import useHotkey from "@/hooks/use-hotkey";
 
 const ChatUI = ({
   chatId
 }: {
   chatId?: string
 }) => {
-  const { userInput,chatMessages, isGenerating, setChatMessages, setSelectedChat, selectedChat } = useContext(TalkifyContext)
+  const {chatMessages,isGenerating, setChatMessages, setSelectedChat, selectedChat } = useContext(TalkifyContext)
+  const newChatShortcut = KEYBOARD_SHORTCUT.find((item) => item.key === "NEW_CHAT");
+  if (!newChatShortcut) {
+    console.log("may be the key in new chat will be changed")
+  }
+
+  useHotkey(newChatShortcut!.keyboard, () => {
+    handleNewChat(true)
+  })
+
+  
   const [loading, setLoading] = useState(true)
-  const { handleFocusChatInput } = useChatHandler()
+  const { handleNewChat, handleFocusChatInput } = useChatHandler()
   const {
     messagesStartRef,
     messagesEndRef,

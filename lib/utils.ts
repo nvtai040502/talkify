@@ -12,6 +12,11 @@ export const createUrl = (pathname: string, params: URLSearchParams | ReadonlyUR
 
   return `${pathname}${queryString}`;
 };
+export function isMacOs() {
+  if (typeof window === "undefined") return false
+
+  return window.navigator.userAgent.includes("Mac")
+}
 
 export const parsedSearchParams  = (params: ReadonlyURLSearchParams) => {
   return Object.fromEntries(params.entries())
