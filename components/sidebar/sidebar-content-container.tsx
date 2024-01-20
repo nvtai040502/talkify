@@ -23,6 +23,7 @@ export const SidebarContentContainer: FC<SidebarContentContainerProps> = ({ cont
     // console.log("🚀 ~ chats:", chats)
   
   const renderSidebarContent = (
+    
     contentType: ContentType,
     data: DataListType,
   ) => {

@@ -10,7 +10,19 @@ export async function getWorkSpaces(userId?: string | null) {
   })
   return workSpaces
 }
+export async function getWorkspacesByPresetId(presetId: string) {
+  const workspacesInPreset = await db.workspace.findMany({
+    where: {
+      presets: {
+        some: {
+          presetId,
+        },
+      },
+    },
+  });
 
+  return workspacesInPreset;
+}
 export async function deleteWorkspace(id: string) {
   await db.workspace.delete({
     where: {

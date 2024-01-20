@@ -44,7 +44,7 @@ export const CreatePreset: FC<CreatePresetProps> = ({
           prompt: presetChatSettings.prompt,
           temperature: presetChatSettings.temperature,
           workspaceId: selectedWorkspace.id
-        } as Preset
+        } 
       }
       renderInputs={() => (
         <>

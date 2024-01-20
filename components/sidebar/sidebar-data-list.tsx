@@ -51,7 +51,7 @@ export const SidebarDataList: FC<SidebarDataListProps> = ({
                 {["Today", "Yesterday", "Previous Week", "Older"].map(
                   (dateCategory, index) => {
                     const sortedData = getChatsSortedByDate(
-                      data,
+                      data as Chat[],
                       dateCategory as
                         | "Today"
                         | "Yesterday"

@@ -1,5 +1,6 @@
 import { updateChat } from "@/actions/chats"
-import { getPresetWorkspacesByPresetId, updatePreset } from "@/actions/presets"
+import { createPresetWorkspaces, deletePresetWorkspaces, updatePreset } from "@/actions/presets"
+import { getWorkspacesByPresetId } from "@/actions/workspaces"
 import { Button } from "@/components/ui/button"
 import { Label } from "@/components/ui/label"
 import {
@@ -10,12 +11,14 @@ import {
   SheetTitle,
   SheetTrigger
 } from "@/components/ui/sheet"
+import { AssignWorkspaces } from "@/components/workspace/assign-workspaces"
 import { TalkifyContext } from "@/global/context"
 import { ContentType } from "@/types/content"
 import { DataItemType } from "@/types/sidebar-data"
 import { Preset, Workspace } from "@prisma/client"
 import { FC, useContext, useEffect, useRef, useState } from "react"
 import toast from "react-hot-toast"
+import { SidebarDeleteItem } from "./sidebar-delete-item"
 interface SidebarUpdateItemProps {
   isTyping: boolean
   item: DataItemType
@@ -43,16 +46,16 @@ export const SidebarUpdateItem: FC<SidebarUpdateItemProps> = ({
   const buttonRef = useRef<HTMLButtonElement>(null)
 
   const [isOpen, setIsOpen] = useState(false)
-  // const [startingWorkspaces, setStartingWorkspaces] = useState<Workspace[]>([])
-  // const [selectedWorkspaces, setSelectedWorkspaces] = useState<Workspace[]>([])
+  const [startingWorkspaces, setStartingWorkspaces] = useState<Workspace[]>([])
+  const [selectedWorkspaces, setSelectedWorkspaces] = useState<Workspace[]>([])
   
   useEffect(() => {
     if (isOpen) {
       const fetchData = async () => {
         if (workspaces.length > 1) {
-          // const workspaces = await fetchSelectedWorkspaces()
-          // setStartingWorkspaces(workspaces)
-          // setSelectedWorkspaces(workspaces)
+          const workspaces = await fetchSelectedWorkspaces()
+          setStartingWorkspaces(workspaces)
+          setSelectedWorkspaces(workspaces)
         }
 
         const fetchDataFunction = fetchDataFunctions[contentType]
@@ -74,99 +77,99 @@ export const SidebarUpdateItem: FC<SidebarUpdateItemProps> = ({
     presets: null,
   }
 
-  // const fetchWorkpaceFunctions = {
-  //   chats: null,
-  //   preset: async (presetId: string) => {
-  //     const item = await getPresetWorkspacesByPresetId(presetId)
-  //     return item
-  //   },
+  const fetchWorkpaceFunctions = {
+    chats: null,
+    presets: async (presetId: string) => {
+      const item = await getWorkspacesByPresetId(presetId)
+      return item
+    },
+  }
+
+  const fetchSelectedWorkspaces = async () => {
+    const fetchFunction = fetchWorkpaceFunctions[contentType]
+
+    if (!fetchFunction) return []
+
+    const workspaces = await fetchFunction(item.id)
+
+    return workspaces
+  }
+
+  const handleWorkspaceUpdates = async (
+    startingWorkspaces: Workspace[],
+    selectedWorkspaces: Workspace[],
+    itemId: string,
+    deleteWorkspaceFn: (
+      workspaces: { itemId: string; workspaceId: string }[]
+    ) => Promise<boolean>,
+    createWorkspaceFn: (
+      workspaces: { itemId: string; workspaceId: string }[]
+    ) => Promise<void>,
+    itemIdKey: string
+  ) => {
+    if (!selectedWorkspace) return
+
+    const deleteList = startingWorkspaces.filter(
+      startingWorkspace =>
+        !selectedWorkspaces.some(
+          selectedWorkspace => selectedWorkspace.id === startingWorkspace.id
+        )
+    )
+
     
-  // }
+    await deleteWorkspaceFn(
+      deleteList.map(workspace => {
+        return {
+          // user_id: workspace.user_id,
+          [itemIdKey]: itemId,
+          workspaceId: workspace.id
+        } as any
+      })
+    )
+    // if (deleteList.map(w => w.id).includes(selectedWorkspace.id)) {
+    //   const setStateFunction = stateUpdateFunctions[contentType]
 
-  // const fetchSelectedWorkspaces = async () => {
-  //   const fetchFunction = fetchWorkpaceFunctions[contentType]
+    //   if (setStateFunction) {
+    //     setStateFunction((prevItems: any) =>
+    //       prevItems.filter((prevItem: any) => prevItem.id !== item.id)
+    //     )
+    //   }
+    // }
 
-  //   if (!fetchFunction) return []
-
-  //   const workspaces = await fetchFunction(item.id)
-
-  //   return workspaces
-  // }
-
-  // const handleWorkspaceUpdates = async (
-  //   startingWorkspaces: Tables<"workspaces">[],
-  //   selectedWorkspaces: Tables<"workspaces">[],
-  //   itemId: string,
-  //   deleteWorkspaceFn: (
-  //     itemId: string,
-  //     workspaceId: string
-  //   ) => Promise<boolean>,
-  //   createWorkspaceFn: (
-  //     workspaces: { user_id: string; item_id: string; workspace_id: string }[]
-  //   ) => Promise<void>,
-  //   itemIdKey: string
-  // ) => {
-  //   if (!selectedWorkspace) return
-
-  //   const deleteList = startingWorkspaces.filter(
-  //     startingWorkspace =>
-  //       !selectedWorkspaces.some(
-  //         selectedWorkspace => selectedWorkspace.id === startingWorkspace.id
-  //       )
-  //   )
-
-  //   for (const workspace of deleteList) {
-  //     await deleteWorkspaceFn(itemId, workspace.id)
-  //   }
-
-  //   if (deleteList.map(w => w.id).includes(selectedWorkspace.id)) {
-  //     const setStateFunction = stateUpdateFunctions[contentType]
-
-  //     if (setStateFunction) {
-  //       setStateFunction((prevItems: any) =>
-  //         prevItems.filter((prevItem: any) => prevItem.id !== item.id)
-  //       )
-  //     }
-  //   }
-
-  //   const createList = selectedWorkspaces.filter(
-  //     selectedWorkspace =>
-  //       !startingWorkspaces.some(
-  //         startingWorkspace => startingWorkspace.id === selectedWorkspace.id
-  //       )
-  //   )
-
-  //   await createWorkspaceFn(
-  //     createList.map(workspace => {
-  //       return {
-  //         user_id: workspace.user_id,
-  //         [itemIdKey]: itemId,
-  //         workspace_id: workspace.id
-  //       } as any
-  //     })
-  //   )
-  // }
+    const createList = selectedWorkspaces.filter(
+      selectedWorkspace =>
+        !startingWorkspaces.some(
+          startingWorkspace => startingWorkspace.id === selectedWorkspace.id
+        )
+    )
+    // console.log(itemId)
+    await createWorkspaceFn(
+      createList.map(workspace => {
+        return {
+          // user_id: workspace.user_id,
+          [itemIdKey]: itemId,
+          workspaceId: workspace.id
+        } as any
+      })
+    )
+  }
 
   const updateFunctions = {
     chats: updateChat,
     presets: async (presetId: string, updateState: Preset) => {
       const updatedPreset = await updatePreset(updateState)
 
-      // await handleWorkspaceUpdates(
-      //   startingWorkspaces,
-      //   selectedWorkspaces,
-      //   presetId,
-      //   deletePresetWorkspace,
-      //   createPresetWorkspaces as any,
-      //   "preset_id"
-      // )
+      await handleWorkspaceUpdates(
+        startingWorkspaces,
+        selectedWorkspaces,
+        presetId,
+        deletePresetWorkspaces as any,
+        createPresetWorkspaces as any,
+        "presetId"
+      )
 
       return updatedPreset
     },
-    
-
-      
-    
   }
 
   const stateUpdateFunctions = {
@@ -202,21 +205,21 @@ export const SidebarUpdateItem: FC<SidebarUpdateItemProps> = ({
     }
   }
 
-  // const handleSelectWorkspace = (workspace: Tables<"workspaces">) => {
-  //   setSelectedWorkspaces(prevState => {
-  //     const isWorkspaceAlreadySelected = prevState.find(
-  //       selectedWorkspace => selectedWorkspace.id === workspace.id
-  //     )
+  const handleSelectWorkspace = (workspace: Workspace) => {
+    setSelectedWorkspaces(prevState => {
+      const isWorkspaceAlreadySelected = prevState.find(
+        selectedWorkspace => selectedWorkspace.id === workspace.id
+      )
 
-  //     if (isWorkspaceAlreadySelected) {
-  //       return prevState.filter(
-  //         selectedWorkspace => selectedWorkspace.id !== workspace.id
-  //       )
-  //     } else {
-  //       return [...prevState, workspace]
-  //     }
-  //   })
-  // }
+      if (isWorkspaceAlreadySelected) {
+        return prevState.filter(
+          selectedWorkspace => selectedWorkspace.id !== workspace.id
+        )
+      } else {
+        return [...prevState, workspace]
+      }
+    })
+  }
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLDivElement>) => {
     if (!isTyping && e.key === "Enter" && !e.shiftKey) {
@@ -251,10 +254,10 @@ export const SidebarUpdateItem: FC<SidebarUpdateItemProps> = ({
               <div className="space-y-1">
                 <Label>Assigned Workspaces</Label>
 
-                {/* <AssignWorkspaces
+                <AssignWorkspaces
                   selectedWorkspaces={selectedWorkspaces}
                   onSelectWorkspace={handleSelectWorkspace}
-                /> */}
+                />
               </div>
             )}
 
@@ -262,10 +265,10 @@ export const SidebarUpdateItem: FC<SidebarUpdateItemProps> = ({
           </div>
         </div>
 
-        <SheetFooter className="mt-2 flex justify-between">
-          {/* <SidebarDeleteItem item={item} contentType={contentType} /> */}
+        <SheetFooter className="flex justify-between mt-2">
+          <SidebarDeleteItem item={item} contentType={contentType} />
 
-          <div className="flex grow justify-end space-x-2">
+          <div className="flex justify-end space-x-2 grow">
             <Button variant="outline" onClick={() => setIsOpen(false)}>
               Cancel
             </Button>

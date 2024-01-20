@@ -66,10 +66,10 @@ model WorkspacePreset {
   workspaceId String   
   presetId String    
 
-  workspace Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
-  preset Preset @relation(fields: [presetId], references: [id], onDelete: Cascade)
+  workspace Workspace @relation(fields: [workspaceId], references: [id])
+  preset Preset @relation(fields: [presetId], references: [id])
 
-  @@id([workspaceId, presetId], name: "workspace_preset_unique")
+  @@id([workspaceId, presetId])
 }
 
 model Preset {
