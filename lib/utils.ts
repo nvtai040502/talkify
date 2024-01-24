@@ -1,4 +1,4 @@
-import { Chat } from "@prisma/client";
+import { Chat, Message } from "@prisma/client";
 import { type ClassValue, clsx } from "clsx"
 import { ReadonlyURLSearchParams } from "next/navigation";
 import { twMerge } from "tailwind-merge"
@@ -21,6 +21,10 @@ export function isMacOs() {
 export const parsedSearchParams  = (params: ReadonlyURLSearchParams) => {
   return Object.fromEntries(params.entries())
 }
+
+export const formatMessage = (message: Message) => {
+  return `${message.role}: ${message.content}`;
+};
 
 export const getChatsSortedByDate = (
   data: Chat[],

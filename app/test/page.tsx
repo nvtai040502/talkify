@@ -1,91 +1,36 @@
-// pages/index.js or any other Next.js page
-"use client";
-import { Button } from '@/components/ui/button';
-import { useEffect, useState } from 'react';
+import { ChatOllama } from "@langchain/community/chat_models/ollama";
+import { StringOutputParser } from "@langchain/core/output_parsers";
+import { ChatPromptTemplate } from "@langchain/core/prompts";
+import { HttpResponseOutputParser } from "langchain/output_parsers";
 
-const MyApp = () => {
-  const [abortController, setAbortController] = useState(new AbortController());
-  const [test, setTest] = useState(false);
+const prompt = ChatPromptTemplate.fromMessages([
+  ["system", "You are a world class technical documentation writer."],
+  ["user", "{input}"],
+]);
 
-  useEffect(() => {
-    const fetchData = async () => {
-      // const controller = new AbortController();
-      const signal = abortController.signal;
 
-      try {
-        const response = await fetch('/api/chat/localhost/ollama', {
-          method: 'POST',
-          body: JSON.stringify("hello"),
-          signal: signal,
-        });
+const TestPage = async () => {
+const model = new ChatOllama({
+  baseUrl: "http://localhost:11434", // Default value
+  model: "phi:latest", // Default value
+});
+const outputParser = new StringOutputParser();
+const chain = prompt.pipe(model).pipe(outputParser);
 
-        if (!response.ok) {
-          throw new Error(`HTTP error! Status: ${response.status}`);
-        }
+const stream = await chain.stream({
+  input: "hello?",
+});
+const chunks = [];
+for await (const chunk of stream) {
+  chunks.push(chunk);
+  console.log(chunk)
+}
 
-        const reader = response.body!.getReader();
-        console.log(response);
 
-        signal.addEventListener("abort", () => {
-          reader.cancel();
-          console.log('Fetch aborted...');
-        });
-
-        const decoder = new TextDecoder();
-
-        try {
-          while (true) {
-            const { done, value } = await reader.read();
-
-            if (done) {
-              break;
-            }
-
-            if (value) {
-              console.log(decoder.decode(value));
-              // Update your state with the received data if needed
-            }
-          }
-        } catch (error: any) {
-          if (error.name !== 'AbortError') {
-            console.error('Error during stream reading:', error);
-          }
-        } finally {
-          reader.releaseLock();
-        }
-      } catch (error: any) {
-        if (error.name !== 'AbortError') {
-          console.error('Fetch error:', error);
-        }
-      }
-    };
-
-    // Invoke fetchData
-    fetchData();
-
-  }, [test]);
+console.log(chunks.join(""));
 
   return (
-    <div>
-      {/* Render the received stream data in the component */}
-      <Button
-        onClick={() => {
-          abortController.abort();
-        }}
-      >
-        hello
-      </Button>
-      <Button
-        onClick={() => {
-          setAbortController(new AbortController());
-          // Toggle 'test' to trigger the useEffect and invoke fetchData
-          setTest((prevTest) => !prevTest);
-        }}
-      >
-        hello2
-      </Button>
-    </div>
-  );
-};
-
-export default MyApp;
+    <div></div>
+  )
+}
+export default TestPage

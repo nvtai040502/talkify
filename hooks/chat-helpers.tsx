@@ -21,7 +21,8 @@ export const handleHostedChat = async (
   // console.log(formattedMessages)
 
   const response = await fetchChatResponse(
-    `/api/chat/hosted/hf`,
+    // `/api/chat/hosted/hf`,
+    `api/retrival`,
     {
       messages: formattedMessages
     },
@@ -53,8 +54,8 @@ export const handleLocalChat = async (
 
   const formattedMessages = await buildFinalMessages(payload)
   const response = await fetchChatResponse(
-    process.env.NEXT_PUBLIC_OLLAMA_URL + "/api/chat",
-    // "/api/chat/localhost/ollama", it's won't work when i try to using langchain and ollama, so weird 
+    // process.env.NEXT_PUBLIC_OLLAMA_URL + "/api/chat",
+    "/api/chat/localhost/ollama", 
     {
       model: payload.chatSettings.model,
       messages: formattedMessages,
@@ -169,7 +170,7 @@ export const processResponse = async (
       response.body,
       chunk => {
         try {
-          contentToAdd = isHosted ? chunk : JSON.parse(chunk).message.content
+          contentToAdd = chunk 
           fullText += contentToAdd
           // console.log(fullText)
         } catch (error) {

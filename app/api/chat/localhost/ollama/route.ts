@@ -1,34 +1,39 @@
 import { ChatOllama } from "@langchain/community/chat_models/ollama";
 import { NextRequest, NextResponse } from "next/server";
 import { StringOutputParser } from "@langchain/core/output_parsers";
-import { ChatPromptTemplate } from "@langchain/core/prompts";
+import { PromptTemplate } from "@langchain/core/prompts";
 import { Message } from "@prisma/client";
+import { formatMessage } from "@/lib/utils";
 
 export const runtime = "edge";
+const TEMPLATE = `You are a pirate named Patchy. All responses must be extremely verbose and in pirate dialect.
+
+Current conversation:
+{chat_history}
+
+User: {input}
+AI:`;
 
 export async function POST(req: NextRequest) {
   try {
-    const {message}:{message: Message} = await req.json()
+    const {messages}:{messages: Message[]} = await req.json()
+    const formattedPreviousMessages = messages.slice(0, -1).map(formatMessage);
+    const currentMessageContent = messages[messages.length - 1].content;
+    console.log(messages)
     const chatModel = new ChatOllama({
       baseUrl: `${process.env.NEXT_PUBLIC_OLLAMA_URL}`, 
       model: "phi:latest",
-      format: "json",
     })
 
-    // const outputParser = new StringOutputParser();
-    const prompt = ChatPromptTemplate.fromMessages([
-      [
-        "system",
-        `You are an expert translator. Format all responses as JSON objects with two keys: "original" and "translated".`,
-      ],
-      ["user", `Translate "{input}" into {language}.`],
-    ]);
-    const chain = prompt.pipe(chatModel);
+    const outputParser = new StringOutputParser();
+    const prompt = PromptTemplate.fromTemplate(TEMPLATE);
+    console.log(prompt)
+    const chain = prompt.pipe(chatModel).pipe(outputParser);
+
     const stream = await chain.stream({
-      input: "I love programming",
-      language: "Vietnamese",
+      chat_history: formattedPreviousMessages.join("\n"),
+      input: currentMessageContent,
     });
-    // const stream = await chatModel.stream(message);
     return new Response(stream, {
       headers: {
         "Content-Type": "text/plain; charset=utf-8",
