@@ -55,7 +55,7 @@ export const handleLocalChat = async (
   const formattedMessages = await buildFinalMessages(payload)
   const response = await fetchChatResponse(
     // process.env.NEXT_PUBLIC_OLLAMA_URL + "/api/chat",
-    "/api/chat/localhost/ollama", 
+    "/api/chat/localhost/ollama/retrival", 
     {
       model: payload.chatSettings.model,
       messages: formattedMessages,

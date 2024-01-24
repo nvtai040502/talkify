@@ -1,3 +1,5 @@
+"use client"
+
 import { TalkifyContext } from "@/global/context"
 import { LLMID } from "@/types/llms"
 import { Preset } from "@prisma/client"

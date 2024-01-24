@@ -121,7 +121,7 @@ export const useChatHandler = () => {
           return updatedChats
         })
       }
-  
+ 
      await handleCreateMessages(
         chatMessages,
         currentChat,

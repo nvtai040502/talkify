@@ -1,7 +1,30 @@
 import { ChatPayload } from "@/types/chat"
 import { Message } from "@prisma/client"
 import { encode } from "gpt-tokenizer"
+const buildBasePrompt = (
+  prompt: string,
+  workspaceInstructions: string,
+  // assistant: Tables<"assistants"> | null
+) => {
+  let fullPrompt = ""
+  // if (assistant) {
+  //   fullPrompt += `<INJECT ROLE>\nYou are not an AI. You are ${assistant.name}.\n</INJECT ROLE>\n\n`
+  // }
 
+  fullPrompt += `Today is ${new Date().toLocaleDateString()}.\n\n`
+
+  // if (profileContext) {
+  //   fullPrompt += `User Info:\n${profileContext}\n\n`
+  // }
+
+  if (workspaceInstructions) {
+    fullPrompt += `System Instructions:\n${workspaceInstructions}\n\n`
+  }
+
+  fullPrompt += `User Instructions:\n${prompt}`
+
+  return fullPrompt
+}
 
 export async function buildFinalMessages(
   payload: ChatPayload,
@@ -12,7 +35,10 @@ export async function buildFinalMessages(
     chatMessages,
   } = payload
 
-  
+  const BUILT_PROMPT = buildBasePrompt(
+    chatSettings.prompt,
+    chatSettings.includeWorkspaceInstructions ? workspaceInstructions : "",
+  )
 
   // const CHUNK_SIZE = chatSettings.contextLength
   // const PROMPT_TOKENS = encode(chatSettings.prompt).length
@@ -69,19 +95,19 @@ export async function buildFinalMessages(
     finalMessages.unshift(message)
   }
 
-  // let tempSystemMessage: Message = {
-  //   chatId: "",
-  //   content: BUILT_PROMPT,
-  //   createdAt: new Date(),
-  //   id: processedChatMessages.length + "",
-  //   // model: payload.chatSettings.model,
-  //   role: "system",
-  //   sequence_number: processedChatMessages.length,
-  //   updatedAt: new Date(),
-  //   // user_id: ""
-  // }
+  let tempSystemMessage: Message = {
+    chatId: "",
+    content: BUILT_PROMPT,
+    createdAt: new Date(),
+    id: processedChatMessages.length + "",
+    // model: payload.chatSettings.model,
+    role: "system",
+    sequence_number: processedChatMessages.length,
+    updatedAt: new Date(),
+    // user_id: ""
+  }
 
-  // finalMessages.unshift(tempSystemMessage)
+  finalMessages.unshift(tempSystemMessage)
 
   finalMessages = finalMessages.map(message => {
     let content

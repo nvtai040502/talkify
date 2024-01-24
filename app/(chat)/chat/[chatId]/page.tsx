@@ -2,7 +2,6 @@ import { type Metadata } from 'next'
 import { notFound, redirect } from 'next/navigation'
 
 import { auth } from '@/auth'
-import { Chat } from '@/components/chats/chat'
 import { db } from '@/lib/db'
 import ChatUI from '@/components/chats/chat-ui'
 import ApiTest from '@/components/test/api'
